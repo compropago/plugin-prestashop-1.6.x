@@ -5,7 +5,7 @@ plugin-prestashop
 
 1. Copiar el directorio "compropago" al directorio de los módulos "modules".
 
-2. On your store administration, go to **Modules > Modules**.
+2. En la administración de Prestashop ir hacia: **Módulos > Módulos**.
 
-3. Search by **ComproPago** and click install. <br />
-You will receive the following message: " Module(s) installed successfully."
+3. Buscar el nombre del móduloo: **ComproPago** y dar clic en instalar. <br />
+Recibirá el siguiente mensaje: " Módulo(s) instalado correctamente."
