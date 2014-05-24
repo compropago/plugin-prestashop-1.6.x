@@ -1,9 +1,9 @@
 plugin-prestashop
 =================
 
-## Installation:
+## Instalación:
 
-1. Copy mercadopago folder to modules folder.
+1. Copiar el directorio "compropago" al directorio de los módulos "modules".
 
 2. On your store administration, go to **Modules > Modules**.
 
