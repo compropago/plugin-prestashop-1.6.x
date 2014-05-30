@@ -249,7 +249,7 @@ class MPRestClient {
     private static function get_connect($uri, $method, $client_id, $client_secret, $request, $content_type) {
 		
 		$connect = curl_init();
-		curl_setopt($connect, CURLOPT_USERPWD, "23976112561d20".":");
+		curl_setopt($connect, CURLOPT_USERPWD, $client_id.":");
 		curl_setopt($connect, CURLOPT_URL, "http://api.compropago.com/v1/charges");			 // URL API 
 		curl_setopt($connect, CURLOPT_HTTPHEADER, $content_type);  // Cabeceras API
 		curl_setopt($connect, CURLOPT_SSL_VERIFYPEER, false); // No verificamos certificado SSL (no body cares).
