@@ -2,7 +2,7 @@
  
 =================
 
-## Instalación:
+## Instalación
 
 1. Comprimir el directorio "compropago" en formato .zip y subirlo por el manejador de modulos de PrestaShop. Si prefiere la opción vía FTP deberá subir el directorio "compropago" al directorio "modules" ubicado en el directorio raiz de PrestaShop
 	
