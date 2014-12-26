@@ -59,7 +59,6 @@ class ComproPago extends PaymentModule {
 		SELECT `id_lang`, `iso_code`
 		FROM `' . _DB_PREFIX_ . 'lang`
 		');
-		print_r($this->order_state);
         foreach ($this->order_state as $key => $value) {
             Db::getInstance()->Execute
                     ('
