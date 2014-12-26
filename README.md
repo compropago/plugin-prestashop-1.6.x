@@ -1,4 +1,4 @@
-Plugin para PrestaShop 1.5.x - 1.6.x - ComproPago 
+## Plugin para PrestaShop 1.5.x - 1.6.x - ComproPago 
  
 =================
 
