@@ -4,19 +4,13 @@
 
 ## Instalación:
 
-1. Subir el directorio por FTP o usar el manejador de modulos de PrestaShop:
-<ol>
-<li> Subir por FTP el directorio "compropago" a el directorio de los módulos "modules" que se encuentra en el directorio raiz de su PrestaShop.
-</li>
-<li> Comprimir el directorio "compropago" en formato .zip y subirlo por el manejador de modulos de PrestaShop<br />
-</li>
-</ol>
+1. Comprimir el directorio "compropago" en formato .zip y subirlo por el manejador de modulos de PrestaShop. Si prefiere la opción vía FTP deberá subir el directorio "compropago" al directorio "modules" ubicado en el directorio raiz de PrestaShop
 	
-3. En la administración de Prestashop (backoffice) ir a: **Módulos > Módulos** y buscar el nombre del módulo: **compropago** y dar click en "Instalar". Una vez instlado recibirá el siguiente mensaje: " Módulo(s) instalado correctamente."<br />
+2. En la administración de Prestashop (backoffice) ir a: **Módulos > Módulos** y buscar el nombre del módulo: **compropago** y dar click en "Instalar". Una vez instlado recibirá el siguiente mensaje: " Módulo(s) instalado correctamente."<br />
 
-4. Agregar las llaves, ir al panel de administración de ComproPago (https://compropago.com/panel/configuracion), copiar y pegar las llaves, dentro de las configuraciones del modulo en el panel de administración de PrestaShop (backoffice)
+3. Agregar las llaves, ir al panel de administración de ComproPago (https://compropago.com/panel/configuracion), copiar y pegar las llaves, dentro de las configuraciones del modulo en el panel de administración de PrestaShop (backoffice)
 
-5. Una vez ingresadas las llaves se puede proceder a la configuración del Webhook, quien será responsable de actualizar el estado de las ordenes de compra en automatico. 
+4. Una vez ingresadas las llaves se puede proceder a la configuración del Webhook, quien será responsable de actualizar el estado de las ordenes de compra en automatico. 
 
 
 ## Configuración Webhook
