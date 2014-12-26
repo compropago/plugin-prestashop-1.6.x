@@ -7,20 +7,20 @@
  */
 $GLOBALS["LIB_LOCATION"] = dirname(__FILE__);
 
-class MP {
+class CP {
 
     const version = "1.0";
 
-    private $client_id;
-    private $client_secret;
+    private $public_key;
+    private $secret_key;
 	private $request;
 	
     private $access_data;
     private $sandbox = FALSE;
 
-    function __construct($client_id, $client_secret, $request) {
-        $this->client_id = $client_id;
-        $this->client_secret = $client_secret;
+    function __construct($public_key, $secret_key, $request) {
+        $this->public_key = $public_key;
+        $this->secret_key = $secret_key;
 		$this->request = $request;
     }
 
@@ -28,8 +28,19 @@ class MP {
         if (!is_null($enable)) {
             $this->sandbox = $enable === TRUE;
         }
-
         return $this->sandbox;
+    }
+
+    public function get_charge_request() {
+    
+        $headers = array('Accept: application/compropago+json',
+             'Content-type: application/json'
+        );
+        $uri_prefix = $this->sandbox ? "/sandbox" : "";
+        $access_data = CPRestClient::post($uri_prefix."/v1/charges", $this->public_key, $this->secret_key, $this->request, $headers);
+        $this->access_data = $access_data['response'];
+
+        return $access_data;
     }
 
     /**
@@ -40,9 +51,8 @@ class MP {
 		$headers = array('Accept: application/compropago+json',
 			 'Content-type: application/json'
 		);
-
-        $access_data = MPRestClient::post("http://api.compropago.com/v1/charges", $this->client_id, $this->client_secret, $this->request, $headers);
-
+        $uri_prefix = $this->sandbox ? "/sandbox" : "";
+        $access_data = CPRestClient::post($uri_prefix."/v1/charges", $this->public_key, $this->secret_key, $this->request, $headers);
         $this->access_data = $access_data['response'];
 
         return $access_data;
@@ -54,10 +64,10 @@ class MP {
      * @return array(json)
      */
     public function get_payment($id) {
-        $access_token = $this->get_access_token();
+        //$access_token = $this->get_access_token();
 
         $uri_prefix = $this->sandbox ? "/sandbox" : "";
-        $payment_info = MPRestClient::get($uri_prefix."/collections/notifications/" . $id . "?access_token=" . $access_token);
+        $payment_info = CPRestClient::get($uri_prefix."/v1/charges/" . $id , $this->secret_key);
         return $payment_info;
     }
     public function get_payment_info($id) {
@@ -72,7 +82,7 @@ class MP {
     public function get_authorized_payment($id) {
         $access_token = $this->get_access_token();
 
-        $authorized_payment_info = MPRestClient::get("/authorized_payments/" . $id . "?access_token=" . $access_token);
+        $authorized_payment_info = CPRestClient::get("/authorized_payments/" . $id . "?access_token=" . $access_token);
         return $authorized_payment_info;
     }
 
@@ -88,7 +98,7 @@ class MP {
             "status" => "refunded"
         );
 
-        $response = MPRestClient::put("/collections/" . $id . "?access_token=" . $access_token, $refund_status);
+        $response = CPRestClient::put("/collections/" . $id . "?access_token=" . $access_token, $refund_status);
         return $response;
     }
 
@@ -104,7 +114,7 @@ class MP {
             "status" => "cancelled"
         );
 
-        $response = MPRestClient::put("/collections/" . $id . "?access_token=" . $access_token, $cancel_status);
+        $response = CPRestClient::put("/collections/" . $id . "?access_token=" . $access_token, $cancel_status);
         return $response;
     }
 
@@ -120,7 +130,7 @@ class MP {
             "status" => "cancelled"
         );
 
-        $response = MPRestClient::put("/preapproval/" . $id . "?access_token=" . $access_token, $cancel_status);
+        $response = CPRestClient::put("/preapproval/" . $id . "?access_token=" . $access_token, $cancel_status);
         return $response;
     }
 
@@ -141,7 +151,7 @@ class MP {
 
         $uri_prefix = $this->sandbox ? "/sandbox" : "";
             
-        $collection_result = MPRestClient::get($uri_prefix."/collections/search?" . $filters . "&access_token=" . $access_token);
+        $collection_result = CPRestClient::get($uri_prefix."/collections/search?" . $filters . "&access_token=" . $access_token);
         return $collection_result;
     }
 
@@ -157,7 +167,7 @@ class MP {
 			 'Content-type: application/json'
 		);
 
-        //$preference_result = MPRestClient::post("http://api.compropago.com/v1/charges", $this->client_id, $this->client_secret, $this->request, $headers);
+        //$preference_result = CPRestClient::post("http://api.compropago.com/v1/charges", $this->public_key, $this->secret_key, $this->request, $headers);
 
         return $access_token;
     }
@@ -171,7 +181,7 @@ class MP {
     public function update_preference($id, $preference) {
         $access_token = $this->get_access_token();
 
-        $preference_result = MPRestClient::put("/checkout/preferences/{$id}?access_token=" . $access_token, $preference);
+        $preference_result = CPRestClient::put("/checkout/preferences/{$id}?access_token=" . $access_token, $preference);
         return $preference_result;
     }
 
@@ -183,7 +193,7 @@ class MP {
     public function get_preference($id) {
         $access_token = $this->get_access_token();
 
-        $preference_result = MPRestClient::get("/checkout/preferences/{$id}?access_token=" . $access_token);
+        $preference_result = CPRestClient::get("/checkout/preferences/{$id}?access_token=" . $access_token);
         return $preference_result;
     }
 
@@ -195,7 +205,7 @@ class MP {
     public function create_preapproval_payment($preapproval_payment) {
         //$access_token = $this->get_access_token();
 
-        //$preapproval_payment_result = MPRestClient::post("/preapproval?access_token=" . $access_token, $preapproval_payment);
+        //$preapproval_payment_result = CPRestClient::post("/preapproval?access_token=" . $access_token, $preapproval_payment);
         //return $preapproval_payment_result;
 		return true;
     }
@@ -208,7 +218,7 @@ class MP {
     public function get_preapproval_payment($id) {
         $access_token = $this->get_access_token();
 
-        $preapproval_payment_result = MPRestClient::get("/preapproval/{$id}?access_token=" . $access_token);
+        $preapproval_payment_result = CPRestClient::get("/preapproval/{$id}?access_token=" . $access_token);
         return $preapproval_payment_result;
     }
 
@@ -221,7 +231,7 @@ class MP {
 	public function update_preapproval_payment($id, $preapproval_payment) {
         $access_token = $this->get_access_token();
 
-        $preapproval_payment_result = MPRestClient::put("/preapproval/" . $id . "?access_token=" . $access_token, $preapproval_payment);
+        $preapproval_payment_result = CPRestClient::put("/preapproval/" . $id . "?access_token=" . $access_token, $preapproval_payment);
         return $preapproval_payment_result;
     }
 
@@ -244,32 +254,32 @@ class MP {
 /**
  * ComproPago cURL RestClient
  */
-class MPRestClient {
+class CPRestClient {
 
-    private static function get_connect($uri, $method, $client_id, $client_secret, $request, $content_type) {
-		
+    private static function get_connect($uri, $method, $public_key, $secret_key, $request, $content_type) {
+        
+        $domainUri="https://api.compropago.com";
 		$connect = curl_init();
-		curl_setopt($connect, CURLOPT_USERPWD, $client_id.":");
-		curl_setopt($connect, CURLOPT_URL, "http://api.compropago.com/v1/charges");			 // URL API 
+		curl_setopt($connect, CURLOPT_USERPWD, $secret_key.":");
+		curl_setopt($connect, CURLOPT_URL, $domainUri.$uri);//https://api.compropago.com/v1/charges");			 // URL API 
 		curl_setopt($connect, CURLOPT_HTTPHEADER, $content_type);  // Cabeceras API
 		curl_setopt($connect, CURLOPT_SSL_VERIFYPEER, false); // No verificamos certificado SSL (no body cares).
-		curl_setopt($connect, CURLOPT_POST, 1);				 // Peticiones POST
- 		curl_setopt($connect, CURLOPT_POSTFIELDS, $request);	 // Mandamos el Json
  		curl_setopt($connect, CURLOPT_HEADER,0);  			 //Retornar cabeceras 
  		curl_setopt($connect, CURLOPT_RETURNTRANSFER  ,1);    //Retornar datos de llamada
-
+        if($method == "POST"){
+            curl_setopt($connect, CURLOPT_POST, 1);                // Peticiones POST
+            curl_setopt($connect, CURLOPT_POSTFIELDS, $request);   // Mandamos el Json
+        }
         return $connect;
     }
 
-    private static function exec($method, $uri, $client_id, $client_secret, $request, $content_type) {
-		if(is_array($request)){	
+    private static function exec($method, $uri, $public_key, $secret_key, $request, $content_type) {
+        if(is_array($request)){	
 			$request = json_encode($request);
 		}
-        $connect = self::get_connect($uri, $method, $client_id, $client_secret, $request, $content_type);
-
+        $connect = self::get_connect($uri, $method, $public_key, $secret_key, $request, $content_type);
         $api_result = curl_exec($connect);
         $api_http_code = curl_getinfo($connect, CURLINFO_HTTP_CODE);
-
         $response = array(
             "status" => $api_http_code,
             "response" => json_decode($api_result, true)
@@ -278,22 +288,20 @@ class MPRestClient {
         if ($response['status'] >= 400) {
             throw new Exception ($response['response']['message'], $response['status']);
         }
-
         curl_close($connect);
-
         return $response;
     }
 
-    public static function get($uri, $content_type = "application/json") {
-        return self::exec("GET", $uri, null, $content_type);
+    public static function get($uri, $secret_key, $content_type = "application/json") {
+        return self::exec("GET", $uri, null, $secret_key, null, $content_type);
     }
 
-    public static function post($uri, $client_id, $client_secret, $request, $content_type = array('Accept: application/compropago+json','Content-type: application/json')) {
-        return self::exec("POST", $uri, $client_id, $client_secret, $request, $content_type);
+    public static function post($uri, $public_key, $secret_key, $request, $content_type = array('Accept: application/compropago+json','Content-type: application/json')) {
+        return self::exec("POST", $uri, $public_key, $secret_key, $request, $content_type);
     }
 
-    public static function put($uri, $client_id, $client_secret, $content_type = array('Accept: application/compropago+json','Content-type: application/json')) {
-        return self::exec("PUT", $uri, $client_id, $client_secret, $content_type);
+    public static function put($uri, $public_key, $secret_key, $content_type = array('Accept: application/compropago+json','Content-type: application/json')) {
+        return self::exec("PUT", $uri, $public_key, $secret_key, $content_type);
     }
 
 }

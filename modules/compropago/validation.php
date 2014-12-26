@@ -2,7 +2,7 @@
 
 include(dirname(__FILE__).'/../../config/config.inc.php');
 include(dirname(__FILE__).'/../../header.php');
-include(dirname(__FILE__).'/compropago.php');
+//include(dirname(__FILE__).'/compropago.php');
 
 	if ( isset($_POST['payment_type']) ) {
 		$payment_type =  $_POST['payment_type'];

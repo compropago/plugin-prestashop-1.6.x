@@ -4,28 +4,41 @@
     </center>
     <br />
     <h3>{l s='¡Felicitaciones! Su pedido ha sido generado correctamente.' mod='compropago'}</h3>
-    <p>{l s='El importe de la compra es:' mod='compropago'} <span class="price">{$totalApagar}</span></p>
-    <p>{l s='Para realizar un pago utilize la siguiente información:' mod='compropago'}</p>
-	<br />
-	<h3>{$description}</h3>
-	<ol>
-		<li>{l s='Paso 1:' mod='compropago'} {$step_1}</li>
-		<li>{l s='Paso 2:' mod='compropago'} {$step_2}</li>
-		<li>{l s='Paso 3:' mod='compropago'} {$step_3}</li>
-	</ul>
-	<h3>{l s='Notas:' mod='compropago'}</h3>
-	<ul>
-		<li><p>{$note_extra_comition}</li>
-		<li>{$note_expiration_date}</li>
-		<li>{$note_confirmation}</li>
-	</ul>
-	<br />
-    <p>{l s='Si tiene alguna pregunta por favor, utilice el' mod='compropago'}	<a href="{$base_dir}contact-form.php">{l s='Formulario de contacto' mod='cheque'}</a>.</p>
-    <br />
+    <div class="cp-instruction-section">
+      <div class="cp-title">Seguir los siguientes pasos:</div>
+
+      <div class="cp-step-box">
+        <div class="cp-step">
+              <div class="cp-num">{l s='1.' mod='compropago'}</div> {$step_1}
+        </div>
+        <div class="cp-step">
+              <div class="cp-num">{l s='2.' mod='compropago'}</div> {$step_2}
+        </div>
+        <div class="cp-step">
+            <div class="cp-num">{l s='3.' mod='compropago'}</div> {$step_3}
+        </div>
+      </div>
+      <hr class="cp-grey">
+      <span class="cp-note" style="font-size:12px;color: #333;">Oxxo/7Eleven/Extra cobra en caja una comisión de $7.00/$8.00 por concepto de recepción de cobranza.</span>
+    </div>
+
+	<div class="cp-warning-box">
+        <img src="{$base_dir}modules/compropago/images/warning.png" style="margin: -7px 0px 0px 0px;"> 
+        <span style="font-size: 12px;"><b>Importante</b></span>
+        <ul style="" class="cp-warning">
+          	<li>{$note_extra_comition}</li>
+			<li>{$note_expiration_date}</li>
+			<li>El número de cuenta/tarjeta asignado es único por cada orden.</li>
+
+        </ul>
+    </div>
+	<hr class="cp-grey">
+    <p>{l s='Si tiene alguna pregunta por favor, utilice el' mod='compropago'}	<a href="{$base_dir}index.php?controller=contact" target="_blank"><b>{l s='Formulario de contacto' mod='cheque'}</b></a>.</p>
     {$formcompropago}
 {else}
+
     <p class="warning">
         {l s='Hubo alguna falla en la presentación de su solicitud. Por favor, póngase en contacto con nuestro Servicio de Atención' mod='compropago'} 
-        <a href="{$base_dir}contact-form.php">{l s='atención al cliente' mod='compropago'}</a>.
+        <a href="{$base_dir}index.php?controller=contact">{l s='atención al cliente' mod='compropago'}</a>.
     </p>
 {/if}

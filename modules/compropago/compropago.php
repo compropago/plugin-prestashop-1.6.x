@@ -1,7 +1,6 @@
 <?php
 
 include(dirname(__FILE__) . '/includes/compropago.php');
-include(dirname(__FILE__) . '/includes/CPApi.php');
 
 if (!defined('_PS_VERSION_'))
     exit;
@@ -37,12 +36,9 @@ class ComproPago extends PaymentModule {
 		}
         if (
 			!parent::install()
-			OR !Configuration::updateValue('compropago_CLIENT_ID', '')
-			OR !Configuration::updateValue('compropago_CLIENT_SECRET', '')
-			OR !Configuration::updateValue('compropago_METHODS', '')
-			OR !Configuration::updateValue('compropago_URLPROCESS', _PS_BASE_URL_ . '/history.php')
-			OR !Configuration::updateValue('compropago_URLSUCCESFULL', _PS_BASE_URL_ . '/history.php')
-			OR !Configuration::updateValue('compropago_BTN', 0)
+			OR !Configuration::updateValue('compropago_PUBLIC_KEY', '')
+			OR !Configuration::updateValue('compropago_SECRET_KEY', '')
+			OR !$this->registerHook('displayHeader')
 			OR !$this->registerHook('payment')
 			OR !$this->registerHook('paymentReturn')
         ) {
@@ -53,22 +49,18 @@ class ComproPago extends PaymentModule {
     }
 
     public function create_states() {
-
         $this->order_state = array(
-            array('ccfbff', '00100', 'ComproPago - Transacción en curso', ''),
-            array('c9fecd', '11110', 'ComproPago - Transacción completada', 'payment'),
-            array('fec9c9', '11110', 'ComproPago - Transacción Cancelada', 'order_canceled'),
-            array('fec9c9', '11110', 'ComproPago - Transacción rechazada', 'payment_error')
+            array('25bffd', '00100', 'ComproPago - Transacción en curso', ''),
+            array('8bc954', '11110', 'ComproPago - Transacción completada', 'payment'),
+            array('faee6e', '11110', 'ComproPago - Transacción cancelada', 'order_canceled'),
+            array('faee6e', '11110', 'ComproPago - Transacción rechazada', 'payment_error')
         );
-
-
         $languages = Db::getInstance()->ExecuteS('
 		SELECT `id_lang`, `iso_code`
 		FROM `' . _DB_PREFIX_ . 'lang`
 		');
-
+		print_r($this->order_state);
         foreach ($this->order_state as $key => $value) {
-
             Db::getInstance()->Execute
                     ('
 			INSERT INTO `' . _DB_PREFIX_ . 'order_state` 
@@ -76,13 +68,9 @@ class ComproPago extends PaymentModule {
 			VALUES
 			(' . $value[1][0] . ', ' . $value[1][1] . ', \'#' . $value[0] . '\', ' . $value[1][2] . ', ' . $value[1][3] . ', ' . $value[1][4] . ');
 		    ');
-
-
             $sql = 'SELECT MAX(id_order_state) FROM ' . _DB_PREFIX_ . 'order_state';
             $this->figura = Db::getInstance()->getValue($sql);
-
             foreach ($languages as $language_atual) {
-
                 Db::getInstance()->Execute
                         ('
 			    INSERT INTO `' . _DB_PREFIX_ . 'order_state_lang` 
@@ -91,33 +79,24 @@ class ComproPago extends PaymentModule {
 			    (' . $this->figura . ', ' . $language_atual['id_lang'] . ', \'' . $value[2] . '\', \'' . $value[3] . '\');
 		        ');
             }
-
-
-
             $file = (dirname(__file__) . "/icons/$key.gif");
             $newfile = (dirname(dirname(dirname(__file__))) . "/img/os/$this->figura.gif");
             if (!copy($file, $newfile)) {
                 return false;
             }
-
             Configuration::updateValue("compropago_STATUS_$key", $this->figura);
         }
-
         return true;
     }
 
     public function uninstall() {
         if(
-			!Configuration::deleteByName('compropago_CLIENT_ID')
-			OR !Configuration::deleteByName('compropago_CLIENT_SECRET')
-			OR !Configuration::deleteByName('compropago_URLPROCESS')
-			OR !Configuration::deleteByName('compropago_URLSUCCESFULL')
-			OR !Configuration::deleteByName('compropago_BTN')
+			!Configuration::deleteByName('compropago_PUBLIC_KEY')
+			OR !Configuration::deleteByName('compropago_SECRET_KEY')
             OR !parent::uninstall()
         ){
             return false;
         }
-
         return true;
     }
 
@@ -126,31 +105,18 @@ class ComproPago extends PaymentModule {
 	
         if (isset($_POST['submitcompropago'])) {
             if (!sizeof($this->_postErrors)) {
-		if (!empty($_POST['compropago_CLIENT_ID'])) {
-                    Configuration::updateValue('compropago_CLIENT_ID', $_POST['compropago_CLIENT_ID']);
+		if (!empty($_POST['compropago_PUBLIC_KEY'])) {
+                    Configuration::updateValue('compropago_PUBLIC_KEY', $_POST['compropago_PUBLIC_KEY']);
                 }
 		
-                if (!empty($_POST['compropago_CLIENT_SECRET'])) {
-                    Configuration::updateValue('compropago_CLIENT_SECRET', $_POST['compropago_CLIENT_SECRET']);
+                if (!empty($_POST['compropago_SECRET_KEY'])) {
+                    Configuration::updateValue('compropago_SECRET_KEY', $_POST['compropago_SECRET_KEY']);
                 }
 		
-                if (!empty($_POST['pg_url_retorno'])) {
-                    Configuration::updateValue('compropago_URLPROCESS', $_POST['pg_url_retorno']);
-                }
-                if (!empty($_POST['pg_url_succesfull'])) {
-                    Configuration::updateValue('compropago_URLSUCCESFULL', $_POST['pg_url_succesfull']);
-                }
                 $this->displayConf();
             }
             else
                 $this->displayErrors();
-        }
-        elseif (isset($_POST['submitcompropago_Btn'])) {
-            Configuration::updateValue('compropago_BTN', $_POST['btn_pg']);
-            $this->displayConf();
-        } elseif (isset($_POST['submitcompropago_Bnr'])) {
-            Configuration::updateValue('compropago_BANNER', $_POST['banner_pg']);
-            $this->displayConf();
         }
 
         $this->displaycompropago();
@@ -182,46 +148,24 @@ class ComproPago extends PaymentModule {
         $this->_html .= '<div style="float:left;width:100%;margin: 0 0 20px 0;">';
 		$this->_html .= '<img src="'.__PS_BASE_URI__.'modules/compropago/images/logo.png" style="float:left; margin-right:15px;" />';
 		$this->_html .= '</div>';
-		$this->_html .= '<strong>' . $this->l('Setup your account in ComproPago.') . '</strong><br /><br />';
-		$this->_html .= '<strong>' . $this->l('Paso 1:') . '</strong> ' . $this->l('Agregar la llave privada y llave pública, esta se puede encontrar en el apartado de configuración dentro del panel de control de ComproPago.') . ' <a href="https://compropago.com/panel/configuracion" target="_blank">https://compropago.com/panel/configuracion</a><br />';
-		$this->_html .= '<strong>' . $this->l('Paso 2:') . '</strong> ' . $this->l('Si lo prefiere, seleccione el método de pago que usted quiere aceptar.') . '<br />';
+		$this->_html .= '<strong>' . $this->l('Instruccion para instalación de ComproPago.') . '</strong><br /><br />';
+		$this->_html .= '<strong>' . $this->l('Agregar la llave privada y llave pública, esta se puede encontrar en el apartado de configuración dentro del panel de control de ComproPago.') . ' <a href="https://compropago.com/panel/configuracion" target="_blank">https://compropago.com/panel/configuracion</a></strong><br />';
 		$this->_html .= '<br /><br /><br />';
     }
 
     
     public function displayFormSettingscompropago() {
 	
-	//set MP Apis for request in api compro pago
-	$mp = new MPApi();
 	
 	$conf = Configuration::getMultiple(
 		array(
-			'compropago_CLIENT_ID',
-			'compropago_CLIENT_SECRET',
-			'compropago_URLPROCESS',
-			'compropago_URLSUCCESFULL',
-			'compropago_BTN',
-			'compropago_BANNER'
+			'compropago_PUBLIC_KEY',
+			'compropago_SECRET_KEY'
 		)
 	);
 
-	$client_id = array_key_exists('compropago_CLIENT_ID', $_POST) ? $_POST['compropago_CLIENT_ID'] : (array_key_exists('compropago_CLIENT_ID', $conf) ? $conf['compropago_CLIENT_ID'] : '');
-	$client_secret = array_key_exists('compropago_CLIENT_SECRET', $_POST) ? $_POST['compropago_CLIENT_SECRET'] : (array_key_exists('compropago_CLIENT_SECRET', $conf) ? $conf['compropago_CLIENT_SECRET'] : '');
-	$url_retorno = array_key_exists('pg_url_retorno', $_POST) ? $_POST['pg_url_retorno'] : (array_key_exists('compropago_URLPROCESS', $conf) ? $conf['compropago_URLPROCESS'] : '');
-	$url_succesfull = array_key_exists('pg_url_succesfull', $_POST) ? $_POST['pg_url_succesfull'] : (array_key_exists('compropago_URLSUCCESFULL', $conf) ? $conf['compropago_URLSUCCESFULL'] : '');
-	$btn = array_key_exists('btn_pg', $_POST) ? $_POST['btn_pg'] : (array_key_exists('compropago_BTN', $conf) ? $conf['compropago_BTN'] : '');
-	$bnr = array_key_exists('banner_pg', $_POST) ? $_POST['banner_pg'] : (array_key_exists('compropago_BANNER', $conf) ? $conf['compropago_BANNER'] : '');
-	
-	//Type Checkout
-	$type_checkout_options = array(
-		"Iframe",
-		"Lightbox",
-		"Redirect"
-	);
-	
-	//echo "<pre>";
-	//print_r($_REQUEST);
-	//echo Configuration::get('compropago_METHODS') . "<br />";
+	$public_key = array_key_exists('compropago_PUBLIC_KEY', $_POST) ? $_POST['compropago_PUBLIC_KEY'] : (array_key_exists('compropago_PUBLIC_KEY', $conf) ? $conf['compropago_PUBLIC_KEY'] : '');
+	$secret_key = array_key_exists('compropago_SECRET_KEY', $_POST) ? $_POST['compropago_SECRET_KEY'] : (array_key_exists('compropago_SECRET_KEY', $conf) ? $conf['compropago_SECRET_KEY'] : '');
 
 
         $this->_html .= '
@@ -230,22 +174,14 @@ class ComproPago extends PaymentModule {
 			<legend><img src="../img/admin/contact.gif" />' . $this->l('Configuraciones') . '</legend>
 			
 			<label>' . $this->l('Llave privada') . ':</label>
-			<div class="margin-form"><input type="text" size="33" name="compropago_CLIENT_SECRET" value="' . $client_secret . '" /></div>
+			<div class="margin-form"><input type="text" size="33" name="compropago_SECRET_KEY" value="' . $secret_key . '" /></div>
 			<br />
 			
 			<label>' . $this->l('Llave pública') . ':</label>
-			<div class="margin-form"><input type="text" size="33" name="compropago_CLIENT_ID" value="' . htmlentities($client_id, ENT_COMPAT, 'UTF-8') . '" /></div>
-                        <br />
-                        
-                        <label>' . $this->l('Url Process Payment') . ':</label>
-			<div class="margin-form"><input type="text" size="33" name="pg_url_retorno" value="' . $url_retorno . '" /></div>
-			<br />
+			<div class="margin-form"><input type="text" size="33" name="compropago_PUBLIC_KEY" value="' . htmlentities($public_key, ENT_COMPAT, 'UTF-8') . '" /></div>
+            <br />
 			
-			<label>' . $this->l('URL Aproved Payment') . ':</label>
-			<div class="margin-form"><input type="text" size="33" name="pg_url_succesfull" value="' . $url_succesfull . '" /></div>
-			<br />
-			
-			<center><input type="submit" name="submitcompropago" value="' . $this->l('Atualizar') . '" class="button" /></center>
+			<center><input type="submit" name="submitcompropago" value="' . $this->l('Actualizar') . '" class="button" /></center>
 		</fieldset>
 		</form>';
 
@@ -292,18 +228,10 @@ class ComproPago extends PaymentModule {
 			'OXXO' => 'OXXO',
 			'SEVEN_ELEVEN' => 'SEVEN ELEVEN',
 			'EXTRA' => 'EXTRA',
-			'WALMART' => 'WALMART',
 			'SORIANA' => 'SORIANA',
 			'CHEDRAUI' => 'CHEDRAUI',
-			'SAMS_CLUB' => 'SAMS CLUB',
-			'BODEGA_AURRERA' => 'BODEGA AURRERA',
-			'SUPERAMA' => 'SUPERAMA',
-			// 'ELEKTRA' => 'ELEKTRA',
 			'COPPEL' => 'COPPEL',
-			'VIPS' => 'VIPS',
-			'EL_PORTON' => 'EL PORTON',
 			'FARMACIA_BENAVIDES' => 'FARMACIA BENAVIDES',
-			'FARMACIA_GUADALAJARA' => 'FARMACIA GUADALAJARA',
 			'FARMACIA_ESQUIVAR' => 'FARMACIA ESQUIVAR'
 		);
 	
@@ -314,7 +242,6 @@ class ComproPago extends PaymentModule {
 					'currency_default' => new Currency(Configuration::get('PS_CURRENCY_DEFAULT')),
 					'currencies' => $currencies_used,
 					'imgBanner' => $this->getBanner(),
-					'img_green' => __PS_BASE_URI__.'modules/compropago/images/compropago-payment-green-btn.png',
 					'currency_default' => new Currency(Configuration::get('PS_CURRENCY_DEFAULT')),
 					'currencies' => $currencies_used,
 					'total' => number_format(Tools::convertPrice($cart->getOrderTotal(true, 3), $currency), 2, '.', ''),
@@ -338,18 +265,7 @@ class ComproPago extends PaymentModule {
         // dados del pedido
         $DadosOrder = new Order($params['objOrder']->id);
         $ArrayListaProdutos = $DadosOrder->getProducts();
-
-		//Get shipment
-		$address_delivery = new Address(intval($params['cart']->id_address_delivery));
-        $shipments = array(
-            "receiver_address" => array(
-            "floor" => "-",
-            "zip_code" => $address_delivery->postcode,
-            "street_name" => $address_delivery->address1 . " - " . $address_delivery->address2 . " - " . $address_delivery->city. "/" . $address_delivery->country,
-            "apartment" => "-",
-            "street_number" => "-"
-            )
-        );
+        
 	
         //Force format YYYY-DD-MMTH:i:s
         $date_creation_user = date('Y-m-d', strtotime($ArrayCliente['date_add'])) . "T" . date('H:i:s',strtotime($ArrayCliente['date_add']));
@@ -358,33 +274,14 @@ class ComproPago extends PaymentModule {
 		$phone = $address_invoice->phone;
 		$phone .= $phone == "" ? "" : "|";
 		$phone .= $address_invoice->phone_mobile;
-	
-        $payer = array(
-            "name" => $ArrayCliente['firstname'],
-            "surname" => $ArrayCliente['lastname'],
-            "email" => $ArrayCliente['email'],
-            "date_created" => $date_creation_user,
-            "phone" => array(
-                "area_code" => "-",
-                "number" => $phone
-            ),
-            "address" => array(
-                "zip_code" => $address_invoice->postcode,
-				"street_name" => $address_invoice->address1 . " - " . $address_delivery->address2 . " - " . $address_delivery->city. "/" . $address_delivery->country,
-                "street_number" => "-"
-            ),
-            "identification" => array(
-                "number" => "null",
-                "type" => "null"
-            )
-        );
         
         //items
 		$image_url = "";
         // genera Descripcion
         foreach ($ArrayListaProdutos as $info) {
+        	//print_r($info);
             $item = array(
-                $zb[] = $info['product_name'] . ' * ' . $info['product_quantity']
+                $zb[] = '#'. $info['id_order'] .' - '. $info['product_name'] . ' - ' . $info['product_quantity']
             );
 	    
 			//get object image on product object
@@ -398,21 +295,9 @@ class ComproPago extends PaymentModule {
 			}
 		}
 	
-			$descripcion = implode(" + ", $zb);
-			$item_price = number_format($params['total_to_pay'], 2, '.', '');
-			$currency = new Currency($DadosOrder->id_currency);
-			$items = array(
-				array (
-				"id" => $params['objOrder']->id,
-				"title" => utf8_encode($descripcion),
-				"description" => utf8_encode($descripcion),
-				"quantity" => 1,
-				"unit_price" => round($item_price, 2),
-				"currency_id" => $currency->iso_code,
-				"picture_url"=> $image_url,
-				"category_id"=> Configuration::get('compropago_CATEGORY')
-				)
-			);
+		$descripcion = implode(" + ", $zb);
+		$item_price = number_format($params['total_to_pay'], 2, '.', '');
+		$currency = new Currency($DadosOrder->id_currency);
 		
 		$request = array(
 			'currency' => $currency->iso_code,
@@ -426,31 +311,6 @@ class ComproPago extends PaymentModule {
 			'payment_type'=> $payment_type,
 			'send_sms'=> false
 		);
-	
-        //excludes_payment_methods
-		$exclude = Configuration::get('compropago_METHODS');
-	
-        if($exclude != ''):
-			//case exist exclude methods
-            $methods_excludes = preg_split("/[\s,]+/", $exclude);
-			$excludemethods = array();
-			foreach ($methods_excludes as $exclude ){
-				if($exclude != "") {
-					$excludemethods[] = array('id' => $exclude);
-				}
-			}
-        
-            $payment_methods = array(
-                "installments" => $installments,
-                "excluded_payment_methods" => $excludemethods
-            );
-        else:
-            //case not exist exclude methods
-            $payment_methods = array(
-                "installments" => $installments
-            );
-        endif;
-        
         
         //set back url
         $back_urls = array(
@@ -460,19 +320,13 @@ class ComproPago extends PaymentModule {
         
         
         //mount array pref
-        $pref = array();
-        $pref['external_reference'] = $params['objOrder']->id;
-        $pref['payer'] = $payer;
-        $pref['shipments'] = $shipments;
-        $pref['items'] = $items;
-        $pref['back_urls'] = $back_urls;
-        $pref['payment_methods'] = $payment_methods;
-	
-        $client_id = Configuration::get('compropago_CLIENT_ID');
-        $client_secret = Configuration::get('compropago_CLIENT_SECRET');
+        $public_key = Configuration::get('compropago_PUBLIC_KEY');
+        $secret_key = Configuration::get('compropago_SECRET_KEY');
+		
+        
 
-		$mp = new MP ($client_id, $client_secret, $request);
-		$preferenceResult = $mp->create_preference($pref);
+		$cp = new CP ($public_key, $secret_key, $request);
+		$preferenceResult = $cp->get_charge_request();
 		
 		$botton = '';
 	
@@ -493,6 +347,8 @@ class ComproPago extends PaymentModule {
 			'note_expiration_date' => $preferenceResult['response']['payment_instructions']['note_expiration_date'],
 			'note_confirmation' => $preferenceResult['response']['payment_instructions']['note_confirmation'],
 		));
+
+
 
         return $this->display(__file__, 'payment_return.tpl');
     }
@@ -517,9 +373,7 @@ class ComproPago extends PaymentModule {
     }
 
     public function enviar($mailVars, $template, $assunto, $DisplayName, $idCustomer, $idLang, $CustMail, $TplDir) {
-
-        Mail::Send
-                (intval($idLang), $template, $assunto, $mailVars, $CustMail, null, null, null, null, null, $TplDir);
+        Mail::Send(intval($idLang), $template, $assunto, $mailVars, $CustMail, null, null, null, null, null, $TplDir);
     }
 
     public function getUrlByMyOrder($myOrder) {
@@ -539,49 +393,18 @@ class ComproPago extends PaymentModule {
         return $retorno;
     }
 
-    
+	public function hookDisplayHeader($params){
+	  	$this->context->controller->addCSS($this->_path.'css/compropago.css', 'all');
+	}      
     public function getBannerSelectPayment(){
-	$country = Configuration::get('compropago_COUNTRY');
-
-        switch ($country):
-            CASE ('MLA'):
-                $banner = '<img src="'.__PS_BASE_URI__.'modules/compropago/images/logo.png" title="ComproPago - Medios de pago" alt="ComproPago - Medios de pago" />';
-                break;
-            CASE ('MLM'):
-                $banner = '<img src="'.__PS_BASE_URI__.'modules/compropago/images/logo.png" title="ComproPago - Medios de pago" alt="ComproPago - Medios de pago" />';
-                break;
-            CASE ('MLV'):
-                $banner = '<img src="'.__PS_BASE_URI__.'modules/compropago/images/logo.png" title="ComproPago - Medios de pago" alt="ComproPago - Medios de pago" />';
-                break;
-	    CASE ('MLB'):
-            default :
-                $banner = '<img src="'.__PS_BASE_URI__.'modules/compropago/images/logo.png" alt="ComproPago - Medios de pago" title="ComproPago - Medios de pago" />';
-                break;
-        endswitch;
-	
-	return $banner;
+        $banner = '<img src="'.__PS_BASE_URI__.'modules/compropago/images/logo.png" alt="ComproPago - Medios de pago" title="ComproPago - Medios de pago" />';
+		return $banner;
     }
     
     public function getBanner(){
-	$country = Configuration::get('compropago_COUNTRY');
+        $banner = '<img src="'.__PS_BASE_URI__.'modules/compropago/images/compropago.png" alt="ComproPago - Medios de pago" title="ComproPago - Medios de pago" width="468" height="60"/>';
+		return $banner;
 
-        switch ($country):
-            CASE ('MLA'):
-                $banner = '<img src="'.__PS_BASE_URI__.'modules/compropago/images/compropago.png" title="ComproPago - Medios de pago" alt="ComproPago - Medios de pago" width="468" height="60"/>" />';
-                break;
-            CASE ('MLM'):
-                $banner = '<img src="'.__PS_BASE_URI__.'modules/compropago/images/compropago.png" title="ComproPago - Medios de pago" alt="ComproPago - Medios de pago" width="468" height="60"/>';
-                break;
-            CASE ('MLV'):
-                $banner = '<img src="'.__PS_BASE_URI__.'modules/compropago/images/compropago.png" title="ComproPago - Medios de pago" alt="ComproPago - Medios de pago" width="468" height="60"/>';
-                break;
-	    CASE ('MLB'):
-            default :
-                $banner = '<img src="'.__PS_BASE_URI__.'modules/compropago/images/compropago.png" alt="ComproPago - Medios de pago" title="ComproPago - Medios de pago" width="468" height="60"/>';
-                break;
-        endswitch;
-	
-	return $banner;
     }
 }
 

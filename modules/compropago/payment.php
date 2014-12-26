@@ -4,7 +4,7 @@ $useSSL = true;
 
 include(dirname(__FILE__).'/../../config/config.inc.php');
 include(dirname(__FILE__).'/../../header.php');
-include(dirname(__FILE__).'/compropago.php');
+//include(dirname(__FILE__).'/compropago.php');
 
 
 // function deprecated
