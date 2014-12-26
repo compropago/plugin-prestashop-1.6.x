@@ -1,9 +1,10 @@
-plugin-prestashop ComproPago / 1.5.x - 1.6.x
+Plugin para PrestaShop 1.5.x - 1.6.x - ComproPago 
+ 
 =================
 
 ## Instalación:
 
-1. Subir por FTP o en .zip por el manejador de modulos de PrestaShop:
+1. Subir el directorio por FTP o usar el manejador de modulos de PrestaShop:
 <ol>
 <li> Subir por FTP el directorio "compropago" a el directorio de los módulos "modules" que se encuentra en el directorio raiz de su PrestaShop.
 </li>
