@@ -1,10 +1,15 @@
 {if $status == 'ok'}
-    <center>
-    <!-- <center>{$imgBanner}</center> -->
-    </center>
-    <br />
     <h3>{l s='¡Felicitaciones! Su pedido ha sido generado correctamente.' mod='compropago'}</h3>
+        <br />
+
     <div class="cp-instruction-section">
+      <div class="expiration-date">
+        Último día para pagar:
+        <span >
+        {$expiration_date}
+        </span>
+      </div>
+
       <div class="cp-title">Seguir los siguientes pasos:</div>
 
       <div class="cp-step-box">
@@ -26,9 +31,11 @@
         <img src="{$base_dir}modules/compropago/images/warning.png" style="margin: -7px 0px 0px 0px;"> 
         <span style="font-size: 12px;"><b>Importante</b></span>
         <ul style="" class="cp-warning">
-          	<li>{$note_extra_comition}</li>
-			<li>{$note_expiration_date}</li>
-			<li>El número de cuenta/tarjeta asignado es único por cada orden.</li>
+        <li>El ID de control es: {$short_payment_id}</li>
+			  <li>El número de cuenta/tarjeta asignado es único por cada orden de compra.</li>
+         <li>{$note_expiration_date}</li>
+
+        <li>{$note_extra_comition}</li>
 
         </ul>
     </div>

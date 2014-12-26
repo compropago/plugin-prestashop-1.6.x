@@ -269,11 +269,7 @@ class ComproPago extends PaymentModule {
         //Force format YYYY-DD-MMTH:i:s
         $date_creation_user = date('Y-m-d', strtotime($ArrayCliente['date_add'])) . "T" . date('H:i:s',strtotime($ArrayCliente['date_add']));
 		$address_invoice = new Address(intval($params['cart']->id_address_invoice));
-		
-		$phone = $address_invoice->phone;
-		$phone .= $phone == "" ? "" : "|";
-		$phone .= $address_invoice->phone_mobile;
-        
+		        
         //items
 		$image_url = "";
         // genera Descripcion
@@ -306,7 +302,7 @@ class ComproPago extends PaymentModule {
 			'image_url'=> $image_url,
 			'customer_name'=> $ArrayCliente['firstname'] . ' ' . $ArrayCliente['lastname'],
 			'customer_email'=> $ArrayCliente['email'],
-			'customer_phone'=> $phone,
+			'customer_phone'=> '',
 			'payment_type'=> $payment_type,
 			'send_sms'=> false
 		);
@@ -322,24 +318,22 @@ class ComproPago extends PaymentModule {
         $public_key = Configuration::get('compropago_PUBLIC_KEY');
         $secret_key = Configuration::get('compropago_SECRET_KEY');
 		
-        
-
 		$cp = new CP ($public_key, $secret_key, $request);
 		$preferenceResult = $cp->get_charge_request();
 		
 		$botton = '';
-	
+		$exp_date = new DateTime($preferenceResult['response']['expiration_date']);
+		//echo $exp_date->format('d/m/Y');
 		$smarty->assign(array(
 			'totalApagar' => Tools::displayPrice($params['total_to_pay'], $params['currencyObj'], false),
 			'status' => 'ok',
 			'seller_op_id' => $params['objOrder']->id,
 			'secure_key' => $params['objOrder']->secure_key,
-			'id_module' => $this->id,
-			'formcompropago' => $botton,
-			'imgBanner' => $this->getBanner(),
-			
+			'id_module' => $this->id,			      
+			'short_payment_id' => $preferenceResult['response']['short_payment_id'],
+			'expiration_date' => $exp_date->format('d/m/Y'),
 			'description' => $preferenceResult['response']['payment_instructions']['description'],
-			'step_1' => $preferenceResult['response']['payment_instructions']['step_1'],
+  			'step_1' => $preferenceResult['response']['payment_instructions']['step_1'],
 			'step_2' => $preferenceResult['response']['payment_instructions']['step_2'],
 			'step_3' => $preferenceResult['response']['payment_instructions']['step_3'],
 			'note_extra_comition' => $preferenceResult['response']['payment_instructions']['note_extra_comition'],
