@@ -7,10 +7,10 @@ plugin-prestashop ComproPago / 1.5.x - 1.6.x
 <ol>
 <li> Subir por FTP el directorio "compropago" a el directorio de los módulos "modules" que se encuentra en el directorio raiz de su PrestaShop.
 </li>
+<li> Comprimir el directorio "compropago" en formato .zip y subirlo por el manejador de modulos de PrestaShop<br />
+</li>
 </ol>
 	
-	b) Comprimir el directorio "compropago" en formato .zip y subirlo por el manejador de modulos de PrestaShop<br />
-
 3. En la administración de Prestashop (backoffice) ir a: **Módulos > Módulos** y buscar el nombre del módulo: **compropago** y dar click en "Instalar". Una vez instlado recibirá el siguiente mensaje: " Módulo(s) instalado correctamente."<br />
 
 4. Agregar las llaves, ir al panel de administración de ComproPago (https://compropago.com/panel/configuracion), copiar y pegar las llaves, dentro de las configuraciones del modulo en el panel de administración de PrestaShop (backoffice)
