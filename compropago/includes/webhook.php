@@ -5,10 +5,13 @@
 	$body = @file_get_contents('php://input');
     $event_json = json_decode($body);
 
-
-    $payment_cp_id=$event_json->data->object->{'id'};
+    if($event_json->{'api_version'} != '1.0'){
+    	$payment_cp_id=$event_json->{'id'};
+    } else {
+    	$payment_cp_id=$event_json->data->object->{'id'};
+    }    
     if ( isset($payment_cp_id) ) {
-    	if($payment_cp_id == "00000-000-0000-000000"){
+    	if($payment_cp_id == "ch_00000-000-0000-000000"){
 			echo "Pruebas: El webhook esta correctamente instalado. ";
     	}else{
 			$id = $payment_cp_id;
@@ -18,7 +21,12 @@
 			$cp->sandbox_mode($sandbox['value'] == "active" ? true:false);
 			$dados = $cp->get_payment_info ($id);
 			$dados = $dados['response'];
-			$order_id = $dados['data']['object']['payment_details']['product_id'];
+			if($event_json->{'api_version'} != '1.0') {				
+				$order_id = $dados['order_info']['order_id'];
+				echo $order_id;
+			} else {
+				$order_id = $dados['data']['object']['payment_details']['product_id'];
+			}			
 			$order_status = $dados["type"];
 
 			switch ($order_status) {
@@ -34,6 +42,9 @@
 				case 'charge.expired':
 					$nomestatus = "compropago_STATUS_2";
 					break;    
+			    case 'charge.deleted':
+					$nomestatus = "compropago_STATUS_2";     
+					break; 
 				case 'charge.canceled':
 					$nomestatus = "compropago_STATUS_2";     
 					break;  

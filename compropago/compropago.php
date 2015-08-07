@@ -296,9 +296,9 @@ class ComproPago extends PaymentModule {
 		
 		$request = array(
 			'currency' => $currency->iso_code,
-			'product_price' => round($item_price, 2),
-			'product_name' => utf8_encode($descripcion),
-			'product_id'=> $params['objOrder']->id,
+			'order_price' => round($item_price, 2),
+			'order_name' => utf8_encode($descripcion),
+			'order_id'=> $params['objOrder']->id,
 			'image_url'=> $image_url,
 			'customer_name'=> $ArrayCliente['firstname'] . ' ' . $ArrayCliente['lastname'],
 			'customer_email'=> $ArrayCliente['email'],
@@ -320,29 +320,50 @@ class ComproPago extends PaymentModule {
 		
 		$cp = new CP ($public_key, $secret_key, $request);
 		$preferenceResult = $cp->get_charge_request();
-		
-		$botton = '';
-		$exp_date = new DateTime($preferenceResult['response']['expiration_date']);
+
+		$botton = '';		
 		//echo $exp_date->format('d/m/Y');
-		$smarty->assign(array(
-			'totalApagar' => Tools::displayPrice($params['total_to_pay'], $params['currencyObj'], false),
-			'status' => 'ok',
-			'seller_op_id' => $params['objOrder']->id,
-			'secure_key' => $params['objOrder']->secure_key,
-			'id_module' => $this->id,			      
-			'short_payment_id' => $preferenceResult['response']['short_payment_id'],
-			'expiration_date' => $exp_date->format('d/m/Y'),
-			'description' => $preferenceResult['response']['payment_instructions']['description'],
-  			'step_1' => $preferenceResult['response']['payment_instructions']['step_1'],
-			'step_2' => $preferenceResult['response']['payment_instructions']['step_2'],
-			'step_3' => $preferenceResult['response']['payment_instructions']['step_3'],
-			'note_extra_comition' => $preferenceResult['response']['payment_instructions']['note_extra_comition'],
-			'note_expiration_date' => $preferenceResult['response']['payment_instructions']['note_expiration_date'],
-			'note_confirmation' => $preferenceResult['response']['payment_instructions']['note_confirmation'],
-		));
+		$version = $preferenceResult['response']['api_version'];
 
+        if((float)$version != 1.0){  
+        	$exp_date = date('d/m/Y',$preferenceResult['response']['exp_date']);
 
+			$smarty->assign(array(
+				'totalApagar' => Tools::displayPrice($params['total_to_pay'], $params['currencyObj'], false),
+				'status' => 'ok',
+				'seller_op_id' => $params['objOrder']->id,
+				'secure_key' => $params['objOrder']->secure_key,
+				'id_module' => $this->id,			      
+				'short_payment_id' => $preferenceResult['response']['short_id'],
+				'expiration_date' => $exp_date,
+				'description' => $preferenceResult['response']['instructions']['description'],
+	  			'step_1' => $preferenceResult['response']['instructions']['step_1'],
+				'step_2' => $preferenceResult['response']['instructions']['step_2'],
+				'step_3' => $preferenceResult['response']['instructions']['step_3'],
+				'note_extra_comition' => $preferenceResult['response']['instructions']['note_extra_comition'],
+				'note_expiration_date' => $preferenceResult['response']['instructions']['note_expiration_date'],
+				'note_confirmation' => $preferenceResult['response']['instructions']['note_confirmation']
+			));
+		} else {
+			$exp_date = new DateTime($preferenceResult['response']['expiration_date']);
 
+			$smarty->assign(array(
+				'totalApagar' => Tools::displayPrice($params['total_to_pay'], $params['currencyObj'], false),
+				'status' => 'ok',
+				'seller_op_id' => $params['objOrder']->id,
+				'secure_key' => $params['objOrder']->secure_key,
+				'id_module' => $this->id,			      
+				'short_payment_id' => $preferenceResult['response']['short_payment_id'],
+				'expiration_date' => $exp_date->format('d/m/Y'),
+				'description' => $preferenceResult['response']['payment_instructions']['description'],
+	  			'step_1' => $preferenceResult['response']['payment_instructions']['step_1'],
+				'step_2' => $preferenceResult['response']['payment_instructions']['step_2'],
+				'step_3' => $preferenceResult['response']['payment_instructions']['step_3'],
+				'note_extra_comition' => $preferenceResult['response']['payment_instructions']['note_extra_comition'],
+				'note_expiration_date' => $preferenceResult['response']['payment_instructions']['note_expiration_date'],
+				'note_confirmation' => $preferenceResult['response']['payment_instructions']['note_confirmation']
+			));
+		}	
         return $this->display(__file__, 'payment_return.tpl');
     }
 
