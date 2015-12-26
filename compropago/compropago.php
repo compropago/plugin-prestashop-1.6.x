@@ -26,7 +26,7 @@ class compropago  extends PaymentModule{
 	
 	public $publickey;
 	public $privatekey;
-	public $live;
+	
 	public $extra_mail_vars;
 	
 	public function __construct(){
@@ -143,6 +143,10 @@ class compropago  extends PaymentModule{
 					return false;
 	}
 	
+	/**
+	 * Establece los campos del administrador
+	 * @return HelperForm
+	 */
 	public function renderForm()
 	{
 		$fields_form = array(
@@ -238,7 +242,10 @@ class compropago  extends PaymentModule{
 		return $helper->generateForm(array($fields_form));
 	}
 	
-	
+	/**
+	 * 
+	 * @return array
+	 */
 	public function getConfigFieldsValues()
 	{
 		return array(
