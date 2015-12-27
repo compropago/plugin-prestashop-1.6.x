@@ -1,5 +1,4 @@
 <?php
-use Compropago;
 /*
 * Copyright 2015 Compropago.
 *
@@ -19,6 +18,8 @@ use Compropago;
  * @author Rolando Lucio <rolando@compropago.com>
  * controller para versiones >= 1.5
  */
+use Compropago;
+
 class CompropagoPaymentModuleFrontController extends ModuleFrontController
 {
 	public $ssl = true;
@@ -34,7 +35,8 @@ class CompropagoPaymentModuleFrontController extends ModuleFrontController
 		$cart = $this->context->cart;
 		if (!$this->module->checkCurrency($cart))
 			Tools::redirect('index.php?controller=order');
-		
+		//if(Configuration::get('PS_ORDER_PROCESS_TYPE') == 1)
+			
 		try{
 			$compropagoConfig = array(
 									'publickey'=>Configuration::get('COMPROPAGO_PUBLICKEY'),
