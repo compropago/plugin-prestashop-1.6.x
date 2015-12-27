@@ -1,5 +1,20 @@
 {
-    "require": {
-        "compropago/php-sdk": "dev-master"
+  "name": "compropago/prestashop",
+  "description": "ComproPago Plugin for PrestaShop module",
+  "homepage": "https://compropago.com/documentacion/librerias",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "Rolando Lucio",
+      "email": "rolando@compropago.com"
     }
+  ],
+  "require": {
+    "php": ">=5.5",
+    "compropago/php-sdk": "dev-master"
+  },
+  "config": {
+    "preferred-install": "dist"
+  },
+  "type": "prestashop-module"
 }

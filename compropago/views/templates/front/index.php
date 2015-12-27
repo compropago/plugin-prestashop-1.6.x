@@ -17,15 +17,20 @@
 /**
  * @author Rolando Lucio <rolando@compropago.com>
  */
-
-/* SSL Management */
-$useSSL = true;
-
-require('../../config/config.inc.php');
-Tools::displayFileAsDeprecated();
-
-// init front controller in order to use Tools::redirect
-$controller = new FrontController();
-$controller->init();
-
-Tools::redirect(Context::getContext()->link->getModuleLink('compropago', 'payment'));
+				    	
+header("Expires: Mon, 31 Jan 1982 05:00:00 GMT");
+header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
+						
+header("Cache-Control: no-store, no-cache, must-revalidate");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+				    	
+header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
+						
+header("Cache-Control: no-store, no-cache, must-revalidate");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+						
+header("Location: ../");
+exit;

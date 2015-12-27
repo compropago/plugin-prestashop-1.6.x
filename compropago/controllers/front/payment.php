@@ -18,59 +18,35 @@
  * @author Rolando Lucio <rolando@compropago.com>
  * controller para versiones >= 1.5
  */
-use Compropago;
-
 class CompropagoPaymentModuleFrontController extends ModuleFrontController
 {
 	public $ssl = true;
 	public $display_column_left = false;
-	
+
 	/**
 	 * @see FrontController::initContent()
 	 */
 	public function initContent()
 	{
 		parent::initContent();
-	
+
 		$cart = $this->context->cart;
 		if (!$this->module->checkCurrency($cart))
 			Tools::redirect('index.php?controller=order');
-		//if(Configuration::get('PS_ORDER_PROCESS_TYPE') == 1)
-			
-		try{
-			$compropagoConfig = array(
-									'publickey'=>Configuration::get('COMPROPAGO_PUBLICKEY'),
-									'privatekey'=>Configuration::get('COMPROPAGO_PRIVATEKEY'),
-									'live'=>true
-								);
-			$compropagoClient = new Compropago\Client($compropagoConfig);
-			$compropagoService = new Compropago\Service($compropagoClient);
-		} catch (Exception $e) {
-			echo 'Compropago error: ' . $e->getMessage();
-		}
-	
-		$compropagoData['providers']=$compropagoService->getProviders();
-		
-		$compropagoData['showlogo']=(Configuration::get('COMPROPAGO_LOGOS')==0)?'yes':'no';
-		$compropagoData['description']='Plugin Descriptor compropago';
-		$compropagoData['instrucciones']='Compropago Instrucciones';
-	
-		$compropagoTemplate= Compropago\Controllers\Views::loadView('providers',$compropagoData,'path','tpl');
-					
-			$this->context->smarty->assign(array(
-					'compropagoCssFlag'=>true,
-					'compropagoTemplate'=> $compropagoTemplate,
-					'compropagoCss'=>Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->module->name.'/'.'vendor/compropago/php-sdk/assets/css/compropago.css',
-					'compropagoData'=>$compropagoData,
-					'nbProducts' => $cart->nbProducts(),
-					'cust_currency' => $cart->id_currency,
-					'currencies' => $this->module->getCurrency((int)$cart->id_currency),
-					'total' => $cart->getOrderTotal(true, Cart::BOTH),
-					'this_path' => $this->module->getPathUri(),
-					'this_path_bw' => $this->module->getPathUri(),
-					'this_path_ssl' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->module->name.'/'
-			));
-	
-			$this->setTemplate('payment_execution.tpl');
+
+		$this->context->smarty->assign(array(
+			'nbProducts' => $cart->nbProducts(),
+			'cust_currency' => $cart->id_currency,
+			'currencies' => $this->module->getCurrency((int)$cart->id_currency),
+			'total' => $cart->getOrderTotal(true, Cart::BOTH),
+			'isoCode' => $this->context->language->iso_code,
+			'chequeName' => $this->module->publicKey,
+			'chequeAddress' => Tools::nl2br($this->module->privateKey),
+			'this_path' => $this->module->getPathUri(),
+			'this_path_compropago' => $this->module->getPathUri(),
+			'this_path_ssl' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->module->name.'/'
+		));
+
+		$this->setTemplate('payment_execution.tpl');
 	}
 }

@@ -1,5 +1,4 @@
 {*
-*
 * Copyright 2015 Compropago.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,17 +13,13 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *
+* @author Rolando Lucio <rolando@compropago.com>
 *
-*  @author Rolando Lucio <rolando@compropago.com>
-*  @copyright  2015 ComproPago
-*  @license   http://www.apache.org/licenses/LICENSE-2.0
-*  
 *}
 
 <div class="alert alert-info">
 <img src="../modules/compropago/logo.png" style="float:left; margin-right:15px;" width="86" height="49">
-<p><strong>{l s="Con el módulo de ComproPago puedes recibir pagos en OXXO, 7Eleven y muchas tiendas más en todo México" mod='compropago'}</strong></p>
-<p>{l s="Cuando el cliente selecciona en que tienda realizar el pago la orden pasa a  'Waiting for Payment.'" mod='compropago'}</p>
-<p>{l s="Una vez realizado el pago, ComproPago notificar la orden por medio de nuestro webhook " mod='compropago'}</p>
-<p><a href="https://www.compropago.com/" target="_blank">Registrarse en Compropago</a></p>
+<p><strong>{l s="This module allows you to accept payments in Mexico stores like OXXO, 7Eleven and More." mod='compropago'}</strong></p>
+<p>{l s="If the client chooses this payment method, the order status will change to 'Waiting for payment.'" mod='compropago'}</p>
+<p>{l s="ComproPago will confirm the order as soon as payment is received via WebHook." mod='compropago'}</p>
 </div>

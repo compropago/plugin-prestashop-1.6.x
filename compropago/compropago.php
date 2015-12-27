@@ -17,222 +17,213 @@
 /**
  * @author Rolando Lucio <rolando@compropago.com>
  */
-if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ){
-	require __DIR__ . '/vendor/autoload.php';
-}
 
 if (!defined('_PS_VERSION_'))
 	exit;
 
-class compropago  extends PaymentModule{
-	protected $_html = '';
-	protected $_postErrors = array();
-	
-	public $publickey;
-	public $privatekey;
-	
+class Compropago extends PaymentModule
+{
+	private $_html = '';
+	private $_postErrors = array();
+
+	public $publicKey;
+	public $privateKey;
 	public $extra_mail_vars;
-	
-	public function __construct(){
-		
-		
-		
+
+	public function __construct()
+	{
 		$this->name = 'compropago';
 		$this->tab = 'payments_gateways';
-		$this->version ='1.0.1';
-		$this->author='ComproPago';
-		
-		$this->controllers = array(
-								'payment', 
-							//	'validation'
-							);
-		
-		//$this->is_eu_compatible = 1;
-		
+		$this->version = '1.0.0';
+		$this->author = 'ComproPago';
+		$this->controllers = array('payment', 'validation');
+		$this->is_eu_compatible = 1;
+
 		$this->currencies = true;
 		$this->currencies_mode = 'checkbox';
-		
-		$config = Configuration::getMultiple( array('COMPROPAGO_PUBLICKEY','COMPROPAGO_PRIVATEKEY') );
-		if (!empty($config['COMPROPAGO_PUBLICKEY']))
-			$this->publickey = $config['COMPROPAGO_PUBLICKEY'];
-		if (!empty($config['COMPROPAGO_PRIVATEKEY']))
-			$this->privatekey = $config['COMPROPAGO_PRIVATEKEY'];
-							
+
+		$config = Configuration::getMultiple(array('COMPROPAGO_PUBLICKEY', 'COMPROPAGO_PRIVATEKEY'));
+		if (isset($config['COMPROPAGO_PUBLICKEY']))
+			$this->publicKey = $config['COMPROPAGO_PUBLICKEY'];
+		if (isset($config['COMPROPAGO_PRIVATEKEY']))
+			$this->privateKey = $config['COMPROPAGO_PRIVATEKEY'];
 
 		$this->bootstrap = true;
-		
 		parent::__construct();
-		
-		$this->page = basename(__FILE__, '.php');
-		$this->displayName = $this->l('ComproPago');
-		$this->description = $this->l('Con ComproPago puedes recibir pagos en OXXO, 7Eleven y muchas tiendas más en todo México');
-		$this->confirmUninstall = $this->l('Esta seguro de remover ComproPago?');
-		
-		if (!isset($this->publickey) || !isset($this->privatekey) )
-			$this->warning = $this->l('Se requiere ingresar sus llaves para usar el módulo de ComproPago');
+
+		$this->displayName = $this->l('Payments by ComproPago');
+		$this->description = $this->l('This module allows you to accept payments in Mexico stores like OXXO, 7Eleven and More.');
+		$this->confirmUninstall = $this->l('Are you sure you want to uninstall ComproPago?');
+
+		if ((!isset($this->publicKey) || !isset($this->privateKey) || empty($this->publicKey) || empty($this->privateKey)))
+			$this->warning = $this->l('The Public Key and Private Key must be configured before using this module.');
 		if (!count(Currency::checkPaymentCurrencies($this->id)))
 			$this->warning = $this->l('No currency has been set for this module.');
-		
-				$this->extra_mail_vars = array(
-						'{compropago_publickey}' => Configuration::get('COMPROPAGO_PUBLICKEY'),
-						'{compropago_privatekey}' => Configuration::get('COMPROPAGO_PRIVATEKEY')
-				);	
+
+		$this->extra_mail_vars = array(
+											'{COMPROPAGO_PUBLICKEY}' => Configuration::get('COMPROPAGO_PUBLICKEY'),
+											'{COMPROPAGO_PRIVATEKEY}' => Configuration::get('COMPROPAGO_PRIVATEKEY'),
+											'{COMPROPAGO_PRIVATEKEY_html}' => str_replace("\n", '<br />', Configuration::get('COMPROPAGO_PRIVATEKEY'))
+											);
 	}
 
 	public function install()
 	{
 		if (!parent::install() || !$this->registerHook('payment') || ! $this->registerHook('displayPaymentEU') || !$this->registerHook('paymentReturn'))
 			return false;
-			return true;
+		return true;
 	}
-	
+
 	public function uninstall()
 	{
-		if (!Configuration::deleteByName('COMPROPAGO_PUBLICKEY')
-				|| !Configuration::deleteByName('COMPROPAGO_PRIVATEKEY')
-				|| !parent::uninstall())
+		if (!Configuration::deleteByName('COMPROPAGO_PUBLICKEY') || !Configuration::deleteByName('COMPROPAGO_PRIVATEKEY') || !parent::uninstall())
 			return false;
-			return true;
-	}	
-	
-	protected function _postValidation()
+		return true;
+	}
+
+	private function _postValidation()
 	{
 		if (Tools::isSubmit('btnSubmit'))
 		{
 			if (!Tools::getValue('COMPROPAGO_PUBLICKEY'))
-				$this->_postErrors[] = $this->l('Se requiere la Llave Pública.');
-				elseif (!Tools::getValue('COMPROPAGO_PRIVATEKEY'))
-				$this->_postErrors[] = $this->l('Se requiere la Llave Privada.');
+				$this->_postErrors[] = $this->l('The Public Key is required');
+			elseif (!Tools::getValue('COMPROPAGO_PRIVATEKEY'))
+				$this->_postErrors[] = $this->l('The Private Key is required');
 		}
 	}
-	
-	protected function _postProcess()
+
+	private function _postProcess()
 	{
 		if (Tools::isSubmit('btnSubmit'))
 		{
 			Configuration::updateValue('COMPROPAGO_PUBLICKEY', Tools::getValue('COMPROPAGO_PUBLICKEY'));
 			Configuration::updateValue('COMPROPAGO_PRIVATEKEY', Tools::getValue('COMPROPAGO_PRIVATEKEY'));
 		}
-		$this->_html .= $this->displayConfirmation($this->l('Configuración de ComproPago Actualizada'));
+		$this->_html .= $this->displayConfirmation($this->l('Settings updated'));
 	}
-	
-	protected function _displayComproPago()
+
+	private function _displayCompropago()
 	{
 		return $this->display(__FILE__, 'infos.tpl');
 	}
-	
+
 	public function getContent()
 	{
+		$this->_html = '';
+
 		if (Tools::isSubmit('btnSubmit'))
 		{
 			$this->_postValidation();
 			if (!count($this->_postErrors))
 				$this->_postProcess();
-				else
-					foreach ($this->_postErrors as $err)
-						$this->_html .= $this->displayError($err);
+			else
+				foreach ($this->_postErrors as $err)
+					$this->_html .= $this->displayError($err);
+		}
+
+		$this->_html .= $this->_displayCompropago();
+		$this->_html .= $this->renderForm();
+
+		return $this->_html;
+	}
+
+	public function hookPayment($params)
+	{
+		if (!$this->active)
+			return;
+		if (!$this->checkCurrency($params['cart']))
+			return;
+
+		$this->smarty->assign(array(
+			'this_path' => $this->_path,
+			'this_path_compropago' => $this->_path,
+			'this_path_ssl' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->name.'/'
+		));
+		return $this->display(__FILE__, 'payment.tpl');
+	}
+
+	public function hookDisplayPaymentEU($params)
+	{
+		if (!$this->active)
+			return;
+		if (!$this->checkCurrency($params['cart']))
+			return;
+
+		$payment_options = array(
+			'cta_text' => $this->l('Pay by ComproPago'),
+			'logo' => Media::getMediaPath(_PS_MODULE_DIR_.$this->name.'/logo.png'),
+			'action' => $this->context->link->getModuleLink($this->name, 'validation', array(), true)
+		);
+
+		return $payment_options;
+	}
+
+	public function hookPaymentReturn($params)
+	{
+		if (!$this->active)
+			return;
+
+		$state = $params['objOrder']->getCurrentState();
+		//PS_OS_CHEQUE 2 PS_OS_COMPROPAGO?
+		if (in_array($state, array(Configuration::get('PS_OS_CHEQUE'), Configuration::get('PS_OS_OUTOFSTOCK'), Configuration::get('PS_OS_OUTOFSTOCK_UNPAID'))))
+		{
+			$this->smarty->assign(array(
+				'total_to_pay' => Tools::displayPrice($params['total_to_pay'], $params['currencyObj'], false),
+				//'publicKey' => $this->publicKey,
+				//'privateKey' => Tools::nl2br($this->privateKey),
+				'status' => 'ok',
+				'id_order' => $params['objOrder']->id
+			));
+			if (isset($params['objOrder']->reference) && !empty($params['objOrder']->reference))
+				$this->smarty->assign('reference', $params['objOrder']->reference);
 		}
 		else
-			$this->_html .= '<br />';
-	
-			$this->_html .= $this->_displayComproPago();
-			$this->_html .= $this->renderForm();
-	
-			return $this->_html;
+			$this->smarty->assign('status', 'failed');
+		return $this->display(__FILE__, 'payment_return.tpl');
 	}
-	
-	
-	
+
 	public function checkCurrency($cart)
 	{
-		$currency_order = new Currency($cart->id_currency);
-		$currencies_module = $this->getCurrency($cart->id_currency);
-	
+		$currency_order = new Currency((int)($cart->id_currency));
+		$currencies_module = $this->getCurrency((int)$cart->id_currency);
+
 		if (is_array($currencies_module))
 			foreach ($currencies_module as $currency_module)
 				if ($currency_order->id == $currency_module['id_currency'])
 					return true;
-					return false;
+		return false;
 	}
-	
-	/**
-	 * Establece los campos del administrador
-	 * @return HelperForm
-	 */
+
 	public function renderForm()
 	{
 		$fields_form = array(
-				'form' => array(
-						'legend' => array(
-								'title' => $this->l('Configuración de ComproPago'),
-								//'image' => '../img/admin/icon_to_display.gif',  //16x16
-								'icon' => 'icon-rocket'
-						),
-						'input' => array(
-								array(
-										'type' => 'text',
-										'label' => $this->l('Llave Pública'),
-										'name' => 'COMPROPAGO_PUBLICKEY',
-										'desc' => 'Obten tu llave pública: <a href="https://compropago.com/panel/configuracion" target="_blank">Panel de Compropago</a>',
-										'required' => true
-								),
-								array(
-										'type' => 'text',
-										'label' => $this->l('Llave Privada'),
-										'name' => 'COMPROPAGO_PRIVATEKEY',
-										'desc' => 'Obten tu llave privada: <a href="https://compropago.com/panel/configuracion" target="_blank">Panel de Compropago</a>',
-										'required' => true
-								),
-								
-
-								array(
-										'type'      => 'radio',                        
-										'label'     => $this->l('Estilo'),        
-										'desc'      => $this->l('Como se muestra la lista de tiendas donde realizar el pago'),   
-										'name'      => 'COMPROPAGO_LOGOS',                         
-										
-										                              
-										'is_bool'   => true,                                
-										
-										'values'    => array(                                
-												array(
-														'id'    => 'active_on',                      
-														'value' => 0,                                
-														'label' => $this->l('Logos')                 
-												),
-												array(
-														'id'    => 'active_off',
-														'value' => 1,
-														'label' => $this->l('Lista')
-												)
-										),
-								),
-								array(
-										'type' => 'radio',
-										'label' => $this->l('Modo de Pruebas'),
-										'name' => 'COMPROPAGO_MODOPRUEBAS',
-										'desc' => 'Al activar el Modo de pruebas <b>es necesario que <span style="color:red;">cambie sus llaves por las de Modo Prueba</span></b>',
-										'is_bool'=> true,
-										'values' => array(
-												array(
-														'id'    => 'active_on',
-														'value' => 0,
-														'label' => $this->l('Inactivo')
-												),
-												array(
-														'id'    => 'active_off',
-														'value' => 1,
-														'label' => $this->l('Activo')
-												)
-										),
-								),
-						),
-						'submit' => array(
-								'title' => $this->l('Save'),
-						)
+			'form' => array(
+				'legend' => array(
+					'title' => $this->l('ComproPago details'),
+					//crear icono 16x16	
+					'icon' => 'icon-rocket'
 				),
+				'input' => array(
+					array(
+						'type' => 'text',
+						'label' => $this->l('Public Key'),
+						'name' => 'COMPROPAGO_PUBLICKEY',
+						'required' => true
+					),
+					array(
+						'type' => 'text',
+						'label' => $this->l('Private Key'),
+						'desc' => $this->l('Get your keys at ComproPago').': <a href="https://compropago.com/panel/configuracion" target="_blank">'.$this->l('ComproPago Panel').'</a>',
+						'name' => 'COMPROPAGO_PRIVATEKEY',
+						'required' => true
+					),
+				),
+				'submit' => array(
+					'title' => $this->l('Save'),
+				)
+			),
 		);
-	
+
 		$helper = new HelperForm();
 		$helper->show_toolbar = false;
 		$helper->table = $this->table;
@@ -246,44 +237,19 @@ class compropago  extends PaymentModule{
 		$helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false).'&configure='.$this->name.'&tab_module='.$this->tab.'&module_name='.$this->name;
 		$helper->token = Tools::getAdminTokenLite('AdminModules');
 		$helper->tpl_vars = array(
-				'fields_value' => $this->getConfigFieldsValues(),
-				'languages' => $this->context->controller->getLanguages(),
-				'id_language' => $this->context->language->id
+			'fields_value' => $this->getConfigFieldsValues(),
+			'languages' => $this->context->controller->getLanguages(),
+			'id_language' => $this->context->language->id
 		);
-	
+
 		return $helper->generateForm(array($fields_form));
 	}
-	
-	/**
-	 * 
-	 * @return array
-	 */
+
 	public function getConfigFieldsValues()
 	{
 		return array(
-				'COMPROPAGO_PUBLICKEY' => Tools::getValue('COMPROPAGO_PUBLICKEY', Configuration::get('COMPROPAGO_PUBLICKEY')),
-				'COMPROPAGO_PRIVATEKEY' => Tools::getValue('COMPROPAGO_PRIVATEKEY', Configuration::get('COMPROPAGO_PRIVATEKEY'))
+			'COMPROPAGO_PUBLICKEY' => Tools::getValue('COMPROPAGO_PUBLICKEY', Configuration::get('COMPROPAGO_PUBLICKEY')),
+			'COMPROPAGO_PRIVATEKEY' => Tools::getValue('COMPROPAGO_PRIVATEKEY', Configuration::get('COMPROPAGO_PRIVATEKEY')),
 		);
-	}
-	
-	public function hookDisplayHeader($params){
-		
-		//$this->context->controller->addCSS($this->_path.'vendor/compropago/php-sdk/assets/css/compropago.css', 'all');
-		$this->context->controller->addCSS(Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->module->name.'/'.'vendor/compropago/php-sdk/assets/css/compropago.css', 'all');
-	}
-	
-	public function hookPayment($params)
-	{
-		if (!$this->active)
-			return;
-			if (!$this->checkCurrency($params['cart']))
-				return;
-	
-				$this->smarty->assign(array(
-						'this_path' => $this->_path,
-						'this_path_bw' => $this->_path,
-						'this_path_ssl' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->name.'/'
-				));
-				return $this->display(__FILE__, 'payment.tpl');
 	}
 }
