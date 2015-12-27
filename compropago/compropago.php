@@ -17,6 +17,10 @@
 /**
  * @author Rolando Lucio <rolando@compropago.com>
  */
+if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ){
+	require __DIR__ . '/vendor/autoload.php';
+}
+
 if (!defined('_PS_VERSION_'))
 	exit;
 
@@ -31,13 +35,19 @@ class compropago  extends PaymentModule{
 	
 	public function __construct(){
 		
+		
+		
 		$this->name = 'compropago';
 		$this->tab = 'payments_gateways';
 		$this->version ='1.0.1';
 		$this->author='ComproPago';
 		
-		$this->controllers = array('payment', 'validation');
-		$this->is_eu_compatible = 1;
+		$this->controllers = array(
+								'payment', 
+							//	'validation'
+							);
+		
+		//$this->is_eu_compatible = 1;
 		
 		$this->currencies = true;
 		$this->currencies_mode = 'checkbox';
@@ -130,6 +140,8 @@ class compropago  extends PaymentModule{
 	
 			return $this->_html;
 	}
+	
+	
 	
 	public function checkCurrency($cart)
 	{
@@ -252,5 +264,26 @@ class compropago  extends PaymentModule{
 				'COMPROPAGO_PUBLICKEY' => Tools::getValue('COMPROPAGO_PUBLICKEY', Configuration::get('COMPROPAGO_PUBLICKEY')),
 				'COMPROPAGO_PRIVATEKEY' => Tools::getValue('COMPROPAGO_PRIVATEKEY', Configuration::get('COMPROPAGO_PRIVATEKEY'))
 		);
+	}
+	
+	public function hookDisplayHeader($params){
+		
+		//$this->context->controller->addCSS($this->_path.'vendor/compropago/php-sdk/assets/css/compropago.css', 'all');
+		$this->context->controller->addCSS(Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->module->name.'/'.'vendor/compropago/php-sdk/assets/css/compropago.css', 'all');
+	}
+	
+	public function hookPayment($params)
+	{
+		if (!$this->active)
+			return;
+			if (!$this->checkCurrency($params['cart']))
+				return;
+	
+				$this->smarty->assign(array(
+						'this_path' => $this->_path,
+						'this_path_bw' => $this->_path,
+						'this_path_ssl' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->name.'/'
+				));
+				return $this->display(__FILE__, 'payment.tpl');
 	}
 }

@@ -21,10 +21,9 @@
 *  
 *}
 
-<div class="alert alert-info">
-<img src="../modules/compropago/logo.png" style="float:left; margin-right:15px;" width="86" height="49">
-<p><strong>{l s="Con el módulo de ComproPago puedes recibir pagos en OXXO, 7Eleven y muchas tiendas más en todo México" mod='compropago'}</strong></p>
-<p>{l s="Cuando el cliente selecciona en que tienda realizar el pago la orden pasa a  'Waiting for Payment.'" mod='compropago'}</p>
-<p>{l s="Una vez realizado el pago, ComproPago notificar la orden por medio de nuestro webhook " mod='compropago'}</p>
-<p><a href="https://www.compropago.com/" target="_blank">Registrarse en Compropago</a></p>
-</div>
+<p class="payment_module">
+	<a href="{$link->getModuleLink('compropago', 'payment')|escape:'html'}" title="{l s='Pagar usando ComproPago' mod='compropago'}">
+		<img src="{$this_path_bw}logo-to-action.png" alt="{l s='Pagar usando ComproPago' mod='compropago'}" width="86" height="49"/>
+		{l s='Pagar con ComproPago' mod='compropago'}&nbsp;<span>{l s='(Pagos en OXXO, 7Eleven y muchas tiendas más)' mod='compropago'}</span>
+	</a>
+</p> 
