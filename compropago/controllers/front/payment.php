@@ -56,6 +56,7 @@ class CompropagoPaymentModuleFrontController extends ModuleFrontController
 		$compropagoTemplate= Compropago\Controllers\Views::loadView('providers',$compropagoData,'path','tpl');
 					
 			$this->context->smarty->assign(array(
+					'compropagoCssFlag'=>true,
 					'compropagoTemplate'=> $compropagoTemplate,
 					'compropagoCss'=>Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->module->name.'/'.'vendor/compropago/php-sdk/assets/css/compropago.css',
 					'compropagoData'=>$compropagoData,

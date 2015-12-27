@@ -42,10 +42,9 @@
 	{l s='Resumen de su orden' mod='compropago'}
 </p>
 <p>
-{*
-* Css base de compropago, habilitar si no hay conflicto de css
-*<link rel="stylesheet" type="text/css" href="{$compropagoCss}">
-*}
+{if $compropagoCssFlag}
+<link rel="stylesheet" type="text/css" href="{$compropagoCss}">
+{/if}
 {include file="$compropagoTemplate"}
 </p>
 
