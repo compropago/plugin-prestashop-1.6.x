@@ -4,6 +4,6 @@
 .settings
 composer.lock
 dev-notes
-compropago/vendor
+vendor
 .DS_Store
 phpunit.xml
