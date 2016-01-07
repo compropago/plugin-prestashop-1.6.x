@@ -165,7 +165,7 @@ class Compropago extends PaymentModule
 
 		$state = $params['objOrder']->getCurrentState();
 		//PS_OS_CHEQUE 2 PS_OS_COMPROPAGO?
-		if (in_array($state, array(Configuration::get('PS_OS_CHEQUE'), Configuration::get('PS_OS_OUTOFSTOCK'), Configuration::get('PS_OS_OUTOFSTOCK_UNPAID'))))
+		if (in_array($state, array(Configuration::get('PS_OS_COMPROPAGO'), Configuration::get('PS_OS_OUTOFSTOCK'), Configuration::get('PS_OS_OUTOFSTOCK_UNPAID'))))
 		{
 			$this->smarty->assign(array(
 				'total_to_pay' => Tools::displayPrice($params['total_to_pay'], $params['currencyObj'], false),
