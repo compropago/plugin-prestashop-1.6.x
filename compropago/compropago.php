@@ -290,7 +290,7 @@ class Compropago extends PaymentModule
 					array(
 						'type'      => 'radio',                               // This is an <input type="checkbox"> tag.
 						'label'     => $this->l('Mode'),    			    // The <label> for this <input> tag.
-						'desc'      => $this->l('Are you on live or testing?,Change your Keys according to the mode'),   // A help text, displayed right next to the <input> tag.
+						'desc'      => $this->l('Are you on live or testing?,Change your Keys according to the mode').':<a href="https://compropago.com/panel/configuracion" target="_blank">'.$this->l('ComproPago Panel').'</a>',   // A help text, displayed right next to the <input> tag.
 						'name'      => 'COMPROPAGO_MODE',                     // The content of the 'id' attribute of the <input> tag.
 						'required'  => true,                                  // If set to true, this option must be set.
 					//	'is_bool'   => true,                                  // If set to true, this means you want to display a yes/no or true/false option.
