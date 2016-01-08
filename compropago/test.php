@@ -1,5 +1,4 @@
 <?php
-use Compropago;
 /*
 * Copyright 2015 Compropago. 
 *
@@ -20,14 +19,6 @@ use Compropago;
  * @author Rolando Lucio <rolando@compropago.com>
  */
 
-
-foreach($prestaFiles as $prestaFile){
-	if(file_exists($prestaFile)){
-		include_once	$prestaFile;
-	}else{
-		echo "ComproPago Warning: No se encontro el archivo de Prestashop:".$prestaFile."<br>";
-	}
-}
 //include ComproPago SDK & dependecies
 $compropagoComposer= dirname(__FILE__).'/vendor/autoload.php';
 if ( file_exists( $compropagoComposer ) ){
@@ -37,14 +28,16 @@ if ( file_exists( $compropagoComposer ) ){
 }
 
 $compropagoConfig= array(
-		'publickey'=>'pk_test_916115539872928',
-		'privatekey'=>'sk_test_42e7103eaeb6206e',
+		'publickey'=>'pk_live_570a6884d69e263',
+		'privatekey'=>'sk_live_7ff93be105c732dc',
 		'live'=>true
 );
+
+
 try {
 $compropagoClient= new Compropago\Client($compropagoConfig);
 
-$compropagoService= new Compropago\Service($compropagoClient);
+//$compropagoService= new Compropago\Service($compropagoClient);
 //Val keys vs mode here
 
 
@@ -52,23 +45,24 @@ $compropagoService= new Compropago\Service($compropagoClient);
 //$response=$compropagoService->getProviders();
 
 
-$data=array('order_total'=>20000);
+//$data=array('order_total'=>20000);
+//$response=Compropago\Http\Rest::doExecute($compropagoClient,'providers',$data);
 
-$response=Compropago\Http\Rest::doExecute($compropagoClient,'providers',$data);
-
+$response = (Compropago\Controllers\Store::validateGateway($compropagoClient))? 'vdd':'neg';
+//$response= Compropago\Controllers\Store::test('otro param');
 
 }catch (Exception $e){
 	die($e->getMessage());
 }
-/*	
-if($response['responseCode']=='401'){
-	die('aca proceso msj');
-}
-if($response['responseCode']=='200'){
-	$response=$response['responseBody'];
-}
+	
+//if($response['responseCode']=='401'){
+//	die('aca proceso msj');
+//}
+//if($response['responseCode']=='200'){
+//	$response=$response['responseBody'];
+//}
 
-*/
+
 echo '<pre>';
 print_r($response);
 echo '</pre>';

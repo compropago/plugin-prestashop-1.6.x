@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Compropago\\Client' => $vendorDir . '/compropago/php-sdk/src/Compropago/Client.php',
+    'Compropago\\Controllers\\Store' => $vendorDir . '/compropago/php-sdk/src/Compropago/Controllers/Store.php',
     'Compropago\\Controllers\\Views' => $vendorDir . '/compropago/php-sdk/src/Compropago/Controllers/Views.php',
     'Compropago\\Exception' => $vendorDir . '/compropago/php-sdk/src/Compropago/Exception.php',
     'Compropago\\Http\\Curl' => $vendorDir . '/compropago/php-sdk/src/Compropago/Http/Curl.php',

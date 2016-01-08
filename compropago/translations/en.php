@@ -28,6 +28,7 @@ $_MODULE['<{compropago}prestashop>compropago_e058afb19ca0e428bc7f052bd54b666d'] 
 $_MODULE['<{compropago}prestashop>compropago_a02758d758e8bec77a33d7f392eb3f8a'] = 'No currency has been set for this module.';
 $_MODULE['<{compropago}prestashop>compropago_377d9accbf1d85ca08a54df79a775684'] = 'The Public Key is required';
 $_MODULE['<{compropago}prestashop>compropago_d8fb7d857003959310012b1bbc7a63c5'] = 'The Private Key is required';
+$_MODULE['<{compropago}prestashop>compropago_325eaa6c19dfbfdcbb36b6b4fc743fbe'] = 'The Mode is required';
 $_MODULE['<{compropago}prestashop>compropago_c888438d14855d7d96a2724ee9c306bd'] = 'Settings updated';
 $_MODULE['<{compropago}prestashop>compropago_8bdb2b157c2e8364f7251fb3053650d0'] = 'Pay by ComproPago';
 $_MODULE['<{compropago}prestashop>compropago_62f628ae5e19ad33992d7386c48bfb89'] = 'ComproPago details';
