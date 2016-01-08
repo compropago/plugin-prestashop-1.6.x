@@ -20,7 +20,8 @@
 global $_MODULE;
 $_MODULE = array();
 
-$_MODULE['<{compropago}prestashop>compropago_4bb9a05ad91e4ebce4959d6ffd1f7cfb'] = 'Payments by ComproPago';
+//module admin
+$_MODULE['<{compropago}prestashop>compropago_51364ec58cec9ee5f07941677781c917'] = 'ComproPago';
 $_MODULE['<{compropago}prestashop>compropago_689256bbd6f0a9e1b86e5cee6b7a038d'] = 'This module allows you to accept payments in Mexico stores like OXXO, 7Eleven and More.';
 $_MODULE['<{compropago}prestashop>compropago_90c823bb4829305115ec38cce1386eb2'] = 'Are you sure you want to delete ComproPago?';
 $_MODULE['<{compropago}prestashop>compropago_e058afb19ca0e428bc7f052bd54b666d'] = 'The Public Key and Private Key must be configured before using this module.';
@@ -35,9 +36,19 @@ $_MODULE['<{compropago}prestashop>compropago_d2560860c51f895a9871741f0805c39e'] 
 $_MODULE['<{compropago}prestashop>compropago_a5faa48a5a05f3b45c78f7c27f63d288'] = 'Get your keys at ComproPago';
 $_MODULE['<{compropago}prestashop>compropago_889bdcebb4779a00387d204f74e1a44b'] = 'ComproPago Panel';
 $_MODULE['<{compropago}prestashop>compropago_c9cc8cce247e49bae79f15173ce97354'] = 'Save';
+$_MODULE['<{compropago}prestashop>compropago_650be61892bf690026089544abbd9d26'] = 'Mode';
+$_MODULE['<{compropago}prestashop>compropago_13f77ac96d8b8d46bc553674bed34352'] = 'Are you on live or testing?,Change your Keys according to the mode';
+$_MODULE['<{compropago}prestashop>compropago_a849a06e943c4fa48e32586816a93852'] = 'Live Mode';
+$_MODULE['<{compropago}prestashop>compropago_74e20d91279df8e47e489e30bbb8e63f'] = 'Testing Mode';
+$_MODULE['<{compropago}prestashop>compropago_6c4f89a480dc019becdd5437962c36ab'] = 'Invalid Keys, The Public Key and Private Key must be valid before using this module.';
+$_MODULE['<{compropago}prestashop>compropago_22dc559b60080d881e8758013a6ad7a1'] = 'Your Store and Your ComproPago account are set to different Modes.';
+$_MODULE['<{compropago}prestashop>compropago_d5c6a1ad57e8f1c556e4b98493fd4170'] = 'ComproPago ALERT:Your Keys are for a different Mode.';
+$_MODULE['<{compropago}prestashop>compropago_d98319bc92c360fc70600470dc089470'] = 'Your Keys and Your ComproPago account are set to different Modes.';
 
+// payment gateway validation
 $_MODULE['<{compropago}prestashop>validation_e2b7dec8fa4b498156dfee6e4c84b156'] = 'This payment method is not available.';
 
+// moudel info.tpl
 $_MODULE['<{compropago}prestashop>infos_689256bbd6f0a9e1b86e5cee6b7a038d'] = 'This module allows you to accept payments in Mexico stores like OXXO, 7Eleven and More.';
 $_MODULE['<{compropago}prestashop>infos_e444fe40d43bccfad255cf62ddc8d18f'] = 'If the client chooses this payment method, the order status will change to \'Waiting for payment.\'';
 $_MODULE['<{compropago}prestashop>infos_a9da016950bfa3ec48d35f3cd6d8f26c'] = 'ComproPago will confirm the order as soon as payment is received via WebHook.';

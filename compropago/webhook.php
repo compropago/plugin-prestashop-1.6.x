@@ -56,15 +56,17 @@ if (!isset($config['COMPROPAGO_PUBLICKEY']) || !isset($config['COMPROPAGO_PRIVAT
 $compropagoConfig= array(
 		'publickey'=>$config['COMPROPAGO_PUBLICKEY'],
 		'privatekey'=>$config['COMPROPAGO_PRIVATEKEY']
-		//'live'=>false
 );
 
-$compropagoClient= new Compropago\Client($compropagoConfig);
-$compropagoService= new Compropago\Service($compropagoClient);
-//Val keys vs mode here
-
-$response=Compropago\Http\Rest::doExecute($compropagoClient,'users/auth/',$data);
-//Ill check my self i dont belive
-
-
-var_dump($response);
+try{
+	$compropagoClient = new Compropago\Client($compropagoConfig);
+	$compropagoService = new Compropago\Service($compropagoClient);
+	if(!$compropagoResponse = $compropagoService->evalAuth()){
+		die("ComproPago Error: Llaves no validas");
+	}
+}catch (Exception $e) {
+	die($e->getMessage());
+}
+echo '<pre>';
+print_r($compropagoResponse);
+echo '</pre><br>';
