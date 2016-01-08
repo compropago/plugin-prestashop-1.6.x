@@ -96,6 +96,10 @@ class Compropago extends PaymentModule
 								 if($moduleLive != $compropagoResponse->mode_key){
 									 // store Mode vs compropago Keys
 									 $this->warning .= $this->l('ComproPago ALERT:Your Keys are for a different Mode.');
+								 }else{
+								 	if(!$compropagoResponse->mode_key && !$compropagoResponse->livemode){
+								 		$this->warning .= $this->l('WARNING: ComproPago account is Running in TEST Mode');
+								 	}
 								 }
 							 }
 					}		
@@ -199,7 +203,7 @@ class Compropago extends PaymentModule
 			return;
 		if (!$this->checkCurrency($params['cart']))
 			return;
-		if(!Compropago\Controllers\Store::validateGateway($this->compropagoClient))
+		if(!$this->checkCompropago())
 			return;
 
 		$this->smarty->assign(array(
@@ -216,7 +220,7 @@ class Compropago extends PaymentModule
 			return;
 		if (!$this->checkCurrency($params['cart']))
 			return;
-		if(!Compropago\Controllers\Store::validateGateway($this->compropagoClient))
+		if(!$this->checkCompropago())
 			return;
 
 		$payment_options = array(
@@ -251,7 +255,9 @@ class Compropago extends PaymentModule
 			$this->smarty->assign('status', 'failed');
 		return $this->display(__FILE__, 'payment_return.tpl');
 	}
-
+	public function checkCompropago(){
+		return Compropago\Controllers\Store::validateGateway($this->compropagoClient);
+	}
 	public function checkCurrency($cart)
 	{
 		$currency_order = new Currency((int)($cart->id_currency));
