@@ -16,6 +16,7 @@
 */
 /**
  * @author Rolando Lucio <rolando@compropago.com>
+ * @since 2.0.0
  */
 
 if (!defined('_PS_VERSION_'))
