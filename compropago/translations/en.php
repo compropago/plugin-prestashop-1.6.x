@@ -16,6 +16,7 @@
  */
 /**
  * @author Rolando Lucio <rolando@compropago.com>
+ * @since 2.0.0
  */
 global $_MODULE;
 $_MODULE = array();
@@ -46,6 +47,9 @@ $_MODULE['<{compropago}prestashop>compropago_22dc559b60080d881e8758013a6ad7a1'] 
 $_MODULE['<{compropago}prestashop>compropago_d5c6a1ad57e8f1c556e4b98493fd4170'] = 'ComproPago ALERT:Your Keys are for a different Mode.';
 $_MODULE['<{compropago}prestashop>compropago_d98319bc92c360fc70600470dc089470'] = 'Your Keys and Your ComproPago account are set to different Modes.';
 $_MODULE['<{compropago}prestashop>compropago_0cf28c16a23da7a5f2922ac4190b5b1d'] = 'WARNING: ComproPago account is Running in TEST Mode';
+$_MODULE['<{compropago}prestashop>compropago_980310da5d94b91918f46b5c0c54c6f3'] = 'WebHook';
+$_MODULE['<{compropago}prestashop>compropago_8f1106577a0c591223cd8d7621eea525'] = 'Set this Url at ComproPago Panel to use it  to confirm to your store when a payment has been confirmed';
+$_MODULE['<{compropago}prestashop>compropago_5fb63579fc981698f97d55bfecb213ea'] = 'Copy & Paste this Url to WebHooks section of your ComproPago Panel to recive instant notifications when a payment is confirmed';
 
 // payment gateway validation
 $_MODULE['<{compropago}prestashop>validation_e2b7dec8fa4b498156dfee6e4c84b156'] = 'This payment method is not available.';

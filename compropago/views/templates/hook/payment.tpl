@@ -19,7 +19,7 @@
 
 <p class="payment_module">
 	<a href="{$link->getModuleLink('compropago', 'payment', [], true)|escape:'html'}" title="{l s='Pay by ComproPago' mod='compropago'}">
-		<img src="{$this_path_compropago}logo.png" alt="{l s='Pay by ComproPago' mod='compropago'}" width="86" height="49" />
+		<img src="{$this_path_compropago}logo-badge.png" alt="{l s='Pay by ComproPago' mod='compropago'}" width="86" height="49" />
 		{l s='Pay by ComproPago' mod='compropago'} {l s='(order processing will be longer)' mod='compropago'}
 	</a>
 </p>

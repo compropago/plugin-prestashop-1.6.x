@@ -18,7 +18,7 @@
 *}
 
 <div class="alert alert-info">
-<img src="../modules/compropago/logo.png" style="float:left; margin-right:15px;" width="86" height="49">
+<img src="../modules/compropago/logo-desc.png" style="float:left; margin-right:15px;" width="86" height="49">
 <p><strong>{l s="This module allows you to accept payments in Mexico stores like OXXO, 7Eleven and More." mod='compropago'}</strong></p>
 <p>{l s="If the client chooses this payment method, the order status will change to 'Waiting for payment.'" mod='compropago'}</p>
 <p>{l s="ComproPago will confirm the order as soon as payment is received via WebHook." mod='compropago'}</p>

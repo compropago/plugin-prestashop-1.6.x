@@ -37,8 +37,8 @@ class Compropago extends PaymentModule
 	public $extra_mail_vars;
 	public $modoExec;
 	
-	private $compropagoConfig;
-	private $compropagoClient;
+	public $compropagoConfig;
+	public $compropagoClient;
 
 	public function __construct()
 	{
@@ -79,7 +79,7 @@ class Compropago extends PaymentModule
 			$moduleLive=($this->modoExec=='yes')? true:false;
 			$this->setComproPago($moduleLive);
 			try{
-				
+				// Store Mode vs Compropago config, eval keys
 				$compropagoService = new Compropago\Service($this->compropagoClient);
 				if(!$compropagoResponse = $compropagoService->evalAuth()){
 					$this->warning .= $this->l('Invalid Keys, The Public Key and Private Key must be valid before using this module.');
@@ -236,9 +236,10 @@ class Compropago extends PaymentModule
 	{
 		if (!$this->active)
 			return;
-
+		if(!$this->checkCompropago())
+			return;
 		$state = $params['objOrder']->getCurrentState();
-		//PS_OS_CHEQUE 2 PS_OS_COMPROPAGO?
+		//2 PS_OS_COMPROPAGO 
 		if (in_array($state, array(Configuration::get('PS_OS_COMPROPAGO'), Configuration::get('PS_OS_OUTOFSTOCK'), Configuration::get('PS_OS_OUTOFSTOCK_UNPAID'))))
 		{
 			$this->smarty->assign(array(
@@ -276,8 +277,9 @@ class Compropago extends PaymentModule
 			'form' => array(
 				'legend' => array(
 					'title' => $this->l('ComproPago details'),
-					//crear icono 16x16	
-					'icon' => 'icon-rocket'
+					//crear icono 16x16
+					'image' => '../modules/compropago/icono.png'
+					//'icon' => 'icon-rocket'
 				),
 				'input' => array(
 					array(
@@ -313,6 +315,15 @@ class Compropago extends PaymentModule
 										'label' => $this->l('Testing Mode')
 								)
 						),
+					),
+					array(
+							'type' =>'text',
+							'label'=> $this->l('WebHook'),
+							'name' => 'COMPROPAGO_WEBHOOK',
+							'hint' => $this->l('Set this Url at ComproPago Panel to use it  to confirm to your store when a payment has been confirmed'),
+							'desc' => $this->l('Copy & Paste this Url to WebHooks section of your ComproPago Panel to recive instant notifications when a payment is confirmed').':<a href="https://compropago.com/panel/webhooks" target="_blank">'.$this->l('ComproPago Panel').'</a>'
+						
+							
 					),
 						
 						///END OF FIELDS
@@ -350,6 +361,7 @@ class Compropago extends PaymentModule
 			'COMPROPAGO_PUBLICKEY' => Tools::getValue('COMPROPAGO_PUBLICKEY', Configuration::get('COMPROPAGO_PUBLICKEY')),
 			'COMPROPAGO_PRIVATEKEY' => Tools::getValue('COMPROPAGO_PRIVATEKEY', Configuration::get('COMPROPAGO_PRIVATEKEY')),
 			'COMPROPAGO_MODE' => Tools::getValue('COMPROPAGO_MODE', Configuration::get('COMPROPAGO_MODE')),
+			'COMPROPAGO_WEBHOOK' =>  Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->name.'/webhook.php'
 		);
 	}
 }
