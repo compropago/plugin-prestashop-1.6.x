@@ -16,6 +16,7 @@
 */
 /**
  * @author Rolando Lucio <rolando@compropago.com>
+ * @since 2.0.0
  */
 
 class CompropagoValidationModuleFrontController extends ModuleFrontController
@@ -47,10 +48,10 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
 		$currency = $this->context->currency;
 		$total = (float)$cart->getOrderTotal(true, Cart::BOTH);
 
-		$mailVars =	array(
+		/*$mailVars =	array(
 			'{cheque_name}' => Configuration::get('COMPROPAGO_PUBLICKEY'),
 			'{cheque_address}' => Configuration::get('COMPROPAGO_PRIVATEKEY'),
-			'{cheque_address_html}' => str_replace("\n", '<br />', Configuration::get('COMPROPAGO_PRIVATEKEY')));
+			'{cheque_address_html}' => str_replace("\n", '<br />', Configuration::get('COMPROPAGO_PRIVATEKEY')));*/
 
 		$this->module->validateOrder((int)$cart->id, Configuration::get('PS_OS_COMPROPAGO'), $total, $this->module->displayName, NULL, $mailVars, (int)$currency->id, false, $customer->secure_key);
 		Tools::redirect('index.php?controller=order-confirmation&id_cart='.(int)$cart->id.'&id_module='.(int)$this->module->id.'&id_order='.$this->module->currentOrder.'&key='.$customer->secure_key);

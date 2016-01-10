@@ -14,7 +14,7 @@
 * limitations under the License.
 *
 * @author Rolando Lucio <rolando@compropago.com>
-*
+* @since 2.0.0
 *}
 
 <div class="alert alert-info">

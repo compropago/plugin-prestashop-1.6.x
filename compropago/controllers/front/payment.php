@@ -15,8 +15,9 @@
 * limitations under the License.
 */
 /**
- * @author Rolando Lucio <rolando@compropago.com>
  * controller para versiones >= 1.5
+ * @author Rolando Lucio <rolando@compropago.com>
+ * @since 2.0.0
  */
 class CompropagoPaymentModuleFrontController extends ModuleFrontController
 {
@@ -35,16 +36,25 @@ class CompropagoPaymentModuleFrontController extends ModuleFrontController
 			Tools::redirect('index.php?controller=order');
 		if (!$this->module->checkCompropago())
 			Tools::redirect('index.php?controller=order');
-			
+		//TPL view exists?
+		if( !$compropagoTpl=$this->module->getViewPathCompropago('providers')){
+			Tools::redirect('index.php?controller=order');
+		}
+		//ok with tpl config?
+		if( !$compropagoData=$this->module->getProvidersCompropago() ){
+			Tools::redirect('index.php?controller=order');
+		}
 
 		$this->context->smarty->assign(array(
+			'compropagoTpl' => $compropagoTpl,
+			'compropagoData' => $compropagoData,
 			'nbProducts' => $cart->nbProducts(),
 			'cust_currency' => $cart->id_currency,
 			'currencies' => $this->module->getCurrency((int)$cart->id_currency),
 			'total' => $cart->getOrderTotal(true, Cart::BOTH),
 			'isoCode' => $this->context->language->iso_code,
-			'chequeName' => $this->module->publicKey,
-			'chequeAddress' => Tools::nl2br($this->module->privateKey),
+			/*'chequeName' => $this->module->publicKey,
+			'chequeAddress' => Tools::nl2br($this->module->privateKey),*/
 			'this_path' => $this->module->getPathUri(),
 			'this_path_compropago' => $this->module->getPathUri(),
 			'this_path_ssl' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->module->name.'/'

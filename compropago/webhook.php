@@ -19,7 +19,7 @@
  * @author Rolando Lucio <rolando@compropago.com>
  * @since 2.0.0
  */
-//El request es valido?
+//valid request type??
 $request = @file_get_contents('php://input');
 if(!$jsonObj = json_decode($request)){
 	die('Tipo de Request no Valido');
@@ -41,7 +41,7 @@ foreach($prestaFiles as $prestaFile){
 if (!defined('_PS_VERSION_')){
 	die("No se pudo inicializar Prestashop");
 }
-//include ComproPago SDK & dependecies
+//include ComproPago SDK & dependecies via composer autoload
 $compropagoComposer= dirname(__FILE__).'/vendor/autoload.php';
 if ( file_exists( $compropagoComposer ) ){
 	require $compropagoComposer;
@@ -52,7 +52,7 @@ if ( file_exists( $compropagoComposer ) ){
 if (!Module::isInstalled('compropago')){
 	die('El módulo de ComproPago no se encuentra instalado');
 }
-//ComproPago Prestashop Config
+//Get ComproPago Prestashop Config values
 $config = Configuration::getMultiple(array('COMPROPAGO_PUBLICKEY', 'COMPROPAGO_PRIVATEKEY','COMPROPAGO_MODE'));
 //keys set?
 if (!isset($config['COMPROPAGO_PUBLICKEY']) || !isset($config['COMPROPAGO_PRIVATEKEY'])
@@ -69,7 +69,7 @@ $compropagoConfig= array(
 		'publickey'=>$config['COMPROPAGO_PUBLICKEY'],
 		'privatekey'=>$config['COMPROPAGO_PRIVATEKEY'],
 		'live'=>$moduleLive,
-		'contained'=>'plugin; cpps 2.0.0;prestashop '._PS_VERSION_.'; webhook;'		
+		'contained'=>'plugin; cpps 2.0.0; prestashop '._PS_VERSION_.'; webhook;'		
 );
 // consume sdk methods
 try{

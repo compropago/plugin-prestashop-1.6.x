@@ -14,12 +14,12 @@
 * limitations under the License.
 *
 * @author Rolando Lucio <rolando@compropago.com>
-*
+* @since 2.0.0
 *}
 
 
 {capture name=path}
-	<a href="{$link->getPageLink('order', true, NULL, "step=3")|escape:'html':'UTF-8'}" title="{l s='Go back to the Checkout' mod='compropago'}">{l s='Checkout' mod='compropago'}</a><span class="navigation-pipe">{$navigationPipe}</span>{l s='Check payment' mod='compropago'}
+	<a href="{$link->getPageLink('order', true, NULL, "step=3")|escape:'html':'UTF-8'}" title="{l s='Go back to the Checkout' mod='compropago'}">{l s='Checkout' mod='compropago'}</a><span class="navigation-pipe">{$navigationPipe}</span>{l s='ComproPago payment' mod='compropago'}
 {/capture}
 
 {include file="$tpl_dir./breadcrumb.tpl"}
@@ -33,11 +33,11 @@
 	<p class="warning">{l s='Your shopping cart is empty.' mod='compropago'}</p>
 {else}
 
-<h3>{l s='Check payment' mod='compropago'}</h3>
+<h3>{l s='ComproPago payment' mod='compropago'}</h3>
 <form action="{$link->getModuleLink('compropago', 'validation', [], true)|escape:'html'}" method="post">
 	<p>
-		<img src="{$this_path_compropago}logo.png" alt="{l s='Check' mod='compropago'}" width="86" height="49" style="float:left; margin: 0px 10px 5px 0px;" />
-		{l s='You have chosen to pay by check.' mod='compropago'}
+		<img src="{$this_path_compropago}logo-badge.png" alt="{l s='ComproPago' mod='compropago'}" width="86" height="49" style="float:left; margin: 0px 10px 5px 0px;" />
+		{l s='You have chosen to pay by ComproPago.' mod='compropago'}
 		<br/><br />
 		{l s='Here is a short summary of your order:' mod='compropago'}
 	</p>
@@ -63,6 +63,9 @@
 			{l s='We allow the following currencies to be sent by check:' mod='compropago'}&nbsp;<b>{$currencies.0.name}</b>
 			<input type="hidden" name="currency_payement" value="{$currencies.0.id_currency}" />
 		{/if}
+	</p>
+	<p>
+		{include file="$compropagoTpl"}
 	</p>
 	<p>
 		{l s='Check owner and address information will be displayed on the next page.' mod='compropago'}

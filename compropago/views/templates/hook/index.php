@@ -16,6 +16,7 @@
 */
 /**
  * @author Rolando Lucio <rolando@compropago.com>
+ * @since 2.0.0
  */
 				    	
 header("Expires: Mon, 31 Jan 1982 05:00:00 GMT");
