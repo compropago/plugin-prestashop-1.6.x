@@ -58,7 +58,7 @@ $data = array(
 		'order_price'        => '123.45',                  // float con el monto de la operación
 		'order_name'         => 'Test Order Name',         // nombre para la orden
 		'customer_name'      => 'Compropago Test',         // nombre del cliente
-		'customer_email'     => 'test@compropago.com',     // email del cliente
+		'customer_email'     => 'rolando@compropago.com',     // email del cliente
 		'payment_type'       => 'OXXO'                     // identificador de la tienda donde realizar el pago
 );
 //Obtenemos el JSON de la respuesta

@@ -261,7 +261,7 @@ class Compropago extends PaymentModule
 				Db::getInstance()->autoExecute(_DB_PREFIX_ . 'order_state_lang', array(
 						'id_order_state' => $id_order_state,
 						'id_lang' => $language['id_lang'],
-						'name' => $this->l('ComproPago - Pending'),
+						'name' => $this->l('ComproPago - Pending Payment'),
 						'template' => ''
 				), 'INSERT');
 				Configuration::updateValue('COMPROPAGO_PENDING', $id_order_state);
@@ -496,7 +496,9 @@ class Compropago extends PaymentModule
 				//'publicKey' => $this->publicKey,
 				//'privateKey' => Tools::nl2br($this->privateKey),
 				'status' => 'ok',
-				'id_order' => $params['objOrder']->id
+				'id_order' => $params['objOrder']->id,
+				'compropagoData'=> $_REQUEST['compropagoId']
+				
 			));
 			if (isset($params['objOrder']->reference) && !empty($params['objOrder']->reference))
 				$this->smarty->assign('reference', $params['objOrder']->reference);

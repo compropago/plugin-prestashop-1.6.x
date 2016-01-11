@@ -59,7 +59,7 @@ $_MODULE['<{compropago}prestashop>compropago_1de3387305731f8c72e505c4718a4696'] 
 $_MODULE['<{compropago}prestashop>compropago_e7557a784a60ec1cf471e8e79b7d1b81'] = 'Show select box';
 $_MODULE['<{compropago}prestashop>compropago_271929827c34180cb9457f4b3524c55a'] = '- ComproPago allows you to pay at Mexico stores like OXXO, 7Eleven and More.';
 $_MODULE['<{compropago}prestashop>compropago_0ef78bed29538b444578bf4af627d0da'] = 'Select a Store';
-$_MODULE['<{compropago}prestashop>compropago_2133f9b4d465bc1626123ff4160bf346'] = 'ComproPago - Pending';
+$_MODULE['<{compropago}prestashop>compropago_2e009a7853de34d3bc5b712f71e8e1ce'] = 'ComproPago - Pending Payment';
 $_MODULE['<{compropago}prestashop>compropago_02f0eeddb6cd88fa1dadfdd75c96d7cb'] = 'ComproPago - Payment received';
 $_MODULE['<{compropago}prestashop>compropago_1f715ddc03782c85b4e84f7edba76411'] = 'ComproPago - Expired';
 $_MODULE['<{compropago}prestashop>compropago_f463dde0fe30979fae19d1a4ccd2bcb8'] = 'ComproPago - Declined';

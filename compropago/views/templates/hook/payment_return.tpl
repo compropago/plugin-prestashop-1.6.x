@@ -19,8 +19,12 @@
 
 {if $status == 'ok'}
 	<p>{l s='Your order on %s is complete.' sprintf=$shop_name mod='compropago'}</p>
+	<p>
+	<pre>
+		{$compropagoData|@print_r} 
+	</pre>
+	</p>
 	<p>	
-		
 		<br /><br />- {l s='Your order number #%d.' sprintf=$id_order mod='compropago'}
 		{if isset($reference)}
 			<br /><br />- {l s='Your order reference %s.' sprintf=$reference mod='compropago'}
