@@ -20,9 +20,7 @@
 {if $status == 'ok'}
 	<p>{l s='Your order on %s is complete.' sprintf=$shop_name mod='compropago'}</p>
 	<p>
-	<pre>
-		{$compropagoData|@print_r} 
-	</pre>
+		{include file="$compropagoTpl"}
 	</p>
 	<p>	
 		<br /><br />- {l s='Your order number #%d.' sprintf=$id_order mod='compropago'}

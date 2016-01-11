@@ -55,15 +55,17 @@ $compropagoService= new Compropago\Service($compropagoClient);
 //Campos Obligatorios para poder realizar una nueva orden
 $data = array(
 		'order_id'           => 'testorderid',             // string para identificar la orden
-		'order_price'        => '123.45',                  // float con el monto de la operación
+		'order_price'        => '123.46',                  // float con el monto de la operación
 		'order_name'         => 'Test Order Name',         // nombre para la orden
 		'customer_name'      => 'Compropago Test',         // nombre del cliente
-		'customer_email'     => 'rolando@compropago.com',     // email del cliente
+		'customer_email'     => 'test@compropago.com',     // email del cliente
 		'payment_type'       => 'OXXO'                     // identificador de la tienda donde realizar el pago
 );
 //Obtenemos el JSON de la respuesta
-//$response = $compropagoService->placeOrder($data);
-$response=Compropago\Http\Rest::doExecute($compropagoClient,'charges',$data,'POST');
+$response = $compropagoService->placeOrder($data);
+//$response=Compropago\Http\Rest::doExecute($compropagoClient,'charges',$data,'POST');
+
+//$response = $compropagoService->verifyOrder('ch_918939f6-64ac-48d8-b2a4-935c30257125');
 
 }catch (Exception $e){
 	die($e->getMessage());

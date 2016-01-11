@@ -1,4 +1,5 @@
 <?php
+use Compropago\Exception;
 /*
 * Copyright 2015 Compropago.
 *
@@ -488,16 +489,54 @@ class Compropago extends PaymentModule
 			return;
 		
 		$state = $params['objOrder']->getCurrentState();
-		//2 PS_OS_COMPROPAGO 
+		//COMPROPAGO Get order details
+		
+		if((!isset($_REQUEST['compropagoId']) || empty($_REQUEST['compropagoId']) )){
+			$compropagoStatus='fail';
+			$compropagoData=null;
+		}else{
+			$compropagoStatus='ok';
+			//$compropagoData=$params;
+			try{
+				$compropagoData=$this->compropagoService->verifyOrder($_REQUEST['compropagoId']);
+			}catch (Exception $e){
+				$compropagoData->type='exception';
+				$compropagoData->exception=$e->getMessage();
+			}
+			switch ($compropagoData->type){
+				case 'error':
+					$compropagoTpl=$this->getViewPathCompropago('raw');
+					$compropagoData->compropagoId=$_REQUEST['compropagoId'];
+					$compropagoData->Help=$this->l('We have noticed that there is a problem with your order. If you think this is an error, you can contact our').
+															' '.$this->l('customer service department.');
+				break;
+				case 'exception':
+					$compropagoTpl=$this->getViewPathCompropago('raw');
+					$compropagoData->Help=$this->l('We have noticed that there is a problem with your order. If you think this is an error, you can contact our').
+					' '.$this->l('customer service department.');
+				break;
+				case 'charge.pending':
+					$compropagoTpl=$this->getViewPathCompropago('receipt');
+					
+				break;
+				default:
+					$compropagoTpl=$this->getViewPathCompropago('raw');
+					$compropagoStatus='fail';
+					$compropagoData=null;
+			}
+			
+			
+		}
+		
+		
 		if (in_array($state, array(Configuration::get('COMPROPAGO_PENDING'), Configuration::get('PS_OS_OUTOFSTOCK'), Configuration::get('PS_OS_OUTOFSTOCK_UNPAID'))))
 		{
 			$this->smarty->assign(array(
 				'total_to_pay' => Tools::displayPrice($params['total_to_pay'], $params['currencyObj'], false),
-				//'publicKey' => $this->publicKey,
-				//'privateKey' => Tools::nl2br($this->privateKey),
-				'status' => 'ok',
+				'status' => $compropagoStatus,
 				'id_order' => $params['objOrder']->id,
-				'compropagoData'=> $_REQUEST['compropagoId']
+				'compropagoTpl' => $compropagoTpl,
+				'compropagoData'=> $compropagoData
 				
 			));
 			if (isset($params['objOrder']->reference) && !empty($params['objOrder']->reference))

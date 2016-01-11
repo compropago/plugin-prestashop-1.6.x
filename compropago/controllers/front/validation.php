@@ -56,18 +56,17 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
 			//Place a ComproPago Order
 			$compropagoStore=(!isset($_REQUEST['compropagoProvider']) || empty($_REQUEST['compropagoProvider']))?'OXXO':$_REQUEST['compropagoProvider'];
 			$compropagoOrderData = array(
-					'order_id'           => 'testorderid',             // string para identificar la orden
-					'order_price'        => $total,                  // float con el monto de la operación
-					'order_name'         => 'Test Order Name',         // nombre para la orden
-					'customer_name'      => 'Compropago Test',         // nombre del cliente
-					'customer_email'     => 'test@compropago.com',     // email del cliente
+					'order_id'           => 'testorderid',            
+					'order_price'        => $total,                
+					'order_name'         => 'Test Order reference',      
+					'customer_name'      => 'Compropago Prestashop Test',        
+					'customer_email'     => 'rolando@compropago.com',    
 					'payment_type'       => $compropagoStore           
 			);
 			try {
 				//response JSON
 				$compropagoResponse = $this->module->compropagoService->placeOrder($compropagoOrderData);
-				print_r($compropagoResponse);
-				die();
+			
 			}catch(Exception $e){
 				die($this->module->l('This payment method is not available.', 'validation').'<br>'.$e->getMessage());
 			}
