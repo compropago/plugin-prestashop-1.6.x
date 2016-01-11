@@ -1,5 +1,4 @@
 <?php
-use Compropago\Exception;
 /*
 * Copyright 2015 Compropago.
 *
@@ -70,9 +69,17 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
 			}catch(Exception $e){
 				die($this->module->l('This payment method is not available.', 'validation').'<br>'.$e->getMessage());
 			}
-			
+			if(!isset($compropagoResponse->status) && $compropagoResponse->status!='pending'){
+				echo '<pre>';
+				print_r($compropagoResponse);
+				echo '</pre>';
+				die($this->module->l('This payment method is not available.', 'validation'));
+			}
+				
+				
+				$this->module->validateOrder((int)$cart->id, Configuration::get('COMPROPAGO_PENDING'), $total, $this->module->displayName, NULL, $mailVars, (int)$currency->id, false, $customer->secure_key);
+				Tools::redirect('index.php?compropagoId='.$compropagoResponse->id.'&controller=order-confirmation&id_cart='.(int)$cart->id.'&id_module='.(int)$this->module->id.'&id_order='.$this->module->currentOrder.'&key='.$customer->secure_key);
 
-			$this->module->validateOrder((int)$cart->id, Configuration::get('COMPROPAGO_PENDING'), $total, $this->module->displayName, NULL, $mailVars, (int)$currency->id, false, $customer->secure_key);
-			Tools::redirect('index.php?compropagoId='.$compropagoResponse->id.'&controller=order-confirmation&id_cart='.(int)$cart->id.'&id_module='.(int)$this->module->id.'&id_order='.$this->module->currentOrder.'&key='.$customer->secure_key);
+			
 	}
 }

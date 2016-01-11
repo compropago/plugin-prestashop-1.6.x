@@ -1,5 +1,4 @@
 <?php
-use Compropago\Exception;
 /*
 * Copyright 2015 Compropago.
 *
@@ -516,7 +515,7 @@ class Compropago extends PaymentModule
 					' '.$this->l('customer service department.');
 				break;
 				case 'charge.pending':
-					$compropagoTpl=$this->getViewPathCompropago('receipt');
+					$compropagoTpl=$this->getViewPathCompropago('raw');
 					
 				break;
 				default:
