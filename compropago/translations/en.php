@@ -53,8 +53,18 @@ $_MODULE['<{compropago}prestashop>compropago_980310da5d94b91918f46b5c0c54c6f3'] 
 $_MODULE['<{compropago}prestashop>compropago_8f1106577a0c591223cd8d7621eea525'] = 'Set this Url at ComproPago Panel to use it  to confirm to your store when a payment has been confirmed';
 $_MODULE['<{compropago}prestashop>compropago_5fb63579fc981698f97d55bfecb213ea'] = 'Copy & Paste this Url to WebHooks section of your ComproPago Panel to recive instant notifications when a payment is confirmed';
 $_MODULE['<{compropago}prestashop>compropago_ac8c251a631865e7f185b7b08facef97'] = 'Could not load ComproPago SDK instances.';
+$_MODULE['<{compropago}prestashop>compropago_29ae04aab28446966bbf8f3747ed9c28'] = 'Show Logos';
+$_MODULE['<{compropago}prestashop>compropago_3c806855da7cb66fe2ac79520cfcecff'] = 'Want to show store logos or a select box?';
+$_MODULE['<{compropago}prestashop>compropago_1de3387305731f8c72e505c4718a4696'] = 'Show store logos';
+$_MODULE['<{compropago}prestashop>compropago_e7557a784a60ec1cf471e8e79b7d1b81'] = 'Show select box';
+$_MODULE['<{compropago}prestashop>compropago_271929827c34180cb9457f4b3524c55a'] = '- ComproPago allows you to pay at Mexico stores like OXXO, 7Eleven and More.';
+$_MODULE['<{compropago}prestashop>compropago_0ef78bed29538b444578bf4af627d0da'] = 'Select a Store';
+$_MODULE['<{compropago}prestashop>compropago_2133f9b4d465bc1626123ff4160bf346'] = 'ComproPago - Pending';
+$_MODULE['<{compropago}prestashop>compropago_02f0eeddb6cd88fa1dadfdd75c96d7cb'] = 'ComproPago - Payment received';
+$_MODULE['<{compropago}prestashop>compropago_1f715ddc03782c85b4e84f7edba76411'] = 'ComproPago - Expired';
+$_MODULE['<{compropago}prestashop>compropago_f463dde0fe30979fae19d1a4ccd2bcb8'] = 'ComproPago - Declined';
 
-// payment gateway validation
+// [modulePath]/controllers/front/validation.php
 $_MODULE['<{compropago}prestashop>validation_e2b7dec8fa4b498156dfee6e4c84b156'] = 'This payment method is not available.';
 
 // [modulePath]/views/templates/hook/info.tpl
@@ -78,22 +88,21 @@ $_MODULE['<{compropago}prestashop>payment_execution_08dc40f83d32fdab5c231d83af3b
 $_MODULE['<{compropago}prestashop>payment_execution_c884ed19483d45970c5bf23a681e2dd2'] = 'Here is a short summary of your order:';
 $_MODULE['<{compropago}prestashop>payment_execution_3b3b41f131194e747489ef93e778ed0d'] = 'The total amount of your order comes to:';
 $_MODULE['<{compropago}prestashop>payment_execution_1f87346a16cf80c372065de3c54c86d9'] = '(tax incl.)';
-$_MODULE['<{compropago}prestashop>payment_execution_7b1c6e78d93817f61f2b1bbc2108a803'] = 'We accept several currencies to receive payments by check.';
+$_MODULE['<{compropago}prestashop>payment_execution_5e82d0de3eacdb6f47aae378fc55be72'] = 'We accept several currencies to receive payments by ComproPago.';
 $_MODULE['<{compropago}prestashop>payment_execution_a7a08622ee5c8019b57354b99b7693b2'] = 'Choose one of the following:';
-$_MODULE['<{compropago}prestashop>payment_execution_f73ad0f08052884ff465749bf48b55ce'] = 'We allow the following currencies to be sent by check:';
-$_MODULE['<{compropago}prestashop>payment_execution_7135ff14c7931e1c8e9d33aff3dfc7f7'] = 'Check owner and address information will be displayed on the next page.';
+$_MODULE['<{compropago}prestashop>payment_execution_b2f122110d4a3cd38ef03f43257546fd'] = 'We allow the following currencies to be sent by ComproPago:';
+$_MODULE['<{compropago}prestashop>payment_execution_b5b292f1723a6947882813042ca0aefc'] = 'ComproPago payment information will be displayed on the next page.';
 $_MODULE['<{compropago}prestashop>payment_execution_52f64bc0164b0e79deaeaaaa7e93f98f'] = 'Please confirm your order by clicking \'I confirm my order\'.';
 $_MODULE['<{compropago}prestashop>payment_execution_46b9e3665f187c739c55983f757ccda0'] = 'I confirm my order';
 $_MODULE['<{compropago}prestashop>payment_execution_569fd05bdafa1712c4f6be5b153b8418'] = 'Other payment methods';
 $_MODULE['<{compropago}prestashop>payment_execution_0881a11f7af33bc1b43e437391129d66'] = 'Please confirm your order by clicking \'I confirm my order\'';
 
+
+// [modulePath]/views/templates/hook/payment_return.tpl
 $_MODULE['<{compropago}prestashop>payment_return_88526efe38fd18179a127024aba8c1d7'] = 'Your order on %s is complete.';
-$_MODULE['<{compropago}prestashop>payment_return_61da27a5dd1f8ced46c77b0feaa9e159'] = 'Your check must include:';
 $_MODULE['<{compropago}prestashop>payment_return_621455d95c5de701e05900a98aaa9c66'] = 'Payment amount.';
-$_MODULE['<{compropago}prestashop>payment_return_9b8f932b1412d130ece5045ecafd1b42'] = 'Payable to the order of';
-$_MODULE['<{compropago}prestashop>payment_return_9a94f1d749a3de5d299674d6c685e416'] = 'Mail to';
-$_MODULE['<{compropago}prestashop>payment_return_e1c54fdba2544646684f41ace03b5fda'] = 'Do not forget to insert your order number #%d.';
-$_MODULE['<{compropago}prestashop>payment_return_4761b03b53bc2b3bd948bb7443a26f31'] = 'Do not forget to insert your order reference %s.';
+$_MODULE['<{compropago}prestashop>payment_return_292aeef87901257c1ccf0a0ee67ee428'] = 'Your order number #%d.';
+$_MODULE['<{compropago}prestashop>payment_return_6c5a76b0a3c213285939bf002f296f9a'] = 'Your order reference %s.';
 $_MODULE['<{compropago}prestashop>payment_return_610abe74e72f00210e3dcb91a0a3f717'] = 'An email has been sent to you with this information.';
 $_MODULE['<{compropago}prestashop>payment_return_ffd2478830ca2f519f7fe7ee259d4b96'] = 'Your order will be sent as soon as we receive your payment.';
 $_MODULE['<{compropago}prestashop>payment_return_0db71da7150c27142eef9d22b843b4a9'] = 'For any questions or for further information, please contact our';

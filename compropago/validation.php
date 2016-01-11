@@ -50,7 +50,7 @@ if (!Validate::isLoadedObject($customer))
 $currency = $context->currency;
 $total = (float)$cart->getOrderTotal(true, Cart::BOTH);
 
-$compropago->validateOrder((int)$cart->id, Configuration::get('PS_OS_CHEQUE'), $total, $compropago->displayName, NULL, array(), (int)$currency->id, false, $customer->secure_key);
+$compropago->validateOrder((int)$cart->id, Configuration::get('COMPROPAGO_PENDING'), $total, $compropago->displayName, NULL, array(), (int)$currency->id, false, $customer->secure_key);
 
 Tools::redirect('index.php?controller=order-confirmation&id_cart='.(int)($cart->id).'&id_module='.(int)($compropago->id).'&id_order='.$compropago->currentOrder.'&key='.$customer->secure_key);
 

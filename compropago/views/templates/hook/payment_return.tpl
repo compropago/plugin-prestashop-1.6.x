@@ -18,17 +18,14 @@
 *}
 
 {if $status == 'ok'}
-	<p>{l s='Your order on %s is complete.' sprintf=$shop_name mod='compropago'}
-		<br /><br />
-		{l s='Your check must include:' mod='compropago'}
-		<br /><br />- {l s='Payment amount.' mod='compropago'} <span class="price"><strong>{$total_to_pay}</strong></span>
-		<br /><br />- {l s='Payable to the order of' mod='compropago'} <strong>{if $chequeName}{$chequeName}{else}___________{/if}</strong>
-		<br /><br />- {l s='Mail to' mod='compropago'} <strong>{if $chequeAddress}{$chequeAddress}{else}___________{/if}</strong>
-		{if !isset($reference)}
-			<br /><br />- {l s='Do not forget to insert your order number #%d.' sprintf=$id_order mod='compropago'}
-		{else}
-			<br /><br />- {l s='Do not forget to insert your order reference %s.' sprintf=$reference mod='compropago'}
+	<p>{l s='Your order on %s is complete.' sprintf=$shop_name mod='compropago'}</p>
+	<p>	
+		
+		<br /><br />- {l s='Your order number #%d.' sprintf=$id_order mod='compropago'}
+		{if isset($reference)}
+			<br /><br />- {l s='Your order reference %s.' sprintf=$reference mod='compropago'}
 		{/if}
+		<br /><br />- {l s='Payment amount.' mod='compropago'} <span class="price"><strong>{$total_to_pay}</strong></span>
 		<br /><br />{l s='An email has been sent to you with this information.' mod='compropago'}
 		<br /><br /><strong>{l s='Your order will be sent as soon as we receive your payment.' mod='compropago'}</strong>
 		<br /><br />{l s='For any questions or for further information, please contact our' mod='compropago'} <a href="{$link->getPageLink('contact', true)|escape:'html'}">{l s='customer service department.' mod='compropago'}</a>.

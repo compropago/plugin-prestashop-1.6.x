@@ -48,27 +48,29 @@
 			{l s='(tax incl.)' mod='compropago'}
 		{/if}
 	</p>
-	<p>
-		-
-		{if isset($currencies) && $currencies|@count > 1}
-			{l s='We accept several currencies to receive payments by check.' mod='compropago'}
-			<br /><br />
-			{l s='Choose one of the following:' mod='compropago'}
-			<select id="currency_payement" name="currency_payement" onchange="setCurrency($('#currency_payement').val());">
-			{foreach from=$currencies item=currency}
-				<option value="{$currency.id_currency}" {if isset($currencies) && $currency.id_currency == $cust_currency}selected="selected"{/if}>{$currency.name}</option>
-			{/foreach}
-			</select>
-		{else}
-			{l s='We allow the following currencies to be sent by check:' mod='compropago'}&nbsp;<b>{$currencies.0.name}</b>
-			<input type="hidden" name="currency_payement" value="{$currencies.0.id_currency}" />
-		{/if}
-	</p>
+{*
+*	<p>
+*		-
+*		{if isset($currencies) && $currencies|@count > 1}
+*			{l s='We accept several currencies to receive payments by ComproPago.' mod='compropago'}
+*			<br /><br />
+*			{l s='Choose one of the following:' mod='compropago'}
+*			<select id="currency_payement" name="currency_payement" onchange="setCurrency($('#currency_payement').val());">
+*			{foreach from=$currencies item=currency}
+*				<option value="{$currency.id_currency}" {if isset($currencies) && $currency.id_currency == $cust_currency}selected="selected"{/if}>{$currency.name}</option>
+*			{/foreach}
+*			</select>
+*		{else}
+*			{l s='We allow the following currencies to be sent by ComproPago:' mod='compropago'}&nbsp;<b>{$currencies.0.name}</b>
+*			<input type="hidden" name="currency_payement" value="{$currencies.0.id_currency}" />
+*		{/if}
+*	</p>
+*}	
 	<p>
 		{include file="$compropagoTpl"}
 	</p>
 	<p>
-		{l s='Check owner and address information will be displayed on the next page.' mod='compropago'}
+		{l s='ComproPago payment information will be displayed on the next page.' mod='compropago'}
 		<br /><br />
 		<b>{l s='Please confirm your order by clicking \'I confirm my order\'.' mod='compropago'}</b>
 	</p>

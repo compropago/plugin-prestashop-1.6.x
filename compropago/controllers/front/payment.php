@@ -32,10 +32,14 @@ class CompropagoPaymentModuleFrontController extends ModuleFrontController
 		parent::initContent();
 
 		$cart = $this->context->cart;
-		if (!$this->module->checkCurrency($cart))
+		//ComproPago valid currency?
+		if (!$this->module->checkCurrency($cart)){
 			Tools::redirect('index.php?controller=order');
-		if (!$this->module->checkCompropago())
+		}
+		//ComproPago valid config? 
+		if (!$this->module->checkCompropago()){
 			Tools::redirect('index.php?controller=order');
+		}
 		//TPL view exists?
 		if( !$compropagoTpl=$this->module->getViewPathCompropago('providers')){
 			Tools::redirect('index.php?controller=order');

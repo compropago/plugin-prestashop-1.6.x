@@ -7,12 +7,12 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Compropago\\Client' => $vendorDir . '/compropago/php-sdk/src/Compropago/Client.php',
-    'Compropago\\Controllers\\Store' => $vendorDir . '/compropago/php-sdk/src/Compropago/Controllers/Store.php',
     'Compropago\\Controllers\\Views' => $vendorDir . '/compropago/php-sdk/src/Compropago/Controllers/Views.php',
     'Compropago\\Exception' => $vendorDir . '/compropago/php-sdk/src/Compropago/Exception.php',
     'Compropago\\Http\\Curl' => $vendorDir . '/compropago/php-sdk/src/Compropago/Http/Curl.php',
     'Compropago\\Http\\Request' => $vendorDir . '/compropago/php-sdk/src/Compropago/Http/Request.php',
     'Compropago\\Http\\Rest' => $vendorDir . '/compropago/php-sdk/src/Compropago/Http/Rest.php',
     'Compropago\\Service' => $vendorDir . '/compropago/php-sdk/src/Compropago/Service.php',
+    'Compropago\\Utils\\Store' => $vendorDir . '/compropago/php-sdk/src/Compropago/Utils/Store.php',
     'Compropago\\Utils\\Utils' => $vendorDir . '/compropago/php-sdk/src/Compropago/Utils/Utils.php',
 );
