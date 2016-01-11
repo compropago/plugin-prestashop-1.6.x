@@ -227,6 +227,21 @@ class Compropago extends PaymentModule
 			Shop::setContext(Shop::CONTEXT_ALL);
 		
 		$this->installOrderStates();
+		Db::getInstance()->execute('DROP TABLE IF EXISTS `' . _DB_PREFIX_ . 'compropago_orders`;');
+		Db::getInstance()->execute('
+				CREATE TABLE `' . _DB_PREFIX_ . 'compropago_orders` (
+				`id` int(11) NOT NULL AUTO_INCREMENT,
+                `storeId` varchar(255) NOT NULL,
+				`cartId` varchar(255) NOT NULL,
+				`compropagoId` varchar(255) NOT NULL,
+				`storeStatus` varchar(20) NOT NULL,
+				`compropagoStatus` varchar(20) NOT NULL,
+				`op1` mediumtext ,
+				`op2` mediumtext ,
+				`date` varchar(20) NOT NULL,
+				PRIMARY KEY (`id`)
+		) ENGINE=MyISAM DEFAULT CHARSET=utf8  DEFAULT COLLATE utf8_general_ci  AUTO_INCREMENT=1 ;
+				');
 		
 		if (!parent::install() || !$this->registerHook('payment') || ! $this->registerHook('displayPaymentEU') 
 			|| !$this->registerHook('paymentReturn') || !$this->registerHook('displayHeader'))

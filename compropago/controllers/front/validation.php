@@ -47,24 +47,26 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
 			$currency = $this->context->currency;
 			$total = (float)$cart->getOrderTotal(true, Cart::BOTH);
 		
-			$mailVars =	array(
-					'{cheque_name}' => Configuration::get('CHEQUE_NAME'),
-					'{cheque_address}' => Configuration::get('CHEQUE_ADDRESS'),
-					'{cheque_address_html}' => str_replace("\n", '<br />', Configuration::get('CHEQUE_ADDRESS')));
+		
 			
 			//Place a ComproPago Order
 			$compropagoStore=(!isset($_REQUEST['compropagoProvider']) || empty($_REQUEST['compropagoProvider']))?'OXXO':$_REQUEST['compropagoProvider'];
+			$cpOrderName=Configuration::get('PS_SHOP_NAME').', Ref:'. base64_encode($cart->id);
 			$compropagoOrderData = array(
-					'order_id'           => 'testorderid',            
+					'order_id'           => base64_encode($cart->id),            
 					'order_price'        => $total,                
-					'order_name'         => 'Test Order reference',      
-					'customer_name'      => 'Compropago Prestashop Test',        
-					'customer_email'     => 'rolando@compropago.com',    
-					'payment_type'       => $compropagoStore           
+					'order_name'         => $cpOrderName,      
+					'customer_name'      => $customer->firstname.' '.$customer->lastname,        
+					'customer_email'     => $customer->email,    
+					'payment_type'       => $compropagoStore,
+					'app_client_name'	 =>	'prestashop',
+					'app_client_version' => _PS_VERSION_
+					
 			);
 			try {
 				//response JSON
 				$compropagoResponse = $this->module->compropagoService->placeOrder($compropagoOrderData);
+				
 			
 			}catch(Exception $e){
 				die($this->module->l('This payment method is not available.', 'validation').'<br>'.$e->getMessage());
@@ -75,10 +77,30 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
 				echo '</pre>';
 				die($this->module->l('This payment method is not available.', 'validation'));
 			}
-				
-				
-				$this->module->validateOrder((int)$cart->id, Configuration::get('COMPROPAGO_PENDING'), $total, $this->module->displayName, NULL, $mailVars, (int)$currency->id, false, $customer->secure_key);
-				Tools::redirect('index.php?compropagoId='.$compropagoResponse->id.'&controller=order-confirmation&id_cart='.(int)$cart->id.'&id_module='.(int)$this->module->id.'&id_order='.$this->module->currentOrder.'&key='.$customer->secure_key);
+			try{
+				$mailVars =	array(
+						'{compropago_url}' => 'https://www.compropago.com/comprobante/?confirmation_id='.$compropagoResponse->id,
+				);
+				$result= $this->module->validateOrder((int)$cart->id, Configuration::get('COMPROPAGO_PENDING'), $total, $this->module->displayName, NULL, $mailVars, (int)$currency->id, false, $customer->secure_key);
+				Db::getInstance()->autoExecute(_DB_PREFIX_ . 'compropago_orders', array(
+						'storeId'			=> $this->module->currentOrder,
+						'cartId'			=> $cart->id,
+						'compropagoId'		=> $compropagoResponse->id,
+						'storeStatus'		=> 'NEW',
+						'compropagoStatus'	=> $compropagoResponse->status,
+						'op1' 				=> json_encode($compropagoResponse),
+						'op2' 				=> json_encode($compropagoOrderData),
+						'date' 				=> time()
+				),'INSERT');
+			}catch (Exception $e){
+				die($this->module->l('This payment method is not available.', 'validation').'<br>'.$e->getMessage());
+			}
+	
+			
+			
+			
+			
+			Tools::redirect('index.php?compropagoId='.$compropagoResponse->id.'&controller=order-confirmation&id_cart='.(int)$cart->id.'&id_module='.(int)$this->module->id.'&id_order='.$this->module->currentOrder.'&key='.$customer->secure_key);
 
 			
 	}
