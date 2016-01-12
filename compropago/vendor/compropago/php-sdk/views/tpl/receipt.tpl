@@ -20,16 +20,27 @@
 *}
 
 <div id="compropagoWrapper">
+<hr class="compropagoHr">
+<a href="https://www.compropago.com/comprobante/?confirmation_id={$compropagoData->id}" target="_blank">{$compropagoReceiptLink}</a>
+<hr class="compropagoHr">
 
-	<a href="https://www.compropago.com/comprobante/?confirmation_id={$compropagoData->id}" target="_blank">Consulta los detalles de la orden haciendo click <b>Aquí</b></a>
-	<hr class="compropagoHr">
-	
-	vence: {php echo $compropagoData->id}
-	
-	<p>{$compropagoData->instructions->description}</p>
-	<ol>
-		<li>{$compropagoData->instructions->step_1}</li>
-		<li>{$compropagoData->instructions->step_2}</li>
-		<li>{$compropagoData->instructions->step_3}</li>
-	</ol>
+<h3>{$compropagoOrderTitle}</h3>
+<p>{$compropagoData->instructions->description}</p>
+<p>- {$compropagoData->instructions->step_1}</p>
+<p>- {$compropagoData->instructions->step_2}</p>
+<p>- {$compropagoData->instructions->step_3}</p>
+
+{if isset($compropagoData->instructions->note_extra_comition)}
+<p>- {$compropagoData->instructions->note_extra_comition}</p>
+{/if}
+{if isset($compropagoData->instructions->note_expiration_date)}
+<p>- {$compropagoData->instructions->note_expiration_date}</p>
+{/if}
+{if isset($compropagoData->instructions->note_confirmation)}
+<p>- {$compropagoData->instructions->note_confirmation}</p>
+{/if}
+
+<hr class="compropagoHr">
+<a href="https://www.compropago.com/comprobante/?confirmation_id={$compropagoData->id}" target="_blank">{$compropagoReceiptLink}</a>
+<hr class="compropagoHr">
 </div>

@@ -109,8 +109,8 @@ $_MODULE['<{compropago}prestashop>payment_return_0db71da7150c27142eef9d22b843b4a
 $_MODULE['<{compropago}prestashop>payment_return_decce112a9e64363c997b04aa71b7cb8'] = 'customer service department.';
 $_MODULE['<{compropago}prestashop>payment_return_9bdf695c5a30784327137011da6ef568'] = 'We have noticed that there is a problem with your order. If you think this is an error, you can contact our';
 $_MODULE['<{compropago}prestashop>payment_return_d15feee53d81ea16269e54d4784fa123'] = 'We noticed a problem with your order. If you think this is an error, feel free to contact our';
-
-
+$_MODULE['<{compropago}prestashop>payment_return_8996f94e91a806f5d7f47cf2f1b75f69'] = 'Click Here to view full ComproPago Receipt Details';
+$_MODULE['<{compropago}prestashop>payment_return_3732639d6ae74e644a2306bba33e5da4'] = 'ComproPago Order Summary';
 
 
 return $_MODULE;

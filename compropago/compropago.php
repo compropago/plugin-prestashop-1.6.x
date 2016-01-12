@@ -505,19 +505,32 @@ class Compropago extends PaymentModule
 		$state = $params['objOrder']->getCurrentState();
 		//COMPROPAGO Get order details
 		
-		if((!isset($_REQUEST['compropagoId']) || empty($_REQUEST['compropagoId']) )){
+		if( !isset($_REQUEST['compropagoId']) || !isset($_REQUEST['id_cart']) || !isset($_REQUEST['id_order']) 
+		|| empty($_REQUEST['compropagoId']) || empty($_REQUEST['id_cart']) || empty($_REQUEST['id_order']) ){
 			$compropagoStatus='fail';
 			$compropagoData=null;
 		}else{
 			$compropagoStatus='ok';
 			//$compropagoData=$params;
 			try{
-				$compropagoData=$this->compropagoService->verifyOrder($_REQUEST['compropagoId']);
+
+				$sql = "SELECT * FROM "._DB_PREFIX_."compropago_orders	WHERE storeId = '".$_REQUEST['id_order']."' AND  cartId = '".$_REQUEST['id_cart']."' AND compropagoId = '".$_REQUEST['compropagoId']."' AND storeStatus='NEW'";
+				
+				if ($row = Db::getInstance()->getRow($sql)){
+					$compropagoData=json_decode(utf8_decode($row['op1']));
+				}
+				
+					
+				//recheck vs ComproPago
+				//$compropagoData=$this->compropagoService->verifyOrder($_REQUEST['compropagoId']);
 			}catch (Exception $e){
-				$compropagoData->type='exception';
+				$compropagoData->status='exception';
 				$compropagoData->exception=$e->getMessage();
 			}
-			switch ($compropagoData->type){
+			if($compropagoData->type=='error'){
+				$compropagoData->status='error';		
+			}
+			switch ($compropagoData->status){
 				case 'error':
 					$compropagoTpl=$this->getViewPathCompropago('raw');
 					$compropagoData->compropagoId=$_REQUEST['compropagoId'];
@@ -529,8 +542,9 @@ class Compropago extends PaymentModule
 					$compropagoData->Help=$this->l('We have noticed that there is a problem with your order. If you think this is an error, you can contact our').
 					' '.$this->l('customer service department.');
 				break;
-				case 'charge.pending':
-					$compropagoTpl=$this->getViewPathCompropago('raw');
+				case 'pending':
+					$compropagoTpl=$this->getViewPathCompropago('receipt');
+					
 					
 				break;
 				default:
@@ -549,6 +563,8 @@ class Compropago extends PaymentModule
 				'total_to_pay' => Tools::displayPrice($params['total_to_pay'], $params['currencyObj'], false),
 				'status' => $compropagoStatus,
 				'id_order' => $params['objOrder']->id,
+				'compropagoReceiptLink'=>$this->l('Click Here to view full ComproPago Receipt Details'),
+				'compropagoOrderTitle'=>$this->l('ComproPago Order Summary'),
 				'compropagoTpl' => $compropagoTpl,
 				'compropagoData'=> $compropagoData
 				
