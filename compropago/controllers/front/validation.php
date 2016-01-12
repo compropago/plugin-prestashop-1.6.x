@@ -88,7 +88,7 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
 						'compropagoId'		=> $compropagoResponse->id,
 						'storeStatus'		=> 'NEW',
 						'compropagoStatus'	=> $compropagoResponse->status,
-						'op1' 				=> json_encode($compropagoResponse),
+						'op1' 				=> base64_encode(json_encode($compropagoResponse)),
 						'op2' 				=> json_encode($compropagoOrderData),
 						'date' 				=> time()
 				),'INSERT');

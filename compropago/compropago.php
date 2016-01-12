@@ -517,7 +517,7 @@ class Compropago extends PaymentModule
 				$sql = "SELECT * FROM "._DB_PREFIX_."compropago_orders	WHERE storeId = '".$_REQUEST['id_order']."' AND  cartId = '".$_REQUEST['id_cart']."' AND compropagoId = '".$_REQUEST['compropagoId']."' AND storeStatus='NEW'";
 				
 				if ($row = Db::getInstance()->getRow($sql)){
-					$compropagoData=json_decode(utf8_decode($row['op1']));
+					$compropagoData=json_decode(base64_decode($row['op1']));
 				}
 				
 					

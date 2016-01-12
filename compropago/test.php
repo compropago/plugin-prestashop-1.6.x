@@ -26,10 +26,17 @@ if ( file_exists( $compropagoComposer ) ){
 }else{
 	die('No se encontro el autoload para Compropago y sus dependencias:'.$compropagoComposer);
 }
-
+/* 1.0
+'publickey'=>'pk_live_8c9301f6-2af12d',
+'privatekey'=>'sk_live_8c3308e0915e61',
+*/
+/* 1.1
+'publickey'=>'pk_live_570a6884d69e263',
+'privatekey'=>'sk_live_7ff93be105c732dc',
+*/
 $compropagoConfig= array(
-		'publickey'=>'pk_live_570a6884d69e263',
-		'privatekey'=>'sk_live_7ff93be105c732dc',
+'publickey'=>'pk_live_8c9301f6-2af12d',
+'privatekey'=>'sk_live_8c3308e0915e61',
 		'live'=>true
 );
 
@@ -62,10 +69,10 @@ $data = array(
 		'payment_type'       => 'OXXO'                     // identificador de la tienda donde realizar el pago
 );
 //Obtenemos el JSON de la respuesta
-$response = $compropagoService->placeOrder($data);
+//$response = $compropagoService->placeOrder($data);
 //$response=Compropago\Http\Rest::doExecute($compropagoClient,'charges',$data,'POST');
 
-//$response = $compropagoService->verifyOrder('ch_918939f6-64ac-48d8-b2a4-935c30257125');
+$response = $compropagoService->verifyOrder('ch_f5ee0b70-666e-4672-9f21-bca75ffc2409');
 
 }catch (Exception $e){
 	die($e->getMessage());
