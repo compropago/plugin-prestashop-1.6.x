@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 /**
- * Prestashop translation strings, language: ES
+ * Prestashop translation strings, language: ES_MX
  * if string need to be changed remember to change the MD5 hash
  * @author Rolando Lucio <rolando@compropago.com>
  * @since 2.0.0
