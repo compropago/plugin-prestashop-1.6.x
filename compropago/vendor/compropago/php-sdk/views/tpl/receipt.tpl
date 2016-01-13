@@ -25,20 +25,42 @@
 <hr class="compropagoHr">
 
 <h3>{$compropagoOrderTitle}</h3>
+
+ <div class="expiration-date">
+{$compropagoDueDate}
+<span >
+{$compropagoData->exp_date}
+</span>
+</div>
+      
+<div class="compropagoInstructions">
 <p>{$compropagoData->instructions->description}</p>
 <p>- {$compropagoData->instructions->step_1}</p>
 <p>- {$compropagoData->instructions->step_2}</p>
 <p>- {$compropagoData->instructions->step_3}</p>
+</div>
 
-{if isset($compropagoData->instructions->note_extra_comition)}
+<div class="compropagoNotes">
+{if isset($compropagoData->instructions->note_extra_comition) && !empty($compropagoData->instructions->note_extra_comition)}
 <p>- {$compropagoData->instructions->note_extra_comition}</p>
 {/if}
-{if isset($compropagoData->instructions->note_expiration_date)}
+{if isset($compropagoData->instructions->note_expiration_date) && !empty($compropagoData->instructions->note_expiration_date)}
 <p>- {$compropagoData->instructions->note_expiration_date}</p>
 {/if}
-{if isset($compropagoData->instructions->note_confirmation)}
+{if isset($compropagoData->instructions->note_confirmation) && !empty($compropagoData->instructions->note_confirmation)}
 <p>- {$compropagoData->instructions->note_confirmation}</p>
 {/if}
+</div>
+{*
+*<div class="compropagoBankBox">
+*	<div class="account-number-box">
+*	    <div class="account-number">
+*	      <b>{$compropagoData->instructions->details->bank_name} - {$compropagoData->instructions->details->bank_account_number}</b>
+*	    </div>
+*	    <span class="account-number-note">(El número asignado es único por cada orden)</span>
+*	 </div>     
+*</div>
+*}
 
 <hr class="compropagoHr">
 <a href="https://www.compropago.com/comprobante/?confirmation_id={$compropagoData->id}" target="_blank">{$compropagoReceiptLink}</a>

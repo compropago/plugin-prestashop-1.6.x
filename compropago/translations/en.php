@@ -111,6 +111,7 @@ $_MODULE['<{compropago}prestashop>payment_return_9bdf695c5a30784327137011da6ef56
 $_MODULE['<{compropago}prestashop>payment_return_d15feee53d81ea16269e54d4784fa123'] = 'We noticed a problem with your order. If you think this is an error, feel free to contact our';
 $_MODULE['<{compropago}prestashop>payment_return_8996f94e91a806f5d7f47cf2f1b75f69'] = 'Click Here to view full ComproPago Receipt Details';
 $_MODULE['<{compropago}prestashop>payment_return_3732639d6ae74e644a2306bba33e5da4'] = 'ComproPago Order Summary';
+$_MODULE['<{compropago}prestashop>payment_return_14c841eea7774b78caf79c58989f9625'] = 'Due Date';
 
 
 return $_MODULE;

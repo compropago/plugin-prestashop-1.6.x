@@ -543,6 +543,7 @@ class Compropago extends PaymentModule
 					' '.$this->l('customer service department.');
 				break;
 				case 'pending':
+					$compropagoData->exp_date=date('d-m-Y',$compropagoData->exp_date);
 					$compropagoTpl=$this->getViewPathCompropago('receipt');
 					
 					
@@ -565,6 +566,7 @@ class Compropago extends PaymentModule
 				'id_order' => $params['objOrder']->id,
 				'compropagoReceiptLink'=>$this->l('Click Here to view full ComproPago Receipt Details'),
 				'compropagoOrderTitle'=>$this->l('ComproPago Order Summary'),
+				'compropagoDueDate'=>$this->l('Due Date'),
 				'compropagoTpl' => $compropagoTpl,
 				'compropagoData'=> $compropagoData
 				
