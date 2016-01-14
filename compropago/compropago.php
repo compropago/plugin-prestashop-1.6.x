@@ -227,25 +227,36 @@ class Compropago extends PaymentModule
 			Shop::setContext(Shop::CONTEXT_ALL);
 		
 		$this->installOrderStates();
-		Db::getInstance()->execute('DROP TABLE IF EXISTS `' . _DB_PREFIX_ . 'compropago_orders`;');
-		Db::getInstance()->execute('
-				CREATE TABLE `' . _DB_PREFIX_ . 'compropago_orders` (
-				`id` int(11) NOT NULL AUTO_INCREMENT,
-                `storeId` varchar(255) NOT NULL,
-				`cartId` varchar(255) NOT NULL,
-				`compropagoId` varchar(255) NOT NULL,
-				`storeStatus` varchar(20) NOT NULL,
-				`compropagoStatus` varchar(20) NOT NULL,
-				`op1` mediumtext ,
-				`op2` mediumtext ,
-				`date` varchar(20) NOT NULL,
-				PRIMARY KEY (`id`)
-		) ENGINE=MyISAM DEFAULT CHARSET=utf8  DEFAULT COLLATE utf8_general_ci  AUTO_INCREMENT=1 ;
-				');
+		//Lets be sure compropago tables are gone
+		$queries=Compropago\Utils\Store::sqlDropTables(_DB_PREFIX_);
+		foreach($queries as $drop){
+			
+			Db::getInstance()->execute($drop);
+		}
+		//creates compropago tables
+		$queries=Compropago\Utils\Store::sqlCreateTables(_DB_PREFIX_);
 		
+		foreach($queries as $create){
+			if(!Db::getInstance()->execute($create))
+				die('Unable to Create ComproPago Tables, module cant be installed');
+		}
+
 		if (!parent::install() || !$this->registerHook('payment') || ! $this->registerHook('displayPaymentEU') 
 			|| !$this->registerHook('paymentReturn') || !$this->registerHook('displayHeader'))
 			return false;
+		return true;
+	}
+	/**
+	 * Vertify is compropago tables exists
+	 * @return boolean
+	 * @since 2.0.0
+	 */
+	public function verifyTables(){
+		if(!Db::getInstance()->execute("SHOW TABLES LIKE '"._DB_PREFIX_ ."compropago_orders'") ||
+				!Db::getInstance()->execute("SHOW TABLES LIKE '"._DB_PREFIX_ ."compropago_transactions'")
+				){
+					return false;
+		}
 		return true;
 	}
 	/**
@@ -281,7 +292,9 @@ class Compropago extends PaymentModule
 				), 'INSERT');
 				Configuration::updateValue('COMPROPAGO_PENDING', $id_order_state);
 				unset($id_order_state);
-	
+		
+				
+				
 		$values_to_insert = array(
 				'invoice' => 0,
 				'send_email' => 0,
@@ -361,6 +374,60 @@ class Compropago extends PaymentModule
 							'template' => ''
 					), 'INSERT');
 					Configuration::updateValue('COMPROPAGO_DECLINED', $id_order_state);
+					unset($id_order_state);
+			
+			$values_to_insert = array(
+					'invoice' => 0,
+					'send_email' => 0,
+					'module_name' => pSQL($this->name),
+					'color' => 'RoyalBlue',
+					'unremovable' => 0,
+					'hidden' => 0,
+					'logable' => 1,
+					'delivery' => 0,
+					'shipped' => 0,
+					'paid' => 0,
+					'deleted' => 0
+			);
+			if (! Db::getInstance()->autoExecute(_DB_PREFIX_ . 'order_state', $values_to_insert, 'INSERT'))
+				return false;
+				$id_order_state = (int) Db::getInstance()->Insert_ID();
+				$languages = Language::getLanguages(false);
+				foreach ($languages as $language)
+					Db::getInstance()->autoExecute(_DB_PREFIX_ . 'order_state_lang', array(
+							'id_order_state' => $id_order_state,
+							'id_lang' => $language['id_lang'],
+							'name' => $this->l('ComproPago - Deleted'),
+							'template' => ''
+					), 'INSERT');
+					Configuration::updateValue('COMPROPAGO_DELETED', $id_order_state);
+					unset($id_order_state);
+			
+			$values_to_insert = array(
+					'invoice' => 0,
+					'send_email' => 0,
+					'module_name' => pSQL($this->name),
+					'color' => 'RoyalBlue',
+					'unremovable' => 0,
+					'hidden' => 0,
+					'logable' => 1,
+					'delivery' => 0,
+					'shipped' => 0,
+					'paid' => 0,
+					'deleted' => 0
+			);
+			if (! Db::getInstance()->autoExecute(_DB_PREFIX_ . 'order_state', $values_to_insert, 'INSERT'))
+				return false;
+				$id_order_state = (int) Db::getInstance()->Insert_ID();
+				$languages = Language::getLanguages(false);
+				foreach ($languages as $language)
+					Db::getInstance()->autoExecute(_DB_PREFIX_ . 'order_state_lang', array(
+							'id_order_state' => $id_order_state,
+							'id_lang' => $language['id_lang'],
+							'name' => $this->l('ComproPago - Canceled'),
+							'template' => ''
+					), 'INSERT');
+					Configuration::updateValue('COMPROPAGO_CANCELED', $id_order_state);
 					unset($id_order_state);
 						
 	}
@@ -514,18 +581,18 @@ class Compropago extends PaymentModule
 			//$compropagoData=$params;
 			try{
 
-				$sql = "SELECT * FROM "._DB_PREFIX_."compropago_orders	WHERE storeId = '".$_REQUEST['id_order']."' AND  cartId = '".$_REQUEST['id_cart']."' AND compropagoId = '".$_REQUEST['compropagoId']."' AND storeStatus='NEW'";
+				$sql = "SELECT * FROM "._DB_PREFIX_."compropago_orders	WHERE storeOrderId = '".$_REQUEST['id_order']."' AND  storeCartId = '".$_REQUEST['id_cart']."' AND compropagoId = '".$_REQUEST['compropagoId']."' AND storeExtra='COMPROPAGO_PENDING'";
 				
 				if ($row = Db::getInstance()->getRow($sql)){
-					$compropagoData=json_decode(base64_decode($row['op1']));
+					$compropagoData=json_decode(base64_decode($row['ioIn']));
 				}
-				
-					
+	
 				//recheck vs ComproPago
 				//$compropagoData=$this->compropagoService->verifyOrder($_REQUEST['compropagoId']);
 			}catch (Exception $e){
 				$compropagoData->status='exception';
 				$compropagoData->exception=$e->getMessage();
+				//throw new PrestaShopException
 			}
 			if($compropagoData->type=='error'){
 				$compropagoData->status='error';		

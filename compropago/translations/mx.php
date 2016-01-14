@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 /**
- * Prestashop translation strings, language: ES_MX
+ * Prestashop translation strings, language: ES_mx
  * if string need to be changed remember to change the MD5 hash
  * @author Rolando Lucio <rolando@compropago.com>
  * @since 2.0.0
@@ -44,17 +44,17 @@ $_MODULE['<{compropago}prestashop>compropago_650be61892bf690026089544abbd9d26'] 
 $_MODULE['<{compropago}prestashop>compropago_13f77ac96d8b8d46bc553674bed34352'] = 'Modo Activo o de Pruebas?, cambie sus llaves de acuerdo al modo';
 $_MODULE['<{compropago}prestashop>compropago_a849a06e943c4fa48e32586816a93852'] = 'Modo Activo';
 $_MODULE['<{compropago}prestashop>compropago_74e20d91279df8e47e489e30bbb8e63f'] = 'Modo Pruebas';
-$_MODULE['<{compropago}prestashop>compropago_6c4f89a480dc019becdd5437962c36ab'] = 'Llaves Incorrectas, Sus llaves Pública y Privada deben ser validas';
+$_MODULE['<{compropago}prestashop>compropago_6c4f89a480dc019becdd5437962c36ab'] = 'Llaves Incorrectas, Sus llaves Pública y Privada deben ser válidas';
 $_MODULE['<{compropago}prestashop>compropago_22dc559b60080d881e8758013a6ad7a1'] = 'El modo de  su cuenta de ComproPago y el modo de su Tienda deben ser iguales';
 $_MODULE['<{compropago}prestashop>compropago_d5c6a1ad57e8f1c556e4b98493fd4170'] = 'ALERTA ComproPago: Llaves para modo de ejecución diferente';
 $_MODULE['<{compropago}prestashop>compropago_d98319bc92c360fc70600470dc089470'] = 'Sus llaves y el modo de  su cuenta de ComproPago deben ser iguales';
 $_MODULE['<{compropago}prestashop>compropago_0cf28c16a23da7a5f2922ac4190b5b1d'] = 'PRECAUCIÓN: Ejecutando en modo de PRUEBAS';
 $_MODULE['<{compropago}prestashop>compropago_980310da5d94b91918f46b5c0c54c6f3'] = 'WebHook';
-$_MODULE['<{compropago}prestashop>compropago_8f1106577a0c591223cd8d7621eea525'] = 'Ingrese está dirección en su  panel de ComproPago para poder recibir la confirmación de pagos ';
+$_MODULE['<{compropago}prestashop>compropago_8f1106577a0c591223cd8d7621eea525'] = 'Ingrese ésta dirección en su  panel de ComproPago para poder recibir la confirmación de pagos ';
 $_MODULE['<{compropago}prestashop>compropago_5fb63579fc981698f97d55bfecb213ea'] = 'Copie y Pegue la dirección en la sección de WebHooks de su panel en ComproPago para poder recibir la confirmación de pagos';
-$_MODULE['<{compropago}prestashop>compropago_ac8c251a631865e7f185b7b08facef97'] = 'No se pudo cargar el SDK de ComprPago';
+$_MODULE['<{compropago}prestashop>compropago_ac8c251a631865e7f185b7b08facef97'] = 'No se pudo cargar el SDK de ComproPago';
 $_MODULE['<{compropago}prestashop>compropago_29ae04aab28446966bbf8f3747ed9c28'] = 'Mostrar Logos';
-$_MODULE['<{compropago}prestashop>compropago_3c806855da7cb66fe2ac79520cfcecff'] = 'Dese mostrar los logos de tiendas o una caja de selección';
+$_MODULE['<{compropago}prestashop>compropago_3c806855da7cb66fe2ac79520cfcecff'] = 'Desea mostrar los logos de tiendas o una caja de selección';
 $_MODULE['<{compropago}prestashop>compropago_1de3387305731f8c72e505c4718a4696'] = 'Mostrar logos de tiendas';
 $_MODULE['<{compropago}prestashop>compropago_e7557a784a60ec1cf471e8e79b7d1b81'] = 'Mostrar caja de selección';
 $_MODULE['<{compropago}prestashop>compropago_271929827c34180cb9457f4b3524c55a'] = '- ComproPago le permite pagar en OXXO, 7Eleven y muchas tiendas más en todo México';
@@ -69,7 +69,7 @@ $_MODULE['<{compropago}prestashop>validation_e2b7dec8fa4b498156dfee6e4c84b156'] 
 
 // [modulePath]/views/templates/hook/info.tpl
 $_MODULE['<{compropago}prestashop>infos_689256bbd6f0a9e1b86e5cee6b7a038d'] = 'Con ComproPago puedes recibir pagos en OXXO, 7Eleven y muchas tiendas más en todo México';
-$_MODULE['<{compropago}prestashop>infos_e444fe40d43bccfad255cf62ddc8d18f'] = 'El estatus de las ordenes realizadas por este método quedarán registradas como \'Pago Pendiente.\'';
+$_MODULE['<{compropago}prestashop>infos_e444fe40d43bccfad255cf62ddc8d18f'] = 'El estatus de las órdenes realizadas por este método quedarán registradas como \'Pago Pendiente.\'';
 $_MODULE['<{compropago}prestashop>infos_a9da016950bfa3ec48d35f3cd6d8f26c'] = 'ComproPago confirmará  la orden por WebHook una vez confirmada la recepción del pago';
 
 // [modulePath]/views/templates/hook/payment.tpl
@@ -103,9 +103,9 @@ $_MODULE['<{compropago}prestashop>payment_return_88526efe38fd18179a127024aba8c1d
 $_MODULE['<{compropago}prestashop>payment_return_621455d95c5de701e05900a98aaa9c66'] = 'Cantidad a Pagar.';
 $_MODULE['<{compropago}prestashop>payment_return_292aeef87901257c1ccf0a0ee67ee428'] = 'Número de orden: #%d.';
 $_MODULE['<{compropago}prestashop>payment_return_6c5a76b0a3c213285939bf002f296f9a'] = 'Referencia de la orden: %s.';
-$_MODULE['<{compropago}prestashop>payment_return_610abe74e72f00210e3dcb91a0a3f717'] = 'Se le ha enviado un email con está información';
+$_MODULE['<{compropago}prestashop>payment_return_610abe74e72f00210e3dcb91a0a3f717'] = 'Se le ha enviado un email con ésta información';
 $_MODULE['<{compropago}prestashop>payment_return_ffd2478830ca2f519f7fe7ee259d4b96'] = 'Su orden se enviará tan pronto se confirme su pago.';
-$_MODULE['<{compropago}prestashop>payment_return_0db71da7150c27142eef9d22b843b4a9'] = 'para dudas o mayor información, contactenos al';
+$_MODULE['<{compropago}prestashop>payment_return_0db71da7150c27142eef9d22b843b4a9'] = 'para dudas o mayor información, contáctenos al';
 $_MODULE['<{compropago}prestashop>payment_return_decce112a9e64363c997b04aa71b7cb8'] = 'departamento de atención.';
 $_MODULE['<{compropago}prestashop>payment_return_9bdf695c5a30784327137011da6ef568'] = 'Hemos detectado un problema con su orden. Si considera que es un error contacte al';
 $_MODULE['<{compropago}prestashop>payment_return_d15feee53d81ea16269e54d4784fa123'] = 'Hemos detectado un problema con su orden. Si considera que es un error contacte al';

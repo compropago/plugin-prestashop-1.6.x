@@ -100,25 +100,75 @@ try{
 	if($response->type=='error'){
 		die('Error procesando el número de orden');
 	}
-	
-	if($response->type=='charge.success'){
-		$sql = "SELECT * FROM "._DB_PREFIX_."compropago_orders	WHERE compropagoId = '".$response->id."' AND storeStatus='NEW'";
-		if ($row = Db::getInstance()->getRow($sql)){
-			
-			
-		
-			//ok? update own table
-			Db::getInstance()->update(_DB_PREFIX_."compropago_orders", array('storeStatus'=>'CONFIRMED','compropagoStatus'=>'success'), "id ='".$row['id']."'");
-			die('Orden '.$jsonObj->id.' Confirmada');
-			
-		}else{
-			
-			die('El número de orden no se encontro activo en la tienda');
-		}
-	}else{
-		die('El número de orden no se encuentra validado');
+	if(!Db::getInstance()->execute("SHOW TABLES LIKE '"._DB_PREFIX_ ."compropago_orders'") ||
+			!Db::getInstance()->execute("SHOW TABLES LIKE '"._DB_PREFIX_ ."compropago_transactions'")
+			){
+				die('ComproPago Tables Not Found');
+	}
+	switch ($response->type){
+		case 'charge.success':
+			$nomestatus = "COMPROPAGO_SUCCESS";
+			break;
+		case 'charge.pending':
+			$nomestatus = "COMPROPAGO_PENDING";
+			break;    
+		case 'charge.declined':
+			$nomestatus = "COMPROPAGO_DECLINED"; 
+			break;    
+		case 'charge.expired':
+			$nomestatus = "COMPROPAGO_EXPIRED";
+			break;    
+	    case 'charge.deleted':
+			$nomestatus = "COMPROPAGO_DELETED";     
+			break; 
+		case 'charge.canceled':
+			$nomestatus = "COMPROPAGO_CANCELED";     
+			break; 
+		default:
+			die('Invalid Response type');
 	}
 	
+	$sql = "SELECT * FROM "._DB_PREFIX_."compropago_orders	WHERE compropagoId = '".$response->type."' AND storeExtra='".$nomestatus."'";
+	if ($row = Db::getInstance()->getRow($sql)){
+		
+		$id_order=intval($row['storeOrderId']);
+		$recordTime=time();
+		
+		$extraVars = array();
+		$history = new OrderHistory();
+		$history->id_order = $id_order;
+		$history->changeIdOrderState((int)Configuration::get($nomestatus),$history->id_order);
+		//$history->addWithemail(true,$extraVars);
+		$history->addWithemail();
+		$history->save();
+		
+		$sql = "UPDATE `"._DB_PREFIX_."compropago_orders` 
+				SET `modified` = '".$recordTime."', `compropagoStatus` = '".$response->status."', `storeExtra` = '".$nomestatus."' 
+				 WHERE `id` = '".$row['id']."'";
+		if(!Db::getInstance()->execute($sql)){
+			die("Error Updating ComproPago Order Record at Store");
+		}
+		//bas64 cause prestashop db
+		//webhook
+		$ioIn=base64_encode(json_encode($jsonObj));
+		//verify response
+		$ioOut=base64_encode(json_encode($response));
+		
+		Db::getInstance()->autoExecute(_DB_PREFIX_ . 'compropago_transactions', array(
+				'orderId' 			=> $row['id'],
+				'date' 				=> $recordTime,
+				'compropagoId'		=> $response->id,
+				'compropagoStatus'	=> $response->type,
+				'compropagoStatusLast'	=> $row['compropagoStatus'],
+				'ioIn' 				=> $ioIn,
+				'ioOut' 			=> $ioOut
+		),'INSERT');
+		
+		echo('Orden '.$jsonObj->id.' Confirmada');
+		
+	}else{		
+		die('El número de orden no se encontro en la tienda');
+	}	
 }catch (Exception $e){
 	//something went wrong at sdk lvl
 	die($e->getMessage());
