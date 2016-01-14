@@ -100,6 +100,7 @@ try{
 	if($response->type=='error'){
 		die('Error procesando el número de orden');
 	}
+	
 	if($response->type=='charge.success'){
 		$sql = "SELECT * FROM "._DB_PREFIX_."compropago_orders	WHERE compropagoId = '".$response->id."' AND storeStatus='NEW'";
 		if ($row = Db::getInstance()->getRow($sql)){
@@ -117,6 +118,7 @@ try{
 	}else{
 		die('El número de orden no se encuentra validado');
 	}
+	
 }catch (Exception $e){
 	//something went wrong at sdk lvl
 	die($e->getMessage());
