@@ -59,12 +59,13 @@ if (!isset($config['COMPROPAGO_PUBLICKEY']) || !isset($config['COMPROPAGO_PRIVAT
 	|| empty($config['COMPROPAGO_PUBLICKEY']) || empty($config['COMPROPAGO_PRIVATEKEY'])){
 	die("Se requieren las llaves de compropago");
 }
-//mode defined
-if(!isset($config['COMPROPAGO_MODE']) || empty($config['COMPROPAGO_MODE'])){
-	die("Se requiere definir un modo de ejecución");
-}
+
 //Compropago SDK config
-$moduleLive=($config['COMPROPAGO_MODE']=='yes')? true:false;
+if($config['COMPROPAGO_MODE']==true){
+	$moduleLive=true;
+}else {
+	$moduleLive=false;
+}
 $compropagoConfig= array(
 		'publickey'=>$config['COMPROPAGO_PUBLICKEY'],
 		'privatekey'=>$config['COMPROPAGO_PRIVATEKEY'],
@@ -80,13 +81,45 @@ try{
 		die("ComproPago Error: Llaves no validas");
 	}
 	// Store Mode Vs ComproPago Mode, Keys vs Mode & combinations
-	if(! Compropago\Controllers\Store::validateGateway($compropagoClient)){
+	if(! Compropago\Utils\Store::validateGateway($compropagoClient)){
 		die("ComproPago Error: La tienda no se encuentra en un modo de ejecución valido");
 	}
 }catch (Exception $e) {
 	//something went wrong at sdk lvl
 	die($e->getMessage());
 }
-echo '<pre>';
-print_r($compropagoResponse);
-echo '</pre><br>';
+//webhook Test?
+if($jsonObj->id=="ch_00000-000-0000-000000" || $jsonObj->short_id =="000000"){
+	die("Probando el WebHook?, ruta correcta. <br>". 
+		"http vs https, https mejor y seguro  <br>".
+		"pero require un <b>certificado SSL </b><br>".
+		"para su tienda o marcara error");
+}
+try{
+	$response = $compropagoService->verifyOrder($jsonObj->id);
+	if($response->type=='error'){
+		die('Error procesando el número de orden');
+	}
+	if($response->type=='charge.success'){
+		$sql = "SELECT * FROM "._DB_PREFIX_."compropago_orders	WHERE compropagoId = '".$response->id."' AND storeStatus='NEW'";
+		if ($row = Db::getInstance()->getRow($sql)){
+			
+			
+		
+			//ok? update own table
+			Db::getInstance()->update(_DB_PREFIX_."compropago_orders", array('storeStatus'=>'CONFIRMED','compropagoStatus'=>'success'), "id ='".$row['id']."'");
+			die('Orden '.$jsonObj->id.' Confirmada');
+			
+		}else{
+			
+			die('El número de orden no se encontro activo en la tienda');
+		}
+	}else{
+		die('El número de orden no se encuentra validado');
+	}
+}catch (Exception $e){
+	//something went wrong at sdk lvl
+	die($e->getMessage());
+}
+			
+
