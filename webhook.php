@@ -128,7 +128,8 @@ try{
 			die('Invalid Response type');
 	}
 	
-	$sql = "SELECT * FROM "._DB_PREFIX_."compropago_orders	WHERE compropagoId = '".$response->type."' AND storeExtra='".$nomestatus."'";
+	$sql = "SELECT * FROM "._DB_PREFIX_."compropago_orders	WHERE compropagoId = '".$response->id."' ";
+	
 	if ($row = Db::getInstance()->getRow($sql)){
 		
 		$id_order=intval($row['storeOrderId']);

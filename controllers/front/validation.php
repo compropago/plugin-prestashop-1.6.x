@@ -51,9 +51,12 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
 			
 			//Place a ComproPago Order
 			$compropagoStore=(!isset($_REQUEST['compropagoProvider']) || empty($_REQUEST['compropagoProvider']))?'OXXO':$_REQUEST['compropagoProvider'];
-			$cpOrderName=Configuration::get('PS_SHOP_NAME').', Ref:'. base64_encode($cart->id);
+			
+			$result= $this->module->validateOrder((int)$cart->id, Configuration::get('COMPROPAGO_PENDING'), $total, $this->module->displayName, NULL, $mailVars, (int)$currency->id, false, $customer->secure_key);
+			
+			$cpOrderName=Configuration::get('PS_SHOP_NAME').', Ref:'. $this->module->currentOrder;
 			$compropagoOrderData = array(
-					'order_id'           => base64_encode($cart->id),            
+					'order_id'           => $this->module->currentOrder,            
 					'order_price'        => $total,                
 					'order_name'         => $cpOrderName,      
 					'customer_name'      => $customer->firstname.' '.$customer->lastname,        
@@ -65,6 +68,7 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
 			);
 			try {
 				//response JSON
+				
 				$compropagoResponse = $this->module->compropagoService->placeOrder($compropagoOrderData);
 				
 			
@@ -87,7 +91,7 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
 						'{compropago_url}' => 'https://www.compropago.com/comprobante/?confirmation_id='.$compropagoResponse->id,
 				);
 				//Prestashop add order 
-				$result= $this->module->validateOrder((int)$cart->id, Configuration::get('COMPROPAGO_PENDING'), $total, $this->module->displayName, NULL, $mailVars, (int)$currency->id, false, $customer->secure_key);
+				//$result= $this->module->validateOrder((int)$cart->id, Configuration::get('COMPROPAGO_PENDING'), $total, $this->module->displayName, NULL, $mailVars, (int)$currency->id, false, $customer->secure_key);
 				
 				$recordTime=time();
 				//add new compropago order to register
@@ -104,6 +108,7 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
 						'ioIn' 				=> $ioIn,
 						'ioOut' 			=> $ioOut			
 				),'INSERT');
+				
 				$idCompropagoOrder = (int) Db::getInstance()->Insert_ID();
 				//record transaction
 				Db::getInstance()->autoExecute(_DB_PREFIX_ . 'compropago_transactions', array(

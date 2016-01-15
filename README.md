@@ -3,8 +3,15 @@
 Plugin para PrestaShop 1.6.x - ComproPago 
 =================================================
 
+## Ayuda y Soporte de ComproPago
+
+- [Centro de ayuda y soporte](https://compropago.com/ayuda-y-soporte)
+- [Solicitar Integración](https://compropago.com/integracion)
+- [Guía para Empezar a usar ComproPago](https://compropago.com/ayuda-y-soporte/como-comenzar-a-usar-compropago)
+- [Información de Contacto](https://compropago.com/contacto)
+
 ## Requerimientos
-* [PrestaShop 1.6.x o Mayor]
+* [PrestaShop 1.6.x +] (https://www.prestashop.com/)
 * [PHP >= 5.3](http://www.php.net/)
 * [PHP JSON extension](http://php.net/manual/en/book.json.php)
 * [PHP cURL extension](http://php.net/manual/en/book.curl.php)
@@ -20,6 +27,26 @@ Plugin para PrestaShop 1.6.x - ComproPago
 
 4. Una vez ingresadas las llaves se puede proceder a la configuración del Webhook, quien será responsable de actualizar el estado de las ordenes de compra en automatico. 
 
+## Documentación
+### Documentación ComproPago Plugin Prestashop
+
+### Documentación de ComproPago
+**[API de ComproPago] (https://compropago.com/documentacion/api)**
+
+ComproPago te ofrece un API tipo REST para integrar pagos en efectivo en tu comercio electrónico o tus aplicaciones.
+
+
+**[General] (https://compropago.com/documentacion)**
+
+Información de Comisiones y Horarios, como Transferir tu dinero y la Seguridad que proporciona ComproPAgo
+
+
+**[Herramientas] (https://compropago.com/documentacion/boton-pago)**
+* Botón de pago
+* Modo de pruebas/activo
+* WebHooks
+* Librerías y Plugins
+* Shopify
 
 ## Configuración Webhook
 
