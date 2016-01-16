@@ -12,7 +12,7 @@
 	display:none;
 } 
 
-#compropagoWrapper input[type="radio"]:checked + label img{ 
+#compropagoWrapper input[type="radio"]:checked + label img, .clickclass{ 
     border: solid 4px #00AAEF;
     cursor: pointer;
     opacity: 1;
@@ -42,3 +42,6 @@
 #compropagoWrapper input[type="radio"]:indeterminate + label img{ 
     opacity: 1;
 }
+
+
+

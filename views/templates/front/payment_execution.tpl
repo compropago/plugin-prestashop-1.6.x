@@ -33,6 +33,7 @@
 	<p class="warning">{l s='Your shopping cart is empty.' mod='compropago'}</p>
 {else}
 
+
 <h3>{l s='ComproPago payment' mod='compropago'}</h3>
 <form action="{$link->getModuleLink('compropago', 'validation', [], true)|escape:'html'}" method="post">
 	<p>

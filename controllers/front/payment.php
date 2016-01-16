@@ -60,7 +60,8 @@ class CompropagoPaymentModuleFrontController extends ModuleFrontController
 			/*'chequeName' => $this->module->publicKey,
 			'chequeAddress' => Tools::nl2br($this->module->privateKey),*/
 			'this_path' => $this->module->getPathUri(),
-			'this_path_compropago' => $this->module->getPathUri(),
+			//'this_path_compropago' => $this->module->getPathUri(),
+			'this_path_compropago' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->module->name.'/',
 			'this_path_ssl' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->module->name.'/'
 		));
 
