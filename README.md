@@ -1,6 +1,6 @@
-> # Si llego buscando el archivo de instalación para su tienda [Descargue la última versión dando click Aquí] (http://recursos.compropago.com/plugins/prestashop/compropago.zip)
+> # Si llego buscando el archivo de instalación para su tienda [Descargue la última versión dando click Aquí] (https://s3.amazonaws.com/compropago/plugins/prestashop/compropago-ps-2-0-0.zip)
 
-Plugin para PrestaShop 1.6.x - ComproPago 
+Plugin para PrestaShop 1.6.1.x + - ComproPago 
 =================================================
 
 ## Ayuda y Soporte de ComproPago
@@ -11,8 +11,8 @@ Plugin para PrestaShop 1.6.x - ComproPago
 - [Información de Contacto](https://compropago.com/contacto)
 
 ## Requerimientos
-* [PrestaShop 1.6.x +] (https://www.prestashop.com/)
-* [PHP >= 5.3](http://www.php.net/)
+* [PrestaShop 1.6.1.x +] (https://www.prestashop.com/)
+* [PHP >= 5.4](http://www.php.net/)
 * [PHP JSON extension](http://php.net/manual/en/book.json.php)
 * [PHP cURL extension](http://php.net/manual/en/book.curl.php)
 
