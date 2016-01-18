@@ -1,6 +1,6 @@
 > # Si llego buscando el archivo de instalación para su tienda [Descargue la última versión dando click Aquí] (https://s3.amazonaws.com/compropago/plugins/prestashop/compropago-ps-2-0-0.zip)
 
-Plugin para PrestaShop 1.6.1.x + - ComproPago 
+Plugin para PrestaShop ( 1.6.1.x + ) - ComproPago 
 =================================================
 
 ## Ayuda y Soporte de ComproPago
@@ -55,3 +55,14 @@ Información de Comisiones y Horarios, como Transferir tu dinero y la Seguridad 
 2. Agregar una dirección Webhook e ingresar: <b> [direcciondetienda.com]</b>/modules/compropago/includes/webhook.php cambiando "[direcciondetienda.com]" por el nombre de dominio de su tienda
 
 3. Una vez agregada la dirección, dar click en el botón "Probar", recibira un mensaje similar a "Pruebas: El webhook esta correctamente instalado." con este mensaje la instalación queda completada.
+
+
+## Guía de Versiones
+
+| Version | Status      |  PresataShop  | PHP     | Archivo                    | 
+|---------|-------------|---------------|---------|----------------------------|
+| 2.0.0   | Latest      | 1.6.1.x + 	| 5.4 +   | [v2.0.0][compropago-2-0-0] |
+| 1.0.0   | Support     | 1.5.x a 1.6.0 | 5.2 +   | [v1.0.0][compropago-1-0-0] |
+
+[compropago-2-0-0]: https://s3.amazonaws.com/compropago/plugins/prestashop/compropago-ps-2-0-0.zip
+[compropago-1-0-0]: https://s3.amazonaws.com/compropago/plugins/prestashop/compropago-ps-1-0-0.zip
