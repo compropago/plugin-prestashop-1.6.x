@@ -63,6 +63,11 @@ $_MODULE['<{compropago}prestashop>compropago_2e009a7853de34d3bc5b712f71e8e1ce'] 
 $_MODULE['<{compropago}prestashop>compropago_02f0eeddb6cd88fa1dadfdd75c96d7cb'] = 'ComproPago - Pago Recibido';
 $_MODULE['<{compropago}prestashop>compropago_1f715ddc03782c85b4e84f7edba76411'] = 'ComproPago - Expiró';
 $_MODULE['<{compropago}prestashop>compropago_f463dde0fe30979fae19d1a4ccd2bcb8'] = 'ComproPago - Rechazado';
+$_MODULE['<{compropago}prestashop>compropago_b0c7ffb0730be14c38f7371bd4059a48'] = 'ComproPago - Eliminado';
+$_MODULE['<{compropago}prestashop>compropago_81cd9c26ed389e5dcd5c71a9dcb0c36d'] = 'ComproPago - Cancelado';
+$_MODULE['<{compropago}prestashop>compropago_8996f94e91a806f5d7f47cf2f1b75f69'] = 'De Click Aquí para consultar su recibo completo de ComproPago';
+$_MODULE['<{compropago}prestashop>compropago_3732639d6ae74e644a2306bba33e5da4'] = 'Resumen de Orden ComproPago';
+$_MODULE['<{compropago}prestashop>compropago_14c841eea7774b78caf79c58989f9625'] = 'Fecha de vencimiento';
 
 // [modulePath]/controllers/front/validation.php
 $_MODULE['<{compropago}prestashop>validation_e2b7dec8fa4b498156dfee6e4c84b156'] = 'Método de pago no disponible';
@@ -109,9 +114,7 @@ $_MODULE['<{compropago}prestashop>payment_return_0db71da7150c27142eef9d22b843b4a
 $_MODULE['<{compropago}prestashop>payment_return_decce112a9e64363c997b04aa71b7cb8'] = 'departamento de atención.';
 $_MODULE['<{compropago}prestashop>payment_return_9bdf695c5a30784327137011da6ef568'] = 'Hemos detectado un problema con su orden. Si considera que es un error contacte al';
 $_MODULE['<{compropago}prestashop>payment_return_d15feee53d81ea16269e54d4784fa123'] = 'Hemos detectado un problema con su orden. Si considera que es un error contacte al';
-$_MODULE['<{compropago}prestashop>payment_return_8996f94e91a806f5d7f47cf2f1b75f69'] = 'De Click Aquí para consultar su recibo completo de ComproPago';
-$_MODULE['<{compropago}prestashop>payment_return_3732639d6ae74e644a2306bba33e5da4'] = 'Resumen de Orden ComproPago';
-$_MODULE['<{compropago}prestashop>payment_return_14c841eea7774b78caf79c58989f9625'] = 'Fecha de vencimiento';
+
 
 
 return $_MODULE;

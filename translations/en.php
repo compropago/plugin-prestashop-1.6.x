@@ -63,6 +63,11 @@ $_MODULE['<{compropago}prestashop>compropago_2e009a7853de34d3bc5b712f71e8e1ce'] 
 $_MODULE['<{compropago}prestashop>compropago_02f0eeddb6cd88fa1dadfdd75c96d7cb'] = 'ComproPago - Payment received';
 $_MODULE['<{compropago}prestashop>compropago_1f715ddc03782c85b4e84f7edba76411'] = 'ComproPago - Expired';
 $_MODULE['<{compropago}prestashop>compropago_f463dde0fe30979fae19d1a4ccd2bcb8'] = 'ComproPago - Declined';
+$_MODULE['<{compropago}prestashop>compropago_b0c7ffb0730be14c38f7371bd4059a48'] = 'ComproPago - Deleted';
+$_MODULE['<{compropago}prestashop>compropago_81cd9c26ed389e5dcd5c71a9dcb0c36d'] = 'ComproPago - Canceled';
+$_MODULE['<{compropago}prestashop>compropago_8996f94e91a806f5d7f47cf2f1b75f69'] = 'Click Here to view full ComproPago Receipt Details';
+$_MODULE['<{compropago}prestashop>compropago_3732639d6ae74e644a2306bba33e5da4'] = 'ComproPago Order Summary';
+$_MODULE['<{compropago}prestashop>compropago_14c841eea7774b78caf79c58989f9625'] = 'Due Date';
 
 // [modulePath]/controllers/front/validation.php
 $_MODULE['<{compropago}prestashop>validation_e2b7dec8fa4b498156dfee6e4c84b156'] = 'This payment method is not available.';
@@ -109,9 +114,7 @@ $_MODULE['<{compropago}prestashop>payment_return_0db71da7150c27142eef9d22b843b4a
 $_MODULE['<{compropago}prestashop>payment_return_decce112a9e64363c997b04aa71b7cb8'] = 'customer service department.';
 $_MODULE['<{compropago}prestashop>payment_return_9bdf695c5a30784327137011da6ef568'] = 'We have noticed that there is a problem with your order. If you think this is an error, you can contact our';
 $_MODULE['<{compropago}prestashop>payment_return_d15feee53d81ea16269e54d4784fa123'] = 'We noticed a problem with your order. If you think this is an error, feel free to contact our';
-$_MODULE['<{compropago}prestashop>payment_return_8996f94e91a806f5d7f47cf2f1b75f69'] = 'Click Here to view full ComproPago Receipt Details';
-$_MODULE['<{compropago}prestashop>payment_return_3732639d6ae74e644a2306bba33e5da4'] = 'ComproPago Order Summary';
-$_MODULE['<{compropago}prestashop>payment_return_14c841eea7774b78caf79c58989f9625'] = 'Due Date';
+
 
 
 return $_MODULE;
