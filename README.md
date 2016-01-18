@@ -1,4 +1,4 @@
-> # Si llego buscando el archivo de instalación para su tienda [Descargue la última versión dando click Aquí] (https://s3.amazonaws.com/compropago/plugins/prestashop/compropago-ps-2-0-0.zip)
+> # Si llego buscando el archivo de instalación para su tienda [Descargue la última versión dando click Aquí] [compropago-2-0-0]
 
 Plugin para PrestaShop ( 1.6.1.x + ) - ComproPago 
 =================================================
