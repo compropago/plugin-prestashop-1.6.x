@@ -59,7 +59,7 @@ Información de Comisiones y Horarios, como Transferir tu dinero y la Seguridad 
 
 ## Guía de Versiones
 
-| Version | Status      |  PresataShop  | PHP     | Archivo                    | 
+| Version | Status      |  PrestaShop  | PHP     | Archivo                    | 
 |---------|-------------|---------------|---------|----------------------------|
 | 2.0.0   | Latest      | 1.6.1.x + 	| 5.4 +   | [v2.0.0][compropago-2-0-0] |
 | 1.0.0   | Support     | 1.5.x a 1.6.0 | 5.2 +   | [v1.0.0][compropago-1-0-0] |
