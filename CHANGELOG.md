@@ -9,6 +9,6 @@ Liberación de versión estable:
 
 ## 1.0.0 (Deprecated) 2016-01-19
 * Deprecate: Se substituye master por versión 2.0.0
-* Note: Versión con conpatibilidad con prestashop 1.5.x a 1.6.0 , y/o PHP 5.2
+* Note: Versión con compatibilidad con prestashop 1.5.x a 1.6.0 , y/o PHP 5.2
 * https://s3.amazonaws.com/compropago/plugins/prestashop/compropago-ps-1-0-0.zip 
 
