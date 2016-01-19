@@ -52,6 +52,8 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
 			//Place a ComproPago Order
 			$compropagoStore=(!isset($_REQUEST['compropagoProvider']) || empty($_REQUEST['compropagoProvider']))?'OXXO':$_REQUEST['compropagoProvider'];
 			
+			$mailVars =	array('{compropago_msj}' => 'En breve recibirá un email de ComproPago con su orden de pago ');
+			
 			$result= $this->module->validateOrder((int)$cart->id, Configuration::get('COMPROPAGO_PENDING'), $total, $this->module->displayName, NULL, $mailVars, (int)$currency->id, false, $customer->secure_key);
 			
 			$cpOrderName=Configuration::get('PS_SHOP_NAME').', Ref:'. $this->module->currentOrder;
@@ -87,9 +89,9 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
 			}
 			
 			try{
-				$mailVars =	array(
+				/*$mailVars =	array(
 						'{compropago_url}' => 'https://www.compropago.com/comprobante/?confirmation_id='.$compropagoResponse->id,
-				);
+				);*/
 				//Prestashop add order 
 				//$result= $this->module->validateOrder((int)$cart->id, Configuration::get('COMPROPAGO_PENDING'), $total, $this->module->displayName, NULL, $mailVars, (int)$currency->id, false, $customer->secure_key);
 				
