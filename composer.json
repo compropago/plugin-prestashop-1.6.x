@@ -1,5 +1,18 @@
 {
-    "require": {
-        "compropago/php-sdk": "^1.0"
-    }
+  "name": "compropago/prestashop",
+  "type": "prestashop-module",
+  "description": "ComproPago PrestaShop Module",
+  "keywords": ["pagos internet","payment gateway", "prestashop"],
+  "homepage": "https://github.com/compropago/plugin-prestashop",
+  "license": "Apache-2.0",
+  "authors": [
+        {
+            "name": "Rolando Lucio",
+            "email": "rolando@compropago.com"
+        }
+  ],
+  "require": {
+    "php": ">=5.4",
+    "compropago/php-sdk": "^1.0"
+  }
 }
