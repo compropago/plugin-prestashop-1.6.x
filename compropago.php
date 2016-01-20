@@ -611,7 +611,7 @@ class Compropago extends PaymentModule
 				break;
 				case 'pending':
 					$compropagoData->exp_date=date('d-m-Y',$compropagoData->exp_date);
-					$compropagoTpl=$this->getViewPathCompropago('receipt');
+					$compropagoTpl=$this->getViewPathCompropago('iframe');
 					
 					
 				break;
