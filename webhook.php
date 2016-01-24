@@ -144,7 +144,7 @@ try{
 		$history->save();
 		
 		$sql = "UPDATE `"._DB_PREFIX_."compropago_orders` 
-				SET `modified` = '".$recordTime."', `compropagoStatus` = '".$response->status."', `storeExtra` = '".$nomestatus."' 
+				SET `modified` = '".$recordTime."', `compropagoStatus` = '".$response->type."', `storeExtra` = '".$nomestatus."' 
 				 WHERE `id` = '".$row['id']."'";
 		if(!Db::getInstance()->execute($sql)){
 			die("Error Updating ComproPago Order Record at Store");
