@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 2.0.1 2016-01-24
+* Require: PrestaShop 1.6.1.x +
+* Require: PHP >= 5.4
+* Require: ComproPago SDK 1.0.2 +
+* https://s3.amazonaws.com/compropago/plugins/prestashop/compropago-ps-2-0-1.zip
+* Bug Fix: Mail vars
+* Added: Iframe View support
+* Bug Fix: webhook Transactions table error 
+
 ## 2.0.0 2016-01-19
 Liberación de versión estable:
 * Require: PrestaShop 1.6.1.x +
