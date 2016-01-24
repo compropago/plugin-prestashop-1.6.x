@@ -1,4 +1,4 @@
-> ## Si llego buscando el archivo de instalación para su tienda [Descargue la última versión dando click Aquí] [compropago-2-0-0]
+> ## Si llego buscando el archivo de instalación para su tienda [Descargue la última versión dando click Aquí] [compropago-2-0-x]
 
 Plugin para PrestaShop ( 1.6.1.x + ) - ComproPago 
 =================================================
@@ -59,10 +59,10 @@ Información de Comisiones y Horarios, como Transferir tu dinero y la Seguridad 
 
 ## Guía de Versiones
 
-| Version | Status      |  PrestaShop  | PHP     | Archivo                    | 
+| Version | Status      |  PrestaShop   | PHP     | Archivo                    | 
 |---------|-------------|---------------|---------|----------------------------|
-| 2.0.0   | Latest      | 1.6.1.x + 	| 5.4 +   | [v2.0.0][compropago-2-0-0] |
-| 1.0.0   | Support     | 1.5.x a 1.6.0 | 5.2 +   | [v1.0.0][compropago-1-0-0] |
+| 2.0.x   | Latest      | 1.6.1.x + 	| 5.4 +   | [v2.0.x][compropago-2-0-x] |
+| 1.0.0   | EOL		| 1.5.x a 1.6.0 | 5.2 +   | [v1.0.0][compropago-1-0-0] |
 
-[compropago-2-0-0]: https://s3.amazonaws.com/compropago/plugins/prestashop/compropago-ps-2-0-0.zip
+[compropago-2-0-x]: https://s3.amazonaws.com/compropago/plugins/prestashop/compropago-ps-2-0-1.zip
 [compropago-1-0-0]: https://s3.amazonaws.com/compropago/plugins/prestashop/compropago-ps-1-0-0.zip
