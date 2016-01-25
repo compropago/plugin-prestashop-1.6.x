@@ -2,6 +2,12 @@
 
 Plugin para PrestaShop ( 1.6.1.x + ) - ComproPago 
 =================================================
+## Descripción
+Este modulo provee el servicio de ComproPago para poder generar intenciones de pago dentro de la plataforma PrestaShop. 
+
+Con ComproPago puede recibir pagos en OXXO, 7Eleven y muchas tiendas más en todo México.
+
+[Registrarse en ComproPago ] (https://compropago.com)
 
 ## Ayuda y Soporte de ComproPago
 
