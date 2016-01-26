@@ -88,6 +88,11 @@ try{
 	//something went wrong at sdk lvl
 	die($e->getMessage());
 }
+//api normalization
+if($jsonObj->api_version=='1.0'){
+	$jsonObj->id=$jsonObj->data->object->id;
+	$jsonObj->short_id=$jsonObj->data->object->short_id;  
+}
 //webhook Test?
 if($jsonObj->id=="ch_00000-000-0000-000000" || $jsonObj->short_id =="000000"){
 	die("Probando el WebHook?, ruta correcta. <br>". 
