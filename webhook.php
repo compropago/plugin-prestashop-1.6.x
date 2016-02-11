@@ -95,10 +95,7 @@ if($jsonObj->api_version=='1.0'){
 }
 //webhook Test?
 if($jsonObj->id=="ch_00000-000-0000-000000" || $jsonObj->short_id =="000000"){
-	die("Probando el WebHook?, ruta correcta. <br>". 
-		"http vs https, https mejor y seguro  <br>".
-		"pero require un <b>certificado SSL </b><br>".
-		"para su tienda o marcara error");
+	die("Probando el WebHook?, ruta correcta.");
 }
 try{
 	$response = $compropagoService->verifyOrder($jsonObj->id);
