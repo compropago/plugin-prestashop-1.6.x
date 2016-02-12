@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 2.0.2 2016-02-11
+* Require: PrestaShop 1.6.1.x +
+* Require: PHP >= 5.4
+* Require: ComproPago SDK 1.0.2 +
+* Feature: Js para mejorar la vista de selección de tiendas para el Template Base
+* Note: Mejora en retroalimentación de exito de prueba de webhook
+
+
 ## 2.0.1 2016-01-24
 * Require: PrestaShop 1.6.1.x +
 * Require: PHP >= 5.4
