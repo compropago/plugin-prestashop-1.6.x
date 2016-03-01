@@ -74,14 +74,14 @@ $compropagoConfig= array(
 );
 // consume sdk methods
 try{
-	$compropagoClient = new Compropago\Client($compropagoConfig);
-	$compropagoService = new Compropago\Service($compropagoClient);
+	$compropagoClient = new Compropago\Sdk\Client($compropagoConfig);
+	$compropagoService = new Compropago\Sdk\Service($compropagoClient);
 	// Valid Keys?
 	if(!$compropagoResponse = $compropagoService->evalAuth()){
 		die("ComproPago Error: Llaves no validas");
 	}
 	// Store Mode Vs ComproPago Mode, Keys vs Mode & combinations
-	if(! Compropago\Utils\Store::validateGateway($compropagoClient)){
+	if(! Compropago\Sdk\Utils\Store::validateGateway($compropagoClient)){
 		die("ComproPago Error: La tienda no se encuentra en un modo de ejecución valido");
 	}
 }catch (Exception $e) {

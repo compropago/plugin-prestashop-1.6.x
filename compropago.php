@@ -28,6 +28,11 @@ if ( file_exists( $compropagoComposer ) ){
 }else{
 	exit('No se encontro el autoload para Compropago y sus dependencias:'.$compropagoComposer);
 }
+
+use Compropago\Sdk\Utils\Store;
+use Compropago\Sdk\Client;
+use Compropago\Sdk\Service;
+
 class Compropago extends PaymentModule
 {
 	private $_html = '';
@@ -50,7 +55,8 @@ class Compropago extends PaymentModule
 	public function __construct()
 	{
 		//Current module version & config
-		$this->version = '2.0.0';
+		$this->version = '2.0.3';
+		
 		$this->name = 'compropago';
 		$this->tab = 'payments_gateways';
 		$this->author = 'ComproPago';
@@ -149,8 +155,8 @@ class Compropago extends PaymentModule
 					'live'=>$moduleLive,
 					'contained'=>'plugin; cpps '.$this->version.';prestashop '._PS_VERSION_.';'
 			);
-			$this->compropagoClient = new Compropago\Client($this->compropagoConfig);
-			$this->compropagoService = new Compropago\Service($this->compropagoClient);
+			$this->compropagoClient = new Client($this->compropagoConfig);
+			$this->compropagoService = new Service($this->compropagoClient);
 			return true;
 		}catch (Exception $e) {
 			//something went wrong with the sdk
@@ -164,7 +170,7 @@ class Compropago extends PaymentModule
 	 */
 	public function checkCompropago(){
 		try {
-			return Compropago\Utils\Store::validateGateway($this->compropagoClient);
+			return Store::validateGateway($this->compropagoClient);
 		}catch (Exception $e) {
 			//something went wrong with the sdk dont allow gateway method
 			return false;
@@ -219,7 +225,7 @@ class Compropago extends PaymentModule
 	 */
 	public function install()
 	{
-		if (version_compare(phpversion(), '5.3.0', '<')) {
+		if (version_compare(phpversion(), '5.5', '<')) {
 			return false;
 		}
 		
@@ -228,13 +234,13 @@ class Compropago extends PaymentModule
 		
 		$this->installOrderStates();
 		//Lets be sure compropago tables are gone
-		$queries=Compropago\Utils\Store::sqlDropTables(_DB_PREFIX_);
+		$queries= Store::sqlDropTables(_DB_PREFIX_);
 		foreach($queries as $drop){
 			
 			Db::getInstance()->execute($drop);
 		}
 		//creates compropago tables
-		$queries=Compropago\Utils\Store::sqlCreateTables(_DB_PREFIX_);
+		$queries= Store::sqlCreateTables(_DB_PREFIX_);
 		
 		foreach($queries as $create){
 			if(!Db::getInstance()->execute($create))
@@ -491,6 +497,10 @@ class Compropago extends PaymentModule
 	 */
 	public function getContent()
 	{
+		
+		/// validar plugin keys para retro aquì?
+		// ver si aplica global al admin
+		
 		$this->_html = '';
 
 		if (Tools::isSubmit('btnSubmit'))
