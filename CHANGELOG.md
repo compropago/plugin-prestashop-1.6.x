@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 2.0.3 2016-03-01
+* Require: PrestaShop 1.6.1.x +
+* Require: PHP >= 5.5
+* Require: ComproPago SDK 1.1.0 +
+* Utilizing: DIR en lugar de dirname(FILE)
+* Utilizing: SDK 1.1
+* Note: Ajustes para optimizar PHP 5.5
+* Note: retroalimentación de validación de modos se retira del construct a información del módulo
+
+
 ## 2.0.2 2016-02-11
 * Require: PrestaShop 1.6.1.x +
 * Require: PHP >= 5.4

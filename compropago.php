@@ -22,7 +22,7 @@
 if (!defined('_PS_VERSION_'))
 	exit;
 
-$compropagoComposer= dirname(__FILE__).'/vendor/autoload.php';
+$compropagoComposer= _DIR_.'/vendor/autoload.php';
 if ( file_exists( $compropagoComposer ) ){
 	require $compropagoComposer;
 }else{
@@ -89,49 +89,8 @@ class Compropago extends PaymentModule
 		if (( !isset($this->publicKey) || !isset($this->privateKey) || empty($this->publicKey) || empty($this->privateKey) ) ){
 			$this->warning = $this->l('The Public Key and Private Key must be configured before using this module.');
 		}
-		//no operation mode defined?
-		/*if ( !isset($this->modoExec)  ){
-			$this->warning = $this->l('The Mode is required');
-		}*/
-		//Lets eval keys and mode
-		if($this->active && isset($this->publicKey) && isset($this->privateKey) &&
-			!empty($this->publicKey) && !empty($this->privateKey)  ){
-			//$moduleLive=($this->modoExec=='yes')? true:false;
-				$moduleLive=$this->modoExec;
-			if($this->setComproPago($moduleLive)){
-				try{
-					//eval keys
-					if(!$compropagoResponse = $this->compropagoService->evalAuth()){
-						$this->warning .= $this->l('Invalid Keys, The Public Key and Private Key must be valid before using this module.');
-					}else{
-						if($compropagoResponse->mode_key != $compropagoResponse->livemode){
-							// compropagoKey vs compropago Mode
-							$this->warning .= $this->l('Your Keys and Your ComproPago account are set to different Modes.');
-						}else{
-							if($moduleLive != $compropagoResponse->livemode){
-								// store Mode vs compropago Mode
-								$this->warning .= $this->l('Your Store and Your ComproPago account are set to different Modes.');
-							}else{
-								if($moduleLive != $compropagoResponse->mode_key){
-									// store Mode vs compropago Keys
-									$this->warning .= $this->l('ComproPago ALERT:Your Keys are for a different Mode.');
-								}else{
-									if(!$compropagoResponse->mode_key && !$compropagoResponse->livemode){
-										//can process orders but watch out, NOT live operations just testing
-										$this->warning .= $this->l('WARNING: ComproPago account is Running in TEST Mode');
-									}
-								}
-							}
-						}
-					}
-				}catch (Exception $e) {
-					//something went wrong on the SDK side
-					$this->warning .= $e->getMessage(); //may not be show or translated
-				}
-			}else{
-				$this->warning .= $this->l('Could not load ComproPago SDK instances.');
-			}
-		}
+		
+		
 		if (!count(Currency::checkPaymentCurrencies($this->id)))
 			$this->warning = $this->l('No currency has been set for this module.');
 
@@ -183,7 +142,7 @@ class Compropago extends PaymentModule
 	 * @since 2.0.0
 	 */
 	public function getViewPathCompropago($view){
-		$tplPath=dirname(__FILE__).'/vendor/compropago/php-sdk/views/tpl/'.$view.'.tpl';
+		$tplPath=_DIR_.'/vendor/compropago/php-sdk/views/tpl/'.$view.'.tpl';
 		if ( file_exists( $tplPath ) ){
 			return $tplPath;
 		}else{
@@ -498,8 +457,45 @@ class Compropago extends PaymentModule
 	public function getContent()
 	{
 		
-		/// validar plugin keys para retro aquì?
-		// ver si aplica global al admin
+	//Lets eval keys and mode
+		if($this->active && isset($this->publicKey) && isset($this->privateKey) &&
+			!empty($this->publicKey) && !empty($this->privateKey)  ){
+				$moduleLive=$this->modoExec;
+			if($this->setComproPago($moduleLive)){
+				try{
+					//eval keys
+					if(!$compropagoResponse = $this->compropagoService->evalAuth()){
+						$this->warning .= $this->l('Invalid Keys, The Public Key and Private Key must be valid before using this module.');
+					}else{
+						if($compropagoResponse->mode_key != $compropagoResponse->livemode){
+							// compropagoKey vs compropago Mode
+							$this->warning .= $this->l('Your Keys and Your ComproPago account are set to different Modes.');
+						}else{
+							if($moduleLive != $compropagoResponse->livemode){
+								// store Mode vs compropago Mode
+								$this->warning .= $this->l('Your Store and Your ComproPago account are set to different Modes.');
+							}else{
+								if($moduleLive != $compropagoResponse->mode_key){
+									// store Mode vs compropago Keys
+									$this->warning .= $this->l('ComproPago ALERT:Your Keys are for a different Mode.');
+								}else{
+									if(!$compropagoResponse->mode_key && !$compropagoResponse->livemode){
+										//can process orders but watch out, NOT live operations just testing
+										$this->warning .= $this->l('WARNING: ComproPago account is Running in TEST Mode');
+									}
+								}
+							}
+						}
+					}
+				}catch (Exception $e) {
+					//something went wrong on the SDK side
+					$this->warning .= $e->getMessage(); //may not be show or translated
+				}
+			}else{
+				$this->warning .= $this->l('Could not load ComproPago SDK instances.');
+			}
+		}
+		
 		
 		$this->_html = '';
 
