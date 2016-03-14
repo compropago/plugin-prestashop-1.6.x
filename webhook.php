@@ -19,17 +19,20 @@
  * @author Rolando Lucio <rolando@compropago.com>
  * @since 2.0.0
  */
+
 //valid request type??
 $request = @file_get_contents('php://input');
 if(!$jsonObj = json_decode($request)){
 	die('Tipo de Request no Valido');
 }
+
 //Include prestashop files
 $prestaFiles= array(
-		_DIR_.'/../../config/config.inc.php',
-		_DIR_.'/../../init.php',
-		_DIR_.'/../../classes/PrestaShopLogger.php'
+		__DIR__.'/../../config/config.inc.php',
+		__DIR__.'/../../init.php',
+		__DIR__.'/../../classes/PrestaShopLogger.php'
 );
+
 foreach($prestaFiles as $prestaFile){
 	if(file_exists($prestaFile)){
 		include_once	$prestaFile;
@@ -37,23 +40,35 @@ foreach($prestaFiles as $prestaFile){
 		echo "ComproPago Warning: No se encontro el archivo de Prestashop:".$prestaFile."<br>";
 	}
 }
+
+
 //prestashop Rdy?
 if (!defined('_PS_VERSION_')){
 	die("No se pudo inicializar Prestashop");
 }
+
+
 //include ComproPago SDK & dependecies via composer autoload
-$compropagoComposer= _DIR_.'/vendor/autoload.php';
+$compropagoComposer= __DIR__.'/vendor/autoload.php';
+
+
 if ( file_exists( $compropagoComposer ) ){
 	require $compropagoComposer;
 }else{
 	die('No se encontro el autoload para Compropago y sus dependencias:'.$compropagoComposer);
 }
+
+
 //Compropago Plugin Installed?
 if (!Module::isInstalled('compropago')){
 	die('El módulo de ComproPago no se encuentra instalado');
 }
+
+
 //Get ComproPago Prestashop Config values
 $config = Configuration::getMultiple(array('COMPROPAGO_PUBLICKEY', 'COMPROPAGO_PRIVATEKEY','COMPROPAGO_MODE'));
+
+
 //keys set?
 if (!isset($config['COMPROPAGO_PUBLICKEY']) || !isset($config['COMPROPAGO_PRIVATEKEY'])
 	|| empty($config['COMPROPAGO_PUBLICKEY']) || empty($config['COMPROPAGO_PRIVATEKEY'])){
@@ -66,12 +81,16 @@ if($config['COMPROPAGO_MODE']==true){
 }else {
 	$moduleLive=false;
 }
+
+
 $compropagoConfig= array(
 		'publickey'=>$config['COMPROPAGO_PUBLICKEY'],
 		'privatekey'=>$config['COMPROPAGO_PRIVATEKEY'],
 		'live'=>$moduleLive,
 		'contained'=>'plugin; cpps 2.0.0; prestashop '._PS_VERSION_.'; webhook;'		
 );
+
+
 // consume sdk methods
 try{
 	$compropagoClient = new Compropago\Sdk\Client($compropagoConfig);
@@ -84,29 +103,41 @@ try{
 	if(! Compropago\Sdk\Utils\Store::validateGateway($compropagoClient)){
 		die("ComproPago Error: La tienda no se encuentra en un modo de ejecución valido");
 	}
-}catch (Exception $e) {
+}catch (\Exception $e) {
 	//something went wrong at sdk lvl
 	die($e->getMessage());
 }
+
+
 //api normalization
 if($jsonObj->api_version=='1.0'){
 	$jsonObj->id=$jsonObj->data->object->id;
 	$jsonObj->short_id=$jsonObj->data->object->short_id;  
 }
+
+
 //webhook Test?
 if($jsonObj->id=="ch_00000-000-0000-000000" || $jsonObj->short_id =="000000"){
-	die("Probando el WebHook?, ruta correcta.");
+	die("Probando el WebHook?, ruta correcta. <br>". 
+		"http vs https, https mejor y seguro  <br>".
+		"pero require un <b>certificado SSL </b><br>".
+		"para su tienda o marcara error");
 }
+
+
 try{
 	$response = $compropagoService->verifyOrder($jsonObj->id);
+
 	if($response->type=='error'){
 		die('Error procesando el número de orden');
 	}
+
 	if(!Db::getInstance()->execute("SHOW TABLES LIKE '"._DB_PREFIX_ ."compropago_orders'") ||
 			!Db::getInstance()->execute("SHOW TABLES LIKE '"._DB_PREFIX_ ."compropago_transactions'")
 			){
 				die('ComproPago Tables Not Found');
 	}
+
 	switch ($response->type){
 		case 'charge.success':
 			$nomestatus = "COMPROPAGO_SUCCESS";
@@ -172,7 +203,7 @@ try{
 	}else{		
 		die('El número de orden no se encontro en la tienda');
 	}	
-}catch (Exception $e){
+}catch (\Exception $e){
 	//something went wrong at sdk lvl
 	die($e->getMessage());
 }

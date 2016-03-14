@@ -18,11 +18,11 @@
  * @author Rolando Lucio <rolando@compropago.com>
  */
 
-include(dirname(__FILE__).'/../../config/config.inc.php');
+include(__DIR__.'/../../config/config.inc.php');
 Tools::displayFileAsDeprecated();
 
-include(dirname(__FILE__).'/../../header.php');
-include(dirname(__FILE__).'/compropago.php');
+include(__DIR__.'/../../header.php');
+include(__DIR__.'/compropago.php');
 
 $context = Context::getContext();
 $cart = $context->cart;

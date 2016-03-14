@@ -19,6 +19,8 @@
  * @author Rolando Lucio <rolando@compropago.com>
  * @since 2.0.0
  */
+
+
 class CompropagoPaymentModuleFrontController extends ModuleFrontController
 {
 	public $ssl = true;

@@ -18,6 +18,8 @@
  * @author Rolando Lucio <rolando@compropago.com>
  * @since 2.0.0
  */
+
+
 class CompropagoValidationModuleFrontController extends ModuleFrontController
 {
 	public function postProcess()
