@@ -54,7 +54,9 @@ class Compropago extends PaymentModule
 	public function __construct()
 	{
 		//Current module version & config
-		$this->version = '2.0.0';
+		$this->version = '2.0.2';
+		
+		
 		$this->name = 'compropago';
 		$this->tab = 'payments_gateways';
 		$this->author = 'ComproPago';
@@ -97,6 +99,8 @@ class Compropago extends PaymentModule
 
         $this->serviceFlag = $this->setComproPago($this->modoExec);
 
+    if($this->context->employee->isSuperAdmin()){
+    	
 
         if($this->active && isset($this->publicKey) && isset($this->privateKey) &&
             !empty($this->publicKey) && !empty($this->privateKey)  ){
@@ -134,6 +138,7 @@ class Compropago extends PaymentModule
                 $this->warning .= $this->l('Could not load ComproPago SDK instances.');
             }
         }
+    }
 
 
 		if (!count(Currency::checkPaymentCurrencies($this->id)))
@@ -148,7 +153,8 @@ class Compropago extends PaymentModule
 
 
     /**
-     * Generacion de retro alimentacion de configuracion;
+     * Generacion de retro alimentacion de configuracion al guardar ;
+     * necesita activarse en getcontent ... Evaluar
      * @return void
      * @since 2.0.2
      */
@@ -557,7 +563,7 @@ class Compropago extends PaymentModule
 			
 		}
 
-        $this->hookRetroalimentacion();
+        //$this->hookRetroalimentacion();
 	}
 
 
