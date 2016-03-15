@@ -99,8 +99,16 @@ class Compropago extends PaymentModule
 
         $this->serviceFlag = $this->setComproPago($this->modoExec);
 
-    if($this->context->employee->isSuperAdmin()){
+   		$itsBE=null;
+   
+    
+   	// It's Back End?
+    if($this->context->employee){
+    	$itsBE=true;
+    }
+    
     	
+    if($itsBE){	
 
         if($this->active && isset($this->publicKey) && isset($this->privateKey) &&
             !empty($this->publicKey) && !empty($this->privateKey)  ){
