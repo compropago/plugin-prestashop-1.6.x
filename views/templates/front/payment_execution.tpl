@@ -96,8 +96,8 @@
 			}
 
 			function clearProviders(){
-				for(provider of labels){
-					provider.childNodes[1].setAttribute("style","border: 0;");
+				for(count = 0; count < labels.lenght; count++){
+					labels[count].childNodes[1].setAttribute("style","border: 0;");
 				}
 			}
 
