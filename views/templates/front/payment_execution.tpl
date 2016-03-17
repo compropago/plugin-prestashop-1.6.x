@@ -14,6 +14,7 @@
 * limitations under the License.
 *
 * @author Rolando Lucio <rolando@compropago.com>
+* @author Eduardo Aguilar <eduardo.aguilar@compropago.com>
 * @since 2.0.0
 *}
 
@@ -73,8 +74,8 @@
 		<script>
 			var labels = document.querySelectorAll(".compropagoProviderDesc");
 			function clickProvider(){
-				for( provider of labels ){
-					provider.addEventListener("click",function(evt){
+				for( count = 0; count < labels.lenght; count++ ){
+					labels[count].addEventListener("click",function(evt){
 						var image = evt.target;
 
 						clearProviders();
@@ -95,9 +96,8 @@
 			}
 
 			function clearProviders(){
-				for(provider of labels){
-					//console.log(provider.childNodes);
-					provider.childNodes[1].setAttribute("style","border: 0;");
+				for(count = 0; count < labels.lenght; count++){
+					labels[count].childNodes[1].setAttribute("style","border: 0;");
 				}
 			}
 

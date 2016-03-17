@@ -9,6 +9,10 @@
         {
             "name": "Rolando Lucio",
             "email": "rolando@compropago.com"
+        },
+        {
+            "name": "Eduardo Aguilar",
+            "email": "eduardo.aguilar@compropago.com"
         }
   ],
   "require": {
