@@ -1,0 +1,45 @@
+[
+    {
+        "name": "compropago/php-sdk",
+        "version": "1.1.0",
+        "version_normalized": "1.1.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/compropago/compropago-php.git",
+            "reference": "9b295bddbad1b62d1cfd480c38443d3648a335fb"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/compropago/compropago-php/zipball/9b295bddbad1b62d1cfd480c38443d3648a335fb",
+            "reference": "9b295bddbad1b62d1cfd480c38443d3648a335fb",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.5"
+        },
+        "time": "2016-02-15 16:07:14",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Compropago\\Sdk\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "Apache-2.0"
+        ],
+        "authors": [
+            {
+                "name": "Rolando Lucio",
+                "email": "rolando@compropago.com"
+            }
+        ],
+        "description": "PHP SDK for Compropago API",
+        "homepage": "https://compropago.com/documentacion/librerias",
+        "keywords": [
+            "pagos internet",
+            "payment gateway"
+        ]
+    }
+]
