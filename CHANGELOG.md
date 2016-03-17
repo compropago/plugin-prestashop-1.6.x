@@ -1,5 +1,23 @@
 # CHANGELOG
 
+## 2.0.3 alfa 2016-03-01
+* Require: PrestaShop 1.6.1.x +
+* Require: PHP >= 5.5
+* Require: ComproPago SDK 1.1.0 +
+* Utilizing: DIR en lugar de dirname(FILE)
+* Utilizing: SDK 1.1
+* Note: Ajustes para optimizar PHP 5.5
+* Note: retroalimentación de validación de modos se retira del construct a información del módulo
+
+
+## 2.0.2 2016-02-11
+* Require: PrestaShop 1.6.1.x +
+* Require: PHP >= 5.4
+* Require: ComproPago SDK 1.0.2 +
+* Feature: Js para mejorar la vista de selección de tiendas para el Template Base
+* Note: Mejora en retroalimentación de exito de prueba de webhook
+
+
 ## 2.0.1 2016-01-24
 * Require: PrestaShop 1.6.1.x +
 * Require: PHP >= 5.4

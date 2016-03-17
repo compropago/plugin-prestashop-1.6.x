@@ -72,10 +72,9 @@
 
 		<script>
 			var labels = document.querySelectorAll(".compropagoProviderDesc");
-
 			function clickProvider(){
-				for( count = 0; count < labels.lenght; count++ ){
-					labels[count].addEventListener("click",function(evt){
+				for( provider of labels ){
+					provider.addEventListener("click",function(evt){
 						var image = evt.target;
 
 						clearProviders();
@@ -96,8 +95,9 @@
 			}
 
 			function clearProviders(){
-				for(count = 0; count < labels.lenght; count++){
-					labels[count].childNodes[1].setAttribute("style","border: 0;");
+				for(provider of labels){
+					//console.log(provider.childNodes);
+					provider.childNodes[1].setAttribute("style","border: 0;");
 				}
 			}
 
