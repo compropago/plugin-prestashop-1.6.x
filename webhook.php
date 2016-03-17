@@ -26,9 +26,9 @@ if(!$jsonObj = json_decode($request)){
 }
 //Include prestashop files
 $prestaFiles= array(
-		_DIR_.'/../../config/config.inc.php',
-		_DIR_.'/../../init.php',
-		_DIR_.'/../../classes/PrestaShopLogger.php'
+		__DIR__.'/../../config/config.inc.php',
+		__DIR__.'/../../init.php',
+		__DIR__.'/../../classes/PrestaShopLogger.php'
 );
 foreach($prestaFiles as $prestaFile){
 	if(file_exists($prestaFile)){
@@ -42,7 +42,7 @@ if (!defined('_PS_VERSION_')){
 	die("No se pudo inicializar Prestashop");
 }
 //include ComproPago SDK & dependecies via composer autoload
-$compropagoComposer= _DIR_.'/vendor/autoload.php';
+$compropagoComposer= __DIR__.'/vendor/autoload.php';
 if ( file_exists( $compropagoComposer ) ){
 	require $compropagoComposer;
 }else{
