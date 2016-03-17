@@ -54,7 +54,7 @@ class Compropago extends PaymentModule
 	public function __construct()
 	{
 		//Current module version & config
-		$this->version = '2.0.2';
+		$this->version = '2.0.3';
 		
 		
 		$this->name = 'compropago';
