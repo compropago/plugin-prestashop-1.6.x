@@ -72,36 +72,50 @@
 		{include file="$compropagoTpl"}
 
 		<script>
-			var labels = document.querySelectorAll(".compropagoProviderDesc");
-			function clickProvider(){
-				for( count = 0; count < labels.lenght; count++ ){
-					labels[count].addEventListener("click",function(evt){
-						var image = evt.target;
 
-						clearProviders();
+			function StylerProviders(){
 
-						image.setAttribute("style",
-							"border: solid 4px #00AAEF;"+
-						    "cursor: pointer;"+
-						    "opacity: 1;"+
-						    "border-radius: 8px;"+
-						    "-webkit-border-radius: 8px;"+
-						    "-moz-border-radius: 8px;"+
-						    "box-shadow: 0px 0px 10px 0px rgba(0,0,0,.3), 0px 0px 0px 4px rgba(0,170,239,1);"+
-						    "-webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,.3),0px 0px 0px 4px rgba(0,170,239,1);"+
-						    "-moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,.3),0px 0px 0px 4px rgba(0,170,239,1);"
-						);
-					});
-				}
+				var that = this;
+
+				this.labels = document.querySelectorAll(".compropagoProviderDesc");
+
+				this.init = function(){
+				    that.clickProvider();
+				};
+
+				this.clickProvider = function(){
+				    for(count = 0; count < that.labels.length; count++){
+						that.labels[count].addEventListener("click",function(evt){
+							var image = evt.target;
+
+							that.clearProviders();
+
+							image.setAttribute("style",
+								"border: solid 4px #00AAEF;"+
+							    "cursor: pointer;"+
+							    "opacity: 1;"+
+							    "border-radius: 8px;"+
+							    "-webkit-border-radius: 8px;"+
+							    "-moz-border-radius: 8px;"+
+							    "box-shadow: 0px 0px 10px 0px rgba(0,0,0,.3), 0px 0px 0px 4px rgba(0,170,239,1);"+
+							    "-webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,.3),0px 0px 0px 4px rgba(0,170,239,1);"+
+							    "-moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,.3),0px 0px 0px 4px rgba(0,170,239,1);"
+							);
+						});
+				    }
+				};
+
+				this.clearProviders = function(){
+					for(count = 0; count < that.labels.length; count++){
+						that.labels[count].childNodes[1].setAttribute("style","border: 0;");
+					}
+				};
+
 			}
 
-			function clearProviders(){
-				for(count = 0; count < labels.lenght; count++){
-					labels[count].childNodes[1].setAttribute("style","border: 0;");
-				}
-			}
 
-			document.onreadystatechange = clickProvider;
+			document.onreadystatechange = new StylerProviders().init;
+
 		</script>
 	</p>
 	<p>
