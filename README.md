@@ -68,7 +68,7 @@ Información de Comisiones y Horarios, como Transferir tu dinero y la Seguridad 
 | Version | Status      |  PrestaShop   | PHP     | Archivo                    | 
 |---------|-------------|---------------|---------|----------------------------|
 | 1.0.0   | EOL		| 1.5.x a 1.6.0 | 5.2 +   | [v1.0.0][compropago-1-0-0] |
-| 2.0.2   | EOL      | 1.6.1.x + 	| 5.4 +   | [v2.0.x][compropago-2-0-2] |
+| 2.0.2   | EOL      | 1.6.1.x + 	| 5.4 +   | [v2.0.2][compropago-2-0-2] |
 | 2.0.x   | Latest      | 1.6.1.x + 	| 5.5 +   | [v2.0.x][compropago-2-0-x] |
 
 
