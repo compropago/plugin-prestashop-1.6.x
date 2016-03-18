@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 2.0.3 2016-03-18
+* Require: PrestaShop 1.6.1.x +
+* Require: PHP >= 5.5
+* Require: ComproPago SDK 1.1.0 +
+* Utilizing: DIR en lugar de dirname(FILE)
+* Utilizing: SDK 1.1
+* Note: Ajustes para optimizar PHP 5.5
+* Bugfix: vista de proveedores en template base
+* Bugfix: Recurrente Auth en Admin
+
+## 2.0.3 RC 2016-03-17
+* Note: Rebase Version
+* Bugfix: vista de proveedores en template base
+* Bugfix: Recurrente Auth en Admin
+
 ## 2.0.3 alfa 2016-03-01
 * Require: PrestaShop 1.6.1.x +
 * Require: PHP >= 5.5
