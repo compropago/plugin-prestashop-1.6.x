@@ -588,6 +588,7 @@ class Compropago extends PaymentModule
 			Configuration::updateValue('COMPROPAGO_PRIVATEKEY', Tools::getValue('COMPROPAGO_PRIVATEKEY'));
 			Configuration::updateValue('COMPROPAGO_MODE', Tools::getValue('COMPROPAGO_MODE'));
 			Configuration::updateValue('COMPROPAGO_LOGOS', Tools::getValue('COMPROPAGO_LOGOS'));
+			Configuration::updateValue('COMPROPAGO_PROVIDERS', Tools::getValue('COMPROPAGO_PROVIDERS'));
 		}
 		$this->_html .= $this->displayConfirmation($this->l('Settings updated'));
 	}
@@ -805,6 +806,16 @@ class Compropago extends PaymentModule
      */
 	public function renderForm()
 	{
+		$options = array(
+				array(
+						'id_option' => 'OXXO',       // The value of the 'value' attribute of the <option> tag.
+						'name' => 'OXXO'    // The value of the text content of the  <option> tag.
+				),
+				array(
+						'id_option' => 'SEVEN_ELEVEN',
+						'name' => 'Seven Eleven'
+				),
+		);
 		$fields_form = array(
 			'form' => array(
 				'legend' => array(
@@ -872,6 +883,19 @@ class Compropago extends PaymentModule
 									)
 							)
 					),
+					array(
+				  'type' => 'select',                              // This is a <select> tag.
+				  'multiple' => true,
+				  'label' => $this->l('Tiendas:'),         // The <label> for this <select> tag.
+				  'desc' => $this->l('Seleccione las tiendas'),  // A help text, displayed right next to the <select> tag.
+				  'name' => 'COMPROPAGO_PROVIDERS',                     // The content of the 'id' attribute of the <select> tag.
+				  
+				  'options' => array(
+				    'query' => $options,                           // $options contains the data itself.
+				    'id' => 'id_option',                           // The value of the 'id' key must be the same as the key for 'value' attribute of the <option> tag in each $options sub-array.
+				    'name' => 'name'                               // The value of the 'name' key must be the same as the key for the text content of the <option> tag in each $options sub-array.
+				  )
+				),
 				///END OF FIELDS
 				),
 				'submit' => array(
@@ -916,6 +940,7 @@ class Compropago extends PaymentModule
 			'COMPROPAGO_MODE' => Tools::getValue('COMPROPAGO_MODE', Configuration::get('COMPROPAGO_MODE')),
 			'COMPROPAGO_WEBHOOK' =>  Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->name.'/webhook.php',
 			'COMPROPAGO_LOGOS' =>  Tools::getValue('COMPROPAGO_LOGOS', Configuration::get('COMPROPAGO_LOGOS')),
+			'COMPROPAGO_PROVIDERS' =>  Tools::getValue('COMPROPAGO_PROVIDERS', Configuration::get('COMPROPAGO_PROVIDERS[]')),
 		);
 	}
 }
