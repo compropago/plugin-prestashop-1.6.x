@@ -852,8 +852,8 @@ class Compropago extends PaymentModule
 						'name' => 'Chedrahui'
 				),
 				array(
-						'id_option' => 'COPEL',
-						'name' => 'Copel'
+						'id_option' => 'COPPEL',
+						'name' => 'Coppel'
 				),
 				array(
 						'id_option' => 'EXTRA',
