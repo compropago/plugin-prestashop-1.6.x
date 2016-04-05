@@ -42,7 +42,7 @@ class Compropago extends PaymentModule
 	public $extra_mail_vars;
 	public $modoExec;
 	public $showLogo;
-	public $storesFilter;
+	public $filterStores;
 	
 	public $compropagoConfig;
 	public $compropagoClient;
@@ -70,7 +70,7 @@ class Compropago extends PaymentModule
 		
 		// have module been set
 		$config = Configuration::getMultiple(array('COMPROPAGO_PUBLICKEY', 'COMPROPAGO_PRIVATEKEY',
-				'COMPROPAGO_MODE', 'COMPROPAGO_LOGOS'));
+				'COMPROPAGO_MODE', 'COMPROPAGO_LOGOS','COMPROPAGO_PROVIDER'));
 		if (isset($config['COMPROPAGO_PUBLICKEY']))
 			$this->publicKey = $config['COMPROPAGO_PUBLICKEY'];
 		if (isset($config['COMPROPAGO_PRIVATEKEY']))
@@ -79,10 +79,13 @@ class Compropago extends PaymentModule
 		$this->showLogo=(isset($config['COMPROPAGO_LOGOS']))?$config['COMPROPAGO_LOGOS']:false;
 		
 		//most load selected
-		$this->storesFilter=Tools::getValue('COMPROPAGO_PROVIDERS_selected', Configuration::get('COMPROPAGO_PROVIDERS'));
+		//$this->filterStores=Tools::getValue('COMPROPAGO_PROVIDERS_available', Configuration::get('COMPROPAGO_PROVIDERS_selected'));
+		//$this->filterStores=Configuration::get('COMPROPAGO_PROVIDERS');
+		$this->filterStores=explode(',',$config['COMPROPAGO_PROVIDER'] );
 		
-		//var_dump($this->storesFilter);
-
+	
+		//var_dump($this->filterStores);
+	
 		$this->bootstrap = true;
 		parent::__construct();
 		
@@ -288,7 +291,26 @@ class Compropago extends PaymentModule
 	 */
 	public function getProvidersCompropago(){
 		try{
-			$compropagoData['providers']=$this->compropagoService->getProviders(); //Call SDK for providers list
+			
+			$providers= $this->compropagoService->getProviders();
+			 
+			//var_dump($this->filterStores);
+			if(empty($this->filterStores[0])){
+				$compropagoData['providers']= $providers;
+			}else{
+				foreach ($providers as $provider){
+					foreach ($this->filterStores as $internal){
+							
+						if($provider->internal_name == $internal){
+							$filtered[] = $provider;
+						}
+					}
+				}
+					
+				$compropagoData['providers']= $filtered;
+			}
+			
+			
 			$compropagoData['showlogo']=($this->showLogo)?'yes':'no';                              //(yes|no) logos or select
 			$compropagoData['description']=$this->l('- ComproPago allows you to pay at Mexico stores like OXXO, 7Eleven and More.');  // Title to show
 			$compropagoData['instrucciones']=$this->l('Select a Store');    // Instructions text
@@ -590,11 +612,15 @@ class Compropago extends PaymentModule
 	{
 		if (Tools::isSubmit('btnSubmit'))
 		{
+			/**
+			 * Update values at database from form values Tools::getValue(form_field)
+			 */
 			Configuration::updateValue('COMPROPAGO_PUBLICKEY', Tools::getValue('COMPROPAGO_PUBLICKEY'));
 			Configuration::updateValue('COMPROPAGO_PRIVATEKEY', Tools::getValue('COMPROPAGO_PRIVATEKEY'));
 			Configuration::updateValue('COMPROPAGO_MODE', Tools::getValue('COMPROPAGO_MODE'));
 			Configuration::updateValue('COMPROPAGO_LOGOS', Tools::getValue('COMPROPAGO_LOGOS'));
-			Configuration::updateValue('COMPROPAGO_PROVIDERS', Tools::getValue('COMPROPAGO_PROVIDERS_selected'));
+			$myproviders=implode(',',Tools::getValue('COMPROPAGO_PROVIDERS_selected'));
+			Configuration::updateValue('COMPROPAGO_PROVIDER',$myproviders );
 		}
 		$this->_html .= $this->displayConfirmation($this->l('Settings updated'));
 	}
@@ -927,11 +953,11 @@ class Compropago extends PaymentModule
 							)
 					),
 					array(
-				  'type' => 'swap',                              // This is a <select> tag.
+				  'type' => 'swap',                              
 				  'multiple' => true,
-				  'label' => $this->l('Tiendas:'),         // The <label> for this <select> tag.
-				  'desc' => $this->l('Seleccione las tiendas'),  // A help text, displayed right next to the <select> tag.
-				  'name' => 'COMPROPAGO_PROVIDERS',                     // The content of the 'id' attribute of the <select> tag.
+				  'label' => $this->l('Tiendas:'),        
+				  'desc' => $this->l('Seleccione las tiendas'),
+				  'name' => 'COMPROPAGO_PROVIDERS',        
 				  
 				  'options' => array(
 				    'query' => $options,                           // $options contains the data itself.
@@ -977,13 +1003,14 @@ class Compropago extends PaymentModule
 	 */
 	public function getConfigFieldsValues()
 	{
+		$providersDB=explode(',',Configuration::get('COMPROPAGO_PROVIDER') );
 		return array(
 			'COMPROPAGO_PUBLICKEY' => Tools::getValue('COMPROPAGO_PUBLICKEY', Configuration::get('COMPROPAGO_PUBLICKEY')),
 			'COMPROPAGO_PRIVATEKEY' => Tools::getValue('COMPROPAGO_PRIVATEKEY', Configuration::get('COMPROPAGO_PRIVATEKEY')),
 			'COMPROPAGO_MODE' => Tools::getValue('COMPROPAGO_MODE', Configuration::get('COMPROPAGO_MODE')),
 			'COMPROPAGO_WEBHOOK' =>  Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->name.'/webhook.php',
 			'COMPROPAGO_LOGOS' =>  Tools::getValue('COMPROPAGO_LOGOS', Configuration::get('COMPROPAGO_LOGOS')),
-			'COMPROPAGO_PROVIDERS' =>  Tools::getValue('COMPROPAGO_PROVIDERS_selected', Configuration::get('COMPROPAGO_PROVIDERS')),
+			'COMPROPAGO_PROVIDERS' =>  Tools::getValue('COMPROPAGO_PROVIDERS_selected',$providersDB),
 		);
 	}
 }
