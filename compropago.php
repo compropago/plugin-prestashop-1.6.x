@@ -81,7 +81,7 @@ class Compropago extends PaymentModule
 		//most load selected
 		$this->storesFilter=Tools::getValue('COMPROPAGO_PROVIDERS_selected', Configuration::get('COMPROPAGO_PROVIDERS'));
 		
-		var_dump($this->storesFilter);
+		//var_dump($this->storesFilter);
 
 		$this->bootstrap = true;
 		parent::__construct();
