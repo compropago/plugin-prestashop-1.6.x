@@ -78,6 +78,7 @@ class Compropago extends PaymentModule
 		$this->modoExec=(isset($config['COMPROPAGO_MODE']))?$config['COMPROPAGO_MODE']:false;
 		$this->showLogo=(isset($config['COMPROPAGO_LOGOS']))?$config['COMPROPAGO_LOGOS']:false;
 		
+		//most load selected
 		$this->storesFilter=Tools::getValue('COMPROPAGO_PROVIDERS_selected', Configuration::get('COMPROPAGO_PROVIDERS'));
 		
 		var_dump($this->storesFilter);
