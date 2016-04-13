@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 2.0.4 2016-04-13
+* Require: PrestaShop 1.6.1.x +
+* Require: PHP >= 5.5
+* Require: ComproPago SDK 1.1.0 +
+* Feature: Se puede seleccionar que tiendas se desean mostrar como opción de pago 
+
+## 2.0.4 RC 2016-04-05
+* Require: PrestaShop 1.6.1.x +
+* Require: PHP >= 5.5
+* Require: ComproPago SDK 1.1.0 +
+* Feature: Se puede seleccionar que tiendas se desean mostrar como opción de pago 
+
 ## 2.0.3 2016-03-18
 * Require: PrestaShop 1.6.1.x +
 * Require: PHP >= 5.5
