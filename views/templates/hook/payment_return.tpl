@@ -17,21 +17,67 @@
 * @since 2.0.0
 *}
 
+
+
 {if $status == 'ok'}
-	<p>{l s='Your order on %s is complete.' sprintf=$shop_name mod='compropago'}</p>
+    <div class="cprow">
+        <div class="cpcolumn">
+            <h2>{l s='Your order on %s is complete.' sprintf=$shop_name mod='compropago'}</h2>
+        </div>
+    </div>
+    <div class="cprow">
+        <div class="cpcolumn">
+            <table class="cptable">
+                <thead>
+                    <tr>
+                        <th style="width:30%;">Detalle</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Numero de orden</td>
+                        <td>{$id_order}</td>
+                    </tr>
+
+                    {if isset($reference)}
+                        <tr>
+                            <td>Numero de referencia de la orden</td>
+                            <td>{$reference}</td>
+                        </tr>
+                    {/if}
+
+                    <tr>
+                        <td>Monto total a pagar</td>
+                        <td>{$total_to_pay}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <div class="cprow">
+        <div class="cpcolumn">
+            <blockquote>
+                {l s='An email has been sent to you with this information.' mod='compropago'} <br>
+
+                <strong>{l s='Your order will be sent as soon as we receive your payment.' mod='compropago'}</strong>
+
+                <br>
+
+                {l s='For any questions or for further information, please contact our' mod='compropago'}
+                <a href="{$link->getPageLink('contact', true)|escape:'html'}">
+                    {l s='customer service department.' mod='compropago'}
+                </a>
+            </blockquote>
+        </div>
+    </div>
+
 	<p>
 		{include file="$compropagoTpl"}
 	</p>
-	<p>	
-		<br /><br />- {l s='Your order number #%d.' sprintf=$id_order mod='compropago'}
-		{if isset($reference)}
-			<br /><br />- {l s='Your order reference %s.' sprintf=$reference mod='compropago'}
-		{/if}
-		<br /><br />- {l s='Payment amount.' mod='compropago'} <span class="price"><strong>{$total_to_pay}</strong></span>
-		<br /><br />{l s='An email has been sent to you with this information.' mod='compropago'}
-		<br /><br /><strong>{l s='Your order will be sent as soon as we receive your payment.' mod='compropago'}</strong>
-		<br /><br />{l s='For any questions or for further information, please contact our' mod='compropago'} <a href="{$link->getPageLink('contact', true)|escape:'html'}">{l s='customer service department.' mod='compropago'}</a>.
-	</p>
+
 {else}
 	<p class="warning">
 		{l s='We have noticed that there is a problem with your order. If you think this is an error, you can contact our' mod='compropago'} 

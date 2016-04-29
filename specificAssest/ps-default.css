@@ -46,6 +46,13 @@
 }
 
 
+/* Links
+-------------------------------------------------- */
+.cprow a, .cpcontainer a{
+    color: #33C3F0 !important;
+}
+
+
 /* Grid
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 .cpcontainer {
@@ -222,4 +229,21 @@ table.cptable.hover tr:hover {
 
 table.cptable.hover tr:nth-of-type(even):hover {
   background-color: #ececec; }
+
+
+
+/* Blockquotes
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+blockquote {
+    border-left: 0.3rem solid #33C3F0;
+    margin-left: 0;
+    margin-right: 0;
+    padding: 1rem 1.5rem;
+    background-color: #F4F5F6;
+    color: #000 !important;
+}
+blockquote *:last-child {
+    margin: 0;
+}
 
