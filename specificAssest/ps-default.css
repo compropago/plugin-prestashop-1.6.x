@@ -4,11 +4,12 @@
 
 /* Buttons
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
-.cpbutton {
+.cpbutton,
+a.cpbutton{
     display: inline-block;
     height: 38px;
     padding: 0 30px;
-    color: #555;
+    color: #555 !important;
     text-align: center;
     font-size: 11px;
     font-weight: 600;
@@ -26,21 +27,26 @@
 }
 
 .cpbutton:hover,
-.cpbutton:focus {
-    color: #333;
+.cpbutton:focus,
+a.cpbutton:hover,
+a.cpbutton:focus {
+    color: #333 !important;
     border-color: #888;
     outline: 0;
 }
 
-.cpbutton.cpbutton-primary {
-    color: #FFF;
+.cpbutton.cpbutton-primary,
+a.cpbutton.cpbutton-primary{
+    color: #FFF !important;
     background-color: #33C3F0;
     border-color: #33C3F0;
 }
 
 .cpbutton.cpbutton-primary:hover,
-.cpbutton.cpbutton-primary:focus {
-    color: #FFF;
+.cpbutton.cpbutton-primary:focus,
+a.cpbutton.cpbutton-primary:hover,
+a.cpbutton.cpbutton-primary:focus{
+    color: #FFF !important;
     background-color: #1EAEDB;
     border-color: #1EAEDB;
 }
@@ -49,7 +55,7 @@
 /* Links
 -------------------------------------------------- */
 .cprow a, .cpcontainer a{
-    color: #33C3F0 !important;
+    color: #33C3F0;
 }
 
 
@@ -246,4 +252,9 @@ blockquote {
 blockquote *:last-child {
     margin: 0;
 }
+
+/* Alerts
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+
 

@@ -22,14 +22,10 @@
  * Seccion de Steps
  *}
 
-<div class="cprow">
-    <div class="cpcolumn">
-        <h2>{l s='Order summary' mod='compropago'}</h2>
+<h2>{l s='Order summary' mod='compropago'}</h2>
 
-        {assign var='current_step' value='payment'}
-        {include file="$tpl_dir./order-steps.tpl"}
-    </div>
-</div>
+{assign var='current_step' value='payment'}
+{include file="$tpl_dir./order-steps.tpl"}
 
 {**
  * Seccion de Link
@@ -50,7 +46,9 @@
 {if isset($nbProducts) && $nbProducts <= 0}
     <div class="cprow">
         <div class="cpcolumn">
-            <p class="warning">{l s='Your shopping cart is empty.' mod='compropago'}</p>
+            <div class="cpalert">
+                {l s='Your shopping cart is empty.' mod='compropago'}
+            </div>
         </div>
     </div>
 {else}

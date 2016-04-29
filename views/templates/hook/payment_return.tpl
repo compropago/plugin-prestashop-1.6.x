@@ -74,13 +74,20 @@
         </div>
     </div>
 
-	<p>
-		{include file="$compropagoTpl"}
-	</p>
+
+    <div class="cprow">
+        <div class="cpcolumn">
+            {include file="$compropagoTpl"}
+        </div>
+    </div>
 
 {else}
-	<p class="warning">
-		{l s='We have noticed that there is a problem with your order. If you think this is an error, you can contact our' mod='compropago'} 
-		<a href="{$link->getPageLink('contact', true)|escape:'html'}">{l s='customer service department.' mod='compropago'}</a>.
-	</p>
+    <div class="cprow">
+        <div class="cpcolumn">
+            <div class="cpalert">
+                {l s='We have noticed that there is a problem with your order. If you think this is an error, you can contact our' mod='compropago'}
+                <a href="{$link->getPageLink('contact', true)|escape:'html'}">{l s='customer service department.' mod='compropago'}</a>.
+            </div>
+        </div>
+    </div>
 {/if}
