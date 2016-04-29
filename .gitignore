@@ -4,6 +4,5 @@
 .settings
 composer.lock
 dev-notes
-
-.DS_Store
+.idea
 phpunit.xml
