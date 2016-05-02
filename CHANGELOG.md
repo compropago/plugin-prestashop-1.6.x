@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2.0.5 2016-05-02
+* Require: PrestaShop 1.6.1.x +
+* Require: PHP >= 5.5
+* Require: ComproPago SDK 1.1.0 +
+* Feature: Mejora en las vistas de seleccion de tienda y page success del proceso de compra 
+
 ## 2.0.4 2016-04-13
 * Require: PrestaShop 1.6.1.x +
 * Require: PHP >= 5.5
