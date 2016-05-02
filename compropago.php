@@ -327,9 +327,14 @@ class Compropago extends PaymentModule
 	 * @param unknown $params
 	 * @since 2.0.0
 	 */
-	public function hookDisplayHeader($params){
+	public function hookDisplayHeader($params)
+    {
 		//add css
 		$this->context->controller->addCSS($this->_path.'vendor/compropago/php-sdk/assets/css/compropago.css', 'all');
+		$this->context->controller->addCSS($this->_path.'specificAssest/ps-default.css', 'all');
+
+        //add js
+        $this->context->controller->addJS($this->_path.'specificAssest/ps-default.js', 'all');
 	}
 
 
@@ -786,7 +791,7 @@ class Compropago extends PaymentModule
 					$compropagoData=null;
 			}
 			
-			
+
 		}
 		
 		
