@@ -113,7 +113,8 @@
                     {foreach from=$providers item=provider}
                         <li>
                             <input name="compropagoProvider" id="cp_{$provider->internal_name}" type="radio" value="{$provider->internal_name}">
-                            <label for="cp_{$provider->internal_name}">
+
+                            <label class="cp-provider" for="cp_{$provider->internal_name}">
                                 <img src="{$provider->image_medium}" alt="{$provider->name}">
                             </label>
                         </li>
@@ -122,11 +123,13 @@
 
             {else}
 
-                <select name="compropagoProvider" class="providers_list">
-                    {foreach from=$providers item=provider}
-                        <option value="{$provider->internal_name}">{$provider->name}</option>
-                    {/foreach}
-                </select>
+                <div id="cppayment_store">
+                    <select name="compropagoProvider" class="providers_list">
+                        {foreach from=$providers item=provider}
+                            <option value="{$provider->internal_name}">{$provider->name}</option>
+                        {/foreach}
+                    </select>
+                </div>
 
             {/if}
         </div>

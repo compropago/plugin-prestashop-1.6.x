@@ -19,39 +19,28 @@
  */
 
 function StylerProviders(){
-
     var that = this;
 
-    this.labels = document.querySelectorAll(".compropagoProviderDesc");
+    this.labels = document.querySelectorAll("ul.providers_list label img");
 
     this.init = function(){
         that.clickProvider();
+        console.log(that.labels);
     };
 
     this.clickProvider = function(){
         for(count = 0; count < that.labels.length; count++){
-            that.labels[count].addEventListener("click",function(evt){
-                var image = evt.target;
-
+            that.labels[count].addEventListener("click", function(evt){
                 that.clearProviders();
 
-                image.setAttribute("style",
-                    "cursor: pointer;"+
-                    "opacity: 1;"+
-                    "border-radius: 8px;"+
-                    "-webkit-border-radius: 8px;"+
-                    "-moz-border-radius: 8px;"+
-                    "box-shadow: 0px 0px 2px 4px rgba(0,170,239,1);"+
-                    "-webkit-box-shadow: 0px 0px 2px 4px rgba(0,170,239,1);"+
-                    "-moz-box-shadow: 0px 0px 2px 4px rgba(0,170,239,1);"
-                );
+                this.classList.add('provider_selected');
             });
         }
     };
 
     this.clearProviders = function(){
         for(count = 0; count < that.labels.length; count++){
-            that.labels[count].childNodes[1].setAttribute("style","border: 0;");
+            that.labels[count].classList.remove('provider_selected');
         }
     };
 
