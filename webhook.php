@@ -19,162 +19,206 @@
  * @author Rolando Lucio <rolando@compropago.com>
  * @since 2.0.0
  */
-//valid request type??
-$request = @file_get_contents('php://input');
-if(!$jsonObj = json_decode($request)){
-	die('Tipo de Request no Valido');
-}
-//Include prestashop files
-$prestaFiles= array(
-		__DIR__.'/../../config/config.inc.php',
-		__DIR__.'/../../init.php',
-		__DIR__.'/../../classes/PrestaShopLogger.php'
-);
-foreach($prestaFiles as $prestaFile){
-	if(file_exists($prestaFile)){
-		include_once	$prestaFile;
-	}else{
-		echo "ComproPago Warning: No se encontro el archivo de Prestashop:".$prestaFile."<br>";
-	}
-}
-//prestashop Rdy?
+
+require_once __DIR__.'/vendor/autoload.php';
+require_once __DIR__.'/../../config/config.inc.php';
+require_once __DIR__.'/../../init.php';
+require_once __DIR__.'/../../classes/PrestaShopLogger.php';
+
+require_once __DIR__.'/../../classes/order/Order.php';
+require_once __DIR__.'/../../classes/order/OrderHistory.php';
+
+
 if (!defined('_PS_VERSION_')){
-	die("No se pudo inicializar Prestashop");
-}
-//include ComproPago SDK & dependecies via composer autoload
-$compropagoComposer= __DIR__.'/vendor/autoload.php';
-if ( file_exists( $compropagoComposer ) ){
-	require $compropagoComposer;
-}else{
-	die('No se encontro el autoload para Compropago y sus dependencias:'.$compropagoComposer);
-}
-//Compropago Plugin Installed?
-if (!Module::isInstalled('compropago')){
-	die('El módulo de ComproPago no se encuentra instalado');
-}
-//Get ComproPago Prestashop Config values
-$config = Configuration::getMultiple(array('COMPROPAGO_PUBLICKEY', 'COMPROPAGO_PRIVATEKEY','COMPROPAGO_MODE'));
-//keys set?
-if (!isset($config['COMPROPAGO_PUBLICKEY']) || !isset($config['COMPROPAGO_PRIVATEKEY'])
-	|| empty($config['COMPROPAGO_PUBLICKEY']) || empty($config['COMPROPAGO_PRIVATEKEY'])){
-	die("Se requieren las llaves de compropago");
+    die("No se pudo inicializar Prestashop");
 }
 
-//Compropago SDK config
-if($config['COMPROPAGO_MODE']==true){
-	$moduleLive=true;
-}else {
-	$moduleLive=false;
+
+/**
+ * Se hace la inclucion directa de las siguientes 3 clases necesarias para validar la peticion
+ */
+use CompropagoSdk\Factory\Factory;
+use CompropagoSdk\Client;
+use CompropagoSdk\Tools\Validations;
+
+
+/**
+ * Se captura la informacion enviada desde compropago
+ */
+$request = @file_get_contents('php://input');
+
+
+/**
+ * Se valida el request y se transforma con la cadena a un objeto de tipo CpOrderInfo con el Factory
+ */
+if(empty($request) || !$resp_webhook = Factory::cpOrderInfo($request)){
+    die('Tipo de Request no Valido');
 }
-$compropagoConfig= array(
-		'publickey'=>$config['COMPROPAGO_PUBLICKEY'],
-		'privatekey'=>$config['COMPROPAGO_PRIVATEKEY'],
-		'live'=>$moduleLive,
-		'contained'=>'plugin; cpps 2.0.0; prestashop '._PS_VERSION_.'; webhook;'		
-);
-// consume sdk methods
+
+
+
+/**
+ * Get Prestashop Configuratión
+ */
+$config = Configuration::getMultiple(array('COMPROPAGO_PUBLICKEY', 'COMPROPAGO_PRIVATEKEY','COMPROPAGO_MODE'));
+
+
+
+/**
+ * Gurdamos la informacion necesaria para el Cliente
+ * las llaves de compropago y el modo de ejecucion de la tienda
+ */
+$publickey     = $config['COMPROPAGO_PUBLICKEY'];
+$privatekey    = $config['COMPROPAGO_PRIVATEKEY'];
+$live          = ($config['COMPROPAGO_MODE']==true);
+
+
+/**
+ * Se valida que las llaves no esten vacias (No es obligatorio pero si recomendado)
+ */
+//keys set?
+if (empty($publickey) || empty($privatekey)){
+    die("Se requieren las llaves de compropago");
+}
+
+
 try{
-	$compropagoClient = new Compropago\Sdk\Client($compropagoConfig);
-	$compropagoService = new Compropago\Sdk\Service($compropagoClient);
-	// Valid Keys?
-	if(!$compropagoResponse = $compropagoService->evalAuth()){
-		die("ComproPago Error: Llaves no validas");
-	}
-	// Store Mode Vs ComproPago Mode, Keys vs Mode & combinations
-	if(! Compropago\Sdk\Utils\Store::validateGateway($compropagoClient)){
-		die("ComproPago Error: La tienda no se encuentra en un modo de ejecución valido");
-	}
+    /**
+     * Se incializa el cliente
+     */
+    $client = new Client(
+        $publickey,
+        $privatekey,
+        $live,
+        'plugin; cpps 2.0.0; prestashop '._PS_VERSION_.'; webhook;'
+    );
+
+    /**
+     * Validamos que nuestro cliente pueda procesar informacion
+     */
+    Validations::validateGateway($client);
 }catch (Exception $e) {
-	//something went wrong at sdk lvl
-	die($e->getMessage());
+    //something went wrong at sdk lvl
+    die($e->getMessage());
 }
-//api normalization
-if($jsonObj->api_version=='1.0'){
-	$jsonObj->id=$jsonObj->data->object->id;
-	$jsonObj->short_id=$jsonObj->data->object->short_id;  
+
+
+/**
+ * Verificamos si recivimos una peticion de prueba
+ */
+if($resp_webhook->getId()=="ch_00000-000-0000-000000"){
+    die("Probando el WebHook?, Ruta correcta.");
 }
-//webhook Test?
-if($jsonObj->id=="ch_00000-000-0000-000000" || $jsonObj->short_id =="000000"){
-	die("Probando el WebHook?, ruta correcta.");
-}
+
 try{
-	$response = $compropagoService->verifyOrder($jsonObj->id);
-	if($response->type=='error'){
-		die('Error procesando el número de orden');
-	}
-	if(!Db::getInstance()->execute("SHOW TABLES LIKE '"._DB_PREFIX_ ."compropago_orders'") ||
-			!Db::getInstance()->execute("SHOW TABLES LIKE '"._DB_PREFIX_ ."compropago_transactions'")
-			){
-				die('ComproPago Tables Not Found');
-	}
-	switch ($response->type){
-		case 'charge.success':
-			$nomestatus = "COMPROPAGO_SUCCESS";
-			break;
-		case 'charge.pending':
-			$nomestatus = "COMPROPAGO_PENDING";
-			break;    
-		case 'charge.declined':
-			$nomestatus = "COMPROPAGO_DECLINED"; 
-			break;    
-		case 'charge.expired':
-			$nomestatus = "COMPROPAGO_EXPIRED";
-			break;    
-	    case 'charge.deleted':
-			$nomestatus = "COMPROPAGO_DELETED";     
-			break; 
-		case 'charge.canceled':
-			$nomestatus = "COMPROPAGO_CANCELED";     
-			break; 
-		default:
-			die('Invalid Response type');
-	}
-	
-	$sql = "SELECT * FROM "._DB_PREFIX_."compropago_orders	WHERE compropagoId = '".$response->id."' ";
-	
-	if ($row = Db::getInstance()->getRow($sql)){
-		
-		$id_order=intval($row['storeOrderId']);
-		$recordTime=time();
-		
-		$extraVars = array();
-		$history = new OrderHistory();
-		$history->id_order = $id_order;
-		$history->changeIdOrderState((int)Configuration::get($nomestatus),$history->id_order);
-		//$history->addWithemail(true,$extraVars);
-		$history->addWithemail();
-		$history->save();
-		
-		$sql = "UPDATE `"._DB_PREFIX_."compropago_orders` 
-				SET `modified` = '".$recordTime."', `compropagoStatus` = '".$response->type."', `storeExtra` = '".$nomestatus."' 
-				 WHERE `id` = '".$row['id']."'";
-		if(!Db::getInstance()->execute($sql)){
-			die("Error Updating ComproPago Order Record at Store");
-		}
-		//bas64 cause prestashop db
-		//webhook
-		$ioIn=base64_encode(json_encode($jsonObj));
-		//verify response
-		$ioOut=base64_encode(json_encode($response));
-		
-		Db::getInstance()->autoExecute(_DB_PREFIX_ . 'compropago_transactions', array(
-				'orderId' 			=> $row['id'],
-				'date' 				=> $recordTime,
-				'compropagoId'		=> $response->id,
-				'compropagoStatus'	=> $response->type,
-				'compropagoStatusLast'	=> $row['compropagoStatus'],
-				'ioIn' 				=> $ioIn,
-				'ioOut' 			=> $ioOut
-		),'INSERT');
-		
-		echo('Orden '.$jsonObj->id.' Confirmada');
-		
-	}else{		
-		die('El número de orden no se encontro en la tienda');
-	}	
+    /**
+     * Verificamos la informacion del Webhook recivido
+     */
+    $response = $client->api->verifyOrder($resp_webhook->getId());
+
+
+    /**
+     * Comprovamos que la verificacion fue exitosa
+     */
+    if($response->getType() == 'error'){
+        die('Error procesando el numero de orden');
+    }
+
+
+    /**
+     * Validate transaction tables
+     */
+    if(
+        !Db::getInstance()->execute("SHOW TABLES LIKE '"._DB_PREFIX_ ."compropago_orders'") ||
+        !Db::getInstance()->execute("SHOW TABLES LIKE '"._DB_PREFIX_ ."compropago_transactions'")
+    ){
+        die('ComproPago Tables Not Found');
+    }
+
+
+
+    $sql = "SELECT * FROM "._DB_PREFIX_."compropago_orders	WHERE compropagoId = '".$response->getId()."' ";
+
+
+    if ($row = Db::getInstance()->getRow($sql)){
+
+        /**
+         * Generamos las rutinas correspondientes para cada uno de los casos posible del webhook
+         */
+        switch ($response->getType()){
+            case 'charge.success':
+                $nomestatus = "COMPROPAGO_SUCCESS";
+                break;
+            case 'charge.pending':
+                $nomestatus = "COMPROPAGO_PENDING";
+                break;
+            case 'charge.declined':
+                $nomestatus = "COMPROPAGO_DECLINED";
+                break;
+            case 'charge.expired':
+                $nomestatus = "COMPROPAGO_EXPIRED";
+                break;
+            case 'charge.deleted':
+                $nomestatus = "COMPROPAGO_DELETED";
+                break;
+            case 'charge.canceled':
+                $nomestatus = "COMPROPAGO_CANCELED";
+                break;
+            default:
+                die('Invalid Response type');
+        }
+
+
+        /**
+         * Cambio de estatus para las ordenes
+         */
+        $id_order   = intval($response->getOrderInfo()->getOrderId());
+        $recordTime = time();
+
+        $order   = new Order($id_order);
+        $history = new OrderHistory();
+
+        $history->id_order = (int)$order->id;
+        $history->changeIdOrderState((int)Configuration::get($nomestatus), (int)($order->id));
+
+        $history->addWithemail();
+        $history->save();
+
+
+
+        /**
+         * Actualizacion de base de datos
+         */
+        $prefix = _DB_PREFIX_;
+        $sql = "UPDATE `{$prefix}compropago_orders` SET `modified` = '$recordTime', `compropagoStatus` = '{$response->getType()}', `storeExtra` = '$nomestatus' WHERE `id` = '{$response->getId()}'";
+
+        if(!Db::getInstance()->execute($sql)){
+            die("Error Updating ComproPago Order Record at Store");
+        }
+
+        $ioIn  = base64_encode(serialize($resp_webhook));
+        $ioOut = base64_encode(serialize($response));
+
+        Db::getInstance()->autoExecute(_DB_PREFIX_ . 'compropago_transactions', array(
+            'orderId' 			   => $row['id'],
+            'date' 				   => $recordTime,
+            'compropagoId'		   => $response->getId(),
+            'compropagoStatus'	   => $response->getType(),
+            'compropagoStatusLast' => $row['compropagoStatus'],
+            'ioIn' 				   => $ioIn,
+            'ioOut' 			   => $ioOut
+        ),'INSERT');
+
+        echo('Orden '.$resp_webhook->getId().' Confirmada');
+
+    }else{
+        die('El número de orden no se encontro en la tienda');
+    }
+
 }catch (Exception $e){
-	//something went wrong at sdk lvl
-	die($e->getMessage());
+    //something went wrong at sdk lvl
+    die($e->getMessage());
 }
-			
+
+
 

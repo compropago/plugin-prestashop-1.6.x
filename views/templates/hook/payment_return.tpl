@@ -77,9 +77,32 @@
 
     <div class="cprow">
         <div class="cpcolumn">
-            {include file="$compropagoTpl"}
+            <div id="compropagoContainer">
+                <iframe id="compropagoFrame" src="https://compropago.com/comprobante?confirmation_id={$order_id}" frameborder="0"></iframe>
+            </div>
         </div>
     </div>
+
+    <script type="text/javascript">
+        function resizeIframe() {
+            var container=document.getElementById("compropagodContainer");
+            var iframe=document.getElementById("compropagodFrame");
+            if(iframe && container){
+                var ratio=585/811;
+                var width=container.offsetWidth;
+                var height=(width/ratio);
+                if(height>937){ height=937;}
+                iframe.style.width=width + 'px';
+                iframe.style.height=height + 'px';
+            }
+        }
+        window.onload = function(event) {
+            resizeIframe();
+        };
+        window.onresize = function(event) {
+            resizeIframe();
+        };
+    </script>
 
 {else}
     <div class="cprow">

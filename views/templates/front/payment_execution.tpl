@@ -58,7 +58,7 @@
 
 <div class="cprow">
     <div class="ten cpcolumns">
-        <h3>Resumen - {l s='ComproPago payment' mod='compropago'}</h3>
+        <h3>{$description}</h3>
     </div>
     <div class="two cpcolumns">
         <img src="{$this_path_compropago}logo-badge.png" alt="{l s='ComproPago' mod='compropago'}" width="86" height="49" style="float:left; margin: 0px 10px 5px 0px;" />
@@ -101,13 +101,34 @@
 
     <div class="cprow">
         <div class="cpcolumn">
-            <h4>Seleccion de tienda</h4>
+            <h4>{$instructions}</h4>
         </div>
     </div>
 
     <div class="cprow">
         <div class="cpcolumn">
-            {include file="$compropagoTpl"}
+            {if $show_logos == true}
+
+                <ul class="providers_list">
+                    {foreach from=$providers item=provider}
+                        <li>
+                            <input name="compropagoProvider" id="cp_{$provider->internal_name}" type="radio" value="{$provider->internal_name}">
+                            <label for="cp_{$provider->internal_name}">
+                                <img src="{$provider->image_medium}" alt="{$provider->name}">
+                            </label>
+                        </li>
+                    {/foreach}
+                </ul>
+
+            {else}
+
+                <select name="compropagoProvider" class="providers_list">
+                    {foreach from=$providers item=provider}
+                        <option value="{$provider->internal_name}">{$provider->name}</option>
+                    {/foreach}
+                </select>
+
+            {/if}
         </div>
     </div>
 
