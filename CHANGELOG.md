@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 2.1.0 2016-11-10
+* Require: PrestaShop 1.6.1.x
+* Require: PHP >= 5.5
+* Require: ComproPago SDK 2.1.0
+* Feature: Fltro de Proveedores por monto
+* Feature: correccion de estilos en vistas
+* Bugfix: Actualizacion de estatus en el webhook
+
 ## 2.0.5 2016-05-02
 * Require: PrestaShop 1.6.1.x +
 * Require: PHP >= 5.5

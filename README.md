@@ -1,4 +1,4 @@
-> ## Si llego buscando el archivo de instalación para su tienda [Descargue la última versión dando click Aquí] [compropago-2-0-x]
+## Si llego buscando el archivo de instalación para su tienda [Descargue la última versión dando click Aquí](https://github.com/compropago/plugin-prestashop/releases)
 
 Plugin para PrestaShop ( 1.6.1.x + ) - ComproPago 
 =================================================
@@ -7,7 +7,7 @@ Este modulo provee el servicio de ComproPago para poder generar intenciones de p
 
 Con ComproPago puede recibir pagos en OXXO, 7Eleven y muchas tiendas más en todo México.
 
-[Registrarse en ComproPago ] (https://compropago.com)
+[Registrarse en ComproPago](https://compropago.com)
 
 ## Ayuda y Soporte de ComproPago
 
@@ -17,10 +17,10 @@ Con ComproPago puede recibir pagos en OXXO, 7Eleven y muchas tiendas más en tod
 - [Información de Contacto](https://compropago.com/contacto)
 
 ## Requerimientos
-* [PrestaShop 1.6.1.x +] (https://www.prestashop.com/)
-* [PHP >= 5.5] (http://www.php.net/)
-* [PHP JSON extension] (http://php.net/manual/en/book.json.php)
-* [PHP cURL extension] (http://php.net/manual/en/book.curl.php)
+* [PrestaShop 1.6.1.x +](https://www.prestashop.com/)
+* [PHP >= 5.5](http://www.php.net/)
+* [PHP JSON extension](http://php.net/manual/en/book.json.php)
+* [PHP cURL extension](http://php.net/manual/en/book.curl.php)
 
 
 ## Instalación
@@ -37,17 +37,17 @@ Con ComproPago puede recibir pagos en OXXO, 7Eleven y muchas tiendas más en tod
 ### Documentación ComproPago Plugin Prestashop
 
 ### Documentación de ComproPago
-**[API de ComproPago] (https://compropago.com/documentacion/api)**
+**[API de ComproPago](https://compropago.com/documentacion/api)**
 
 ComproPago te ofrece un API tipo REST para integrar pagos en efectivo en tu comercio electrónico o tus aplicaciones.
 
 
-**[General] (https://compropago.com/documentacion)**
+**[General](https://compropago.com/documentacion)**
 
 Información de Comisiones y Horarios, como Transferir tu dinero y la Seguridad que proporciona ComproPAgo
 
 
-**[Herramientas] (https://compropago.com/documentacion/boton-pago)**
+**[Herramientas](https://compropago.com/documentacion/boton-pago)**
 * Botón de pago
 * Modo de pruebas/activo
 * WebHooks
@@ -63,16 +63,3 @@ Información de Comisiones y Horarios, como Transferir tu dinero y la Seguridad 
 3. Una vez agregada la dirección, dar click en el botón "Probar", recibira un mensaje similar a "Pruebas: El webhook esta correctamente instalado." con este mensaje la instalación queda completada.
 
 
-## Guía de Versiones
-
-| Version | Status      |  PrestaShop   | PHP     | Archivo                    | 
-|---------|-------------|---------------|---------|----------------------------|
-| 1.0.0   | EOL		| 1.5.x a 1.6.0 | 5.2 +   | [v1.0.0][compropago-1-0-0] |
-| 2.0.2   | EOL      | 1.6.1.x + 	| 5.4 +   | [v2.0.2][compropago-2-0-2] |
-| 2.0.x   | Latest      | 1.6.1.x + 	| 5.5 +   | [v2.0.x][compropago-2-0-x] |
-
-
-
-[compropago-2-0-x]: https://s3.amazonaws.com/compropago/plugins/prestashop/compropago-ps-2-0-x.zip
-[compropago-2-0-2]: https://s3.amazonaws.com/compropago/plugins/prestashop/compropago-ps-2-0-2.zip
-[compropago-1-0-0]: https://s3.amazonaws.com/compropago/plugins/prestashop/compropago-ps-1-0-0.zip

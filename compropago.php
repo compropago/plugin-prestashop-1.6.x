@@ -19,16 +19,14 @@
  * @since 2.0.0
  */
 
-if (!defined('_PS_VERSION_'))
-	exit;
-
-$compropagoComposer= __DIR__.'/vendor/autoload.php';
-
-if ( file_exists( $compropagoComposer ) ){
-	require $compropagoComposer;
-}else{
-	exit('No se encontro el autoload para Compropago y sus dependencias:'.$compropagoComposer);
+if (!defined('_PS_VERSION_')) {
+    exit;
 }
+
+require_once __DIR__.'/vendor/autoload.php';
+
+
+
 
 class Compropago extends PaymentModule
 {
@@ -43,10 +41,8 @@ class Compropago extends PaymentModule
 	public $modoExec;
 	public $showLogo;
 	public $filterStores;
-	
-	public $compropagoConfig;
-	public $compropagoClient;
-	public $compropagoService;
+
+	public $client;
 	
 	/**
 	 * set & get module config
@@ -55,43 +51,44 @@ class Compropago extends PaymentModule
 	public function __construct()
 	{
 		//Current module version & config
-		$this->version = '2.0.5';
+		$this->version = '2.1.0';
 		
 		
-		$this->name = 'compropago';
-		$this->tab = 'payments_gateways';
-		$this->author = 'ComproPago';
-		$this->controllers = array('payment', 'validation');
+		$this->name             = 'compropago';
+		$this->tab              = 'payments_gateways';
+		$this->author           = 'ComproPago';
+		$this->controllers      = array('payment', 'validation');
 		$this->is_eu_compatible = 1;
 		
 		//currencies setup
-		$this->currencies = true;
+		$this->currencies      = true;
 		$this->currencies_mode = 'checkbox';
 		
 		// have module been set
-		$config = Configuration::getMultiple(array('COMPROPAGO_PUBLICKEY', 'COMPROPAGO_PRIVATEKEY',
-				'COMPROPAGO_MODE', 'COMPROPAGO_LOGOS','COMPROPAGO_PROVIDER'));
-		if (isset($config['COMPROPAGO_PUBLICKEY']))
-			$this->publicKey = $config['COMPROPAGO_PUBLICKEY'];
-		if (isset($config['COMPROPAGO_PRIVATEKEY']))
-			$this->privateKey = $config['COMPROPAGO_PRIVATEKEY'];
+		$config = Configuration::getMultiple(array('COMPROPAGO_PUBLICKEY', 'COMPROPAGO_PRIVATEKEY', 'COMPROPAGO_MODE', 'COMPROPAGO_LOGOS','COMPROPAGO_PROVIDER'));
+
+        if (isset($config['COMPROPAGO_PUBLICKEY'])) {
+            $this->publicKey = $config['COMPROPAGO_PUBLICKEY'];
+        }
+
+		if (isset($config['COMPROPAGO_PRIVATEKEY'])) {
+            $this->privateKey = $config['COMPROPAGO_PRIVATEKEY'];
+        }
+
 		$this->modoExec=(isset($config['COMPROPAGO_MODE']))?$config['COMPROPAGO_MODE']:false;
 		$this->showLogo=(isset($config['COMPROPAGO_LOGOS']))?$config['COMPROPAGO_LOGOS']:false;
 		
 		//most load selected
-		//$this->filterStores=Tools::getValue('COMPROPAGO_PROVIDERS_available', Configuration::get('COMPROPAGO_PROVIDERS_selected'));
-		//$this->filterStores=Configuration::get('COMPROPAGO_PROVIDERS');
-		$this->filterStores=explode(',',$config['COMPROPAGO_PROVIDER'] );
+		$this->filterStores = explode(',',$config['COMPROPAGO_PROVIDER'] );
 		
-	
-		//var_dump($this->filterStores);
-	
+
 		$this->bootstrap = true;
+
 		parent::__construct();
 		
 		//about ComproPago Module
-		$this->displayName = $this->l('ComproPago');
-		$this->description = $this->l('This module allows you to accept payments in Mexico stores like OXXO, 7Eleven and More.');
+		$this->displayName      = $this->l('ComproPago');
+		$this->description      = $this->l('This module allows you to accept payments in Mexico stores like OXXO, 7Eleven and More.');
 		$this->confirmUninstall = $this->l('Are you sure you want to uninstall ComproPago?');
 		
 		// need some keys
@@ -99,128 +96,96 @@ class Compropago extends PaymentModule
 			$this->warning = $this->l('The Public Key and Private Key must be configured before using this module.');
 		}
 
-
-		//no operation mode defined?
-		/*if ( !isset($this->modoExec)  ){
-			$this->warning = $this->l('The Mode is required');
-		}*/
-
-
         $this->serviceFlag = $this->setComproPago($this->modoExec);
 
-   		$itsBE=null;
-   
+   		$itsBE = null;
     
-   	// It's Back End?
-    if($this->context->employee){
-    	$itsBE=true;
-    }
-    
-    	
-    if($itsBE){	
+   	    // It's Back End?
+        if($this->context->employee){
+        	$itsBE = true;
+        }
 
-        if($this->active && isset($this->publicKey) && isset($this->privateKey) &&
-            !empty($this->publicKey) && !empty($this->privateKey)  ){
-            if($this->serviceFlag){
-                try{
-                    //eval keys
-                    if(!$compropagoResponse = $this->compropagoService->evalAuth()){
-                        $this->warning .= $this->l('Invalid Keys, The Public Key and Private Key must be valid before using this module.');
-                    }else{
-                        if($compropagoResponse->mode_key != $compropagoResponse->livemode){
-                            // compropagoKey vs compropago Mode
-                            $this->warning .= $this->l('Your Keys and Your ComproPago account are set to different Modes.');
-                        }else{
-                            if($this->modoExec != $compropagoResponse->livemode){
-                                // store Mode vs compropago Mode
-                                $this->warning .= $this->l('Your Store and Your ComproPago account are set to different Modes.');
-                            }else{
-                                if($this->modoExec != $compropagoResponse->mode_key){
-                                    // store Mode vs compropago Keys
-                                    $this->warning .= $this->l('ComproPago ALERT:Your Keys are for a different Mode.');
-                                }else{
-                                    if(!$compropagoResponse->mode_key && !$compropagoResponse->livemode){
-                                        //can process orders but watch out, NOT live operations just testing
-                                        $this->warning .= $this->l('WARNING: ComproPago account is Running in TEST Mode');
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }catch (\Exception $e) {
-                    //something went wrong on the SDK side
-                    $this->warning .= $e->getMessage(); //may not be show or translated
-                }
-            }else{
-                $this->warning .= $this->l('Could not load ComproPago SDK instances.');
+
+        if($itsBE){
+            $hook_data = $this->hookRetro(true, $this->publicKey, $this->privateKey, $this->modoExec);
+
+            if($hook_data[0]){
+                $this->warning = $this->l($hook_data[1]);
             }
         }
-    }
 
 
-		if (!count(Currency::checkPaymentCurrencies($this->id)))
-			$this->warning = $this->l('No currency has been set for this module.');
+		if (!count(Currency::checkPaymentCurrencies($this->id))) {
+            $this->warning = $this->l('No currency has been set for this module.');
+        }
 
-		/*$this->extra_mail_vars = array(
-											'{COMPROPAGO_PUBLICKEY}' => Configuration::get('COMPROPAGO_PUBLICKEY'),
-											'{COMPROPAGO_PRIVATEKEY}' => Configuration::get('COMPROPAGO_PRIVATEKEY'),
-											'{COMPROPAGO_PRIVATEKEY_html}' => str_replace("\n", '<br />', Configuration::get('COMPROPAGO_PRIVATEKEY'))
-											); */
 	}
 
 
     /**
      * Generacion de retro alimentacion de configuracion al guardar ;
      * necesita activarse en getcontent ... Evaluar
-     * @return void
+     * @return array
      * @since 2.0.2
      */
-    private function hookRetroalimentacion()
+    public function hookRetro($enabled, $publickey, $privatekey, $live)
     {
-        //Lets eval keys and mode
-        if($this->active && isset($this->publicKey) && isset($this->privateKey) &&
-            !empty($this->publicKey) && !empty($this->privateKey)  ){
-            if($this->serviceFlag){
+        $error = array(
+            false,
+            '',
+            'yes'
+        );
+        if($enabled){
+            if(!empty($publickey) && !empty($privatekey) ){
                 try{
+                    $client = new CompropagoSdk\Client(
+                        $publickey,
+                        $privatekey,
+                        $live
+                    );
+                    $compropagoResponse = CompropagoSdk\Tools\Validations::evalAuth($client);
                     //eval keys
-                    if(!$compropagoResponse = $this->compropagoService->evalAuth()){
-                        //$this->warning .= $this->l('Invalid Keys, The Public Key and Private Key must be valid before using this module.');
-                        $this->_postErrors[] = $this->l('Invalid Keys, The Public Key and Private Key must be valid before using this module.');
+                    if(!CompropagoSdk\Tools\Validations::validateGateway($client)){
+                        $error[1] = 'Invalid Keys, The Public Key and Private Key must be valid before using this module.';
+                        $error[0] = true;
                     }else{
                         if($compropagoResponse->mode_key != $compropagoResponse->livemode){
-                            // compropagoKey vs compropago Mode
-                            //$this->warning .= $this->l('Your Keys and Your ComproPago account are set to different Modes.');
-                            $this->_postErrors[] = $this->l('Your Keys and Your ComproPago account are set to different Modes.');
+                            $error[1] = 'Your Keys and Your ComproPago account are set to different Modes.';
+                            $error[0] = true;
                         }else{
-                            if($this->modoExec != $compropagoResponse->livemode){
-                                // store Mode vs compropago Mode
-                                //$this->warning .= $this->l('Your Store and Your ComproPago account are set to different Modes.');
-                                $this->_postErrors[] = $this->l('Your Store and Your ComproPago account are set to different Modes.');
+                            if($live != $compropagoResponse->livemode){
+                                $error[1] = 'Your Store and Your ComproPago account are set to different Modes.';
+                                $error[0] = true;
                             }else{
-                                if($this->modoExec != $compropagoResponse->mode_key){
-                                    // store Mode vs compropago Keys
-                                    //$this->warning .= $this->l('ComproPago ALERT:Your Keys are for a different Mode.');
-                                    $this->_postErrors[] = $this->l('ComproPago ALERT:Your Keys are for a different Mode.');
+                                if($live != $compropagoResponse->mode_key){
+                                    $error[1] = 'ComproPago ALERT:Your Keys are for a different Mode.';
+                                    $error[0] = true;
                                 }else{
                                     if(!$compropagoResponse->mode_key && !$compropagoResponse->livemode){
-                                        //can process orders but watch out, NOT live operations just testing
-                                        //$this->warning .= $this->l('WARNING: ComproPago account is Running in TEST Mode');
-                                        $this->_postErrors[] = $this->l('WARNING: ComproPago account is Running in TEST Mode');
+                                        $error[1] = 'WARNING: ComproPago account is Running in TEST Mode, NO REAL OPERATIONS';
+                                        $error[0] = true;
                                     }
                                 }
                             }
                         }
                     }
-                }catch (\Exception $e) {
-                    //something went wrong on the SDK side
-                    //$this->warning .= $e->getMessage(); //may not be show or translated
-                    $this->_postErrors[] = $e->getMessage();
+                }catch (Exception $e) {
+                    $error[2] = 'no';
+                    $error[1] = $e->getMessage();
+                    $error[0] = true;
                 }
             }else{
-                //$this->warning .= $this->l('Could not load ComproPago SDK instances.');
-                $this->_postErrors[] = $this->l('Could not load ComproPago SDK instances.');
+                $error[1] = 'The Public Key and Private Key must be set before using ComproPago';
+                $error[2] = 'no';
+                $error[0] = true;
             }
+        }else{
+            $error[1] = 'ComproPago is not Enabled';
+            $error[2] = 'no';
+            $error[0] = true;
         }
+
+        return $error;
     }
 
 
@@ -233,17 +198,14 @@ class Compropago extends PaymentModule
      */
 	private function setComproPago($moduleLive){
 		try{
-			$this->compropagoConfig = array(
-					'publickey'=>$this->publicKey,
-					'privatekey'=>$this->privateKey,
-					'live'=>$moduleLive,
-					'contained'=>'plugin; cpps '.$this->version.';prestashop '._PS_VERSION_.';'
-			);
-			$this->compropagoClient = new Compropago\Sdk\Client($this->compropagoConfig);
-			$this->compropagoService = new Compropago\Sdk\Service($this->compropagoClient);
+			$this->client = new CompropagoSdk\Client(
+			    $this->publicKey,
+                $this->privateKey,
+                $moduleLive,
+                'plugin; cpps '.$this->version.';prestashop '._PS_VERSION_.';'
+            );
 			return true;
 		}catch (\Exception $e) {
-			//something went wrong with the sdk
 			return false;
 		}
 	}
@@ -257,27 +219,9 @@ class Compropago extends PaymentModule
 	 */
 	public function checkCompropago(){
 		try {
-			return Compropago\Sdk\Utils\Store::validateGateway($this->compropagoClient);
+			return CompropagoSdk\Tools\Validations::validateGateway($this->client);
 		}catch (\Exception $e) {
-			//something went wrong with the sdk dont allow gateway method
-			return false;
-		}
-	}
-
-
-
-	/**
-	 * Validate TPL file for view
-	 * @return string Path to tpl
-	 * @return false on error
-	 * @since 2.0.0
-	 */
-	public function getViewPathCompropago($view){
-		$tplPath= __DIR__.'/vendor/compropago/php-sdk/views/tpl/'.$view.'.tpl';
-		if ( file_exists( $tplPath ) ){
-			return $tplPath;
-		}else{
-			return false;
+            return false;
 		}
 	}
 
@@ -285,38 +229,19 @@ class Compropago extends PaymentModule
 
 	/**
 	 * get Providers View Config
-	 * @return array  Providers TPL config array
+	 * @return mixed  Providers TPL config array
 	 * @return false  on Exception
 	 * @since 2.0.0
 	 */
-	public function getProvidersCompropago(){
+	public function getProvidersCompropago($limit = 0){
 		try{
-			
-			$providers= $this->compropagoService->getProviders();
-			 
-			//var_dump($this->filterStores);
-			if(empty($this->filterStores[0])){
-				$compropagoData['providers']= $providers;
-			}else{
-				foreach ($providers as $provider){
-					foreach ($this->filterStores as $internal){
-							
-						if($provider->internal_name == $internal){
-							$filtered[] = $provider;
-						}
-					}
-				}
-					
-				$compropagoData['providers']= $filtered;
-			}
-			
-			
-			$compropagoData['showlogo']=($this->showLogo)?'yes':'no';                              //(yes|no) logos or select
-			$compropagoData['description']=$this->l('- ComproPago allows you to pay at Mexico stores like OXXO, 7Eleven and More.');  // Title to show
-			$compropagoData['instrucciones']=$this->l('Select a Store');    // Instructions text
+            $compropagoData['providers']     = $this->client->api->listProviders(false, $limit);
+			$compropagoData['show_logos']    = $this->showLogo;                              //(yes|no) logos or select
+			$compropagoData['description']   = $this->l('ComproPago allows you to pay at Mexico stores like OXXO, 7Eleven and More.');  // Title to show
+			$compropagoData['instrucciones'] = $this->l('Select a Store');    // Instructions text
+
 			return $compropagoData;
 		}catch (Exception $e) {
-			//something went wrong with the sdk
 			return false;
 		}
 	}
@@ -324,17 +249,19 @@ class Compropago extends PaymentModule
 
 	/**
 	 * hook header options
-	 * @param unknown $params
+	 * @param mixed $params
 	 * @since 2.0.0
 	 */
 	public function hookDisplayHeader($params)
     {
 		//add css
-		$this->context->controller->addCSS($this->_path.'vendor/compropago/php-sdk/assets/css/compropago.css', 'all');
+		//$this->context->controller->addCSS($this->_path.'vendor/compropago/php-sdk/assets/css/compropago.css', 'all');
+        $this->context->controller->addCSS($this->_path.'specificAssest/cp-style.css', 'all');
 		$this->context->controller->addCSS($this->_path.'specificAssest/ps-default.css', 'all');
 
         //add js
         $this->context->controller->addJS($this->_path.'specificAssest/ps-default.js', 'all');
+        $this->context->controller->addJS($this->_path.'specificAssest/providers.js', 'all');
 	}
 
 
@@ -346,7 +273,7 @@ class Compropago extends PaymentModule
 	 */
 	public function install()
 	{
-		if (version_compare(phpversion(), '5.3.0', '<')) {
+		if (version_compare(phpversion(), '5.5.0', '<')) {
 			return false;
 		}
 		
@@ -354,23 +281,28 @@ class Compropago extends PaymentModule
 			Shop::setContext(Shop::CONTEXT_ALL);
 		
 		$this->installOrderStates();
+
 		//Lets be sure compropago tables are gone
-		$queries=Compropago\Sdk\Utils\Store::sqlDropTables(_DB_PREFIX_);
+		$queries = CompropagoSdk\Tools\TransactTables::sqlDropTables(_DB_PREFIX_);
+
 		foreach($queries as $drop){
-			
 			Db::getInstance()->execute($drop);
 		}
+
 		//creates compropago tables
-		$queries=Compropago\Sdk\Utils\Store::sqlCreateTables(_DB_PREFIX_);
+		$queries=CompropagoSdk\Tools\TransactTables::sqlCreateTables(_DB_PREFIX_);
 		
 		foreach($queries as $create){
-			if(!Db::getInstance()->execute($create))
-				die('Unable to Create ComproPago Tables, module cant be installed');
+			if(!Db::getInstance()->execute($create)) {
+                die('Unable to Create ComproPago Tables, module cant be installed');
+            }
 		}
 
-		if (!parent::install() || !$this->registerHook('payment') || ! $this->registerHook('displayPaymentEU') 
-			|| !$this->registerHook('paymentReturn') || !$this->registerHook('displayHeader'))
-			return false;
+
+		if (!parent::install() || !$this->registerHook('payment') || !$this->registerHook('displayPaymentEU') || !$this->registerHook('paymentReturn') || !$this->registerHook('displayHeader')) {
+            return false;
+        }
+
 		return true;
 	}
 
@@ -383,10 +315,11 @@ class Compropago extends PaymentModule
 	 */
 	public function verifyTables(){
 		if(!Db::getInstance()->execute("SHOW TABLES LIKE '"._DB_PREFIX_ ."compropago_orders'") ||
-				!Db::getInstance()->execute("SHOW TABLES LIKE '"._DB_PREFIX_ ."compropago_transactions'")
-				){
-					return false;
+            !Db::getInstance()->execute("SHOW TABLES LIKE '"._DB_PREFIX_ ."compropago_transactions'")
+        ){
+            return false;
 		}
+
 		return true;
 	}
 
@@ -399,173 +332,70 @@ class Compropago extends PaymentModule
 	 */
 	protected function installOrderStates()
 	{
+
+        $cp_order_states = [
+            [
+                'label' => 'ComproPago - Pending Payment',
+                'value' => 'COMPROPAGO_PENDING'
+            ],
+            [
+                'label' => 'ComproPago - Payment received',
+                'value' => 'COMPROPAGO_SUCCESS'
+            ],
+            [
+                'label' => 'ComproPago - Expired',
+                'value' => 'COMPROPAGO_EXPIRED'
+            ],
+            [
+                'label' => 'ComproPago - Declined',
+                'value' => 'COMPROPAGO_DECLINED'
+            ],
+            [
+                'label' => 'ComproPago - Deleted',
+                'value' => 'COMPROPAGO_DELETED'
+            ],
+            [
+                'label' => 'ComproPago - Canceled',
+                'value' => 'COMPROPAGO_CANCELED'
+            ],
+        ];
+
 		$values_to_insert = array(
-				'invoice' => 0,
-				'send_email' => 0,
-				'module_name' => pSQL($this->name),
-				'color' => 'RoyalBlue',
-				'unremovable' => 0,
-				'hidden' => 0,
-				'logable' => 1,
-				'delivery' => 0,
-				'shipped' => 0,
-				'paid' => 0,
-				'deleted' => 0
+			'invoice'     => 0,
+			'send_email'  => 0,
+			'module_name' => pSQL($this->name),
+			'color'       => 'RoyalBlue',
+			'unremovable' => 0,
+			'hidden'      => 0,
+			'logable'     => 1,
+			'delivery'    => 0,
+			'shipped'     => 0,
+			'paid'        => 0,
+			'deleted'     => 0
 		);
 
-		if (! Db::getInstance()->autoExecute(_DB_PREFIX_ . 'order_state', $values_to_insert, 'INSERT'))
-			return false;
-			$id_order_state = (int) Db::getInstance()->Insert_ID();
-			$languages = Language::getLanguages(false);
-			foreach ($languages as $language)
-				Db::getInstance()->autoExecute(_DB_PREFIX_ . 'order_state_lang', array(
-						'id_order_state' => $id_order_state,
-						'id_lang' => $language['id_lang'],
-						'name' => $this->l('ComproPago - Pending Payment'),
-						'template' => ''
-				), 'INSERT');
-				Configuration::updateValue('COMPROPAGO_PENDING', $id_order_state);
-				unset($id_order_state);
-		
-				
-				
-		$values_to_insert = array(
-				'invoice' => 0,
-				'send_email' => 0,
-				'module_name' => pSQL($this->name),
-				'color' => 'RoyalBlue',
-				'unremovable' => 0,
-				'hidden' => 0,
-				'logable' => 1,
-				'delivery' => 0,
-				'shipped' => 0,
-				'paid' => 1,
-				'deleted' => 0
-		);
 
+        foreach ($cp_order_states as $state){
+            if (! Db::getInstance()->autoExecute(_DB_PREFIX_ . 'order_state', $values_to_insert, 'INSERT')) {
+                return false;
+            }
 
-		if (! Db::getInstance()->autoExecute(_DB_PREFIX_ . 'order_state', $values_to_insert, 'INSERT'))
-			return false;
-			$id_order_state = (int) Db::getInstance()->Insert_ID();
-			$languages = Language::getLanguages(false);
-			foreach ($languages as $language)
-				Db::getInstance()->autoExecute(_DB_PREFIX_ . 'order_state_lang', array(
-						'id_order_state' => $id_order_state,
-						'id_lang' => $language['id_lang'],
-						'name' => $this->l('ComproPago - Payment received'),
-						'template' => ''
-				), 'INSERT');
-				Configuration::updateValue('COMPROPAGO_SUCCESS', $id_order_state);
-				unset($id_order_state);
-				
-			$values_to_insert = array(
-					'invoice' => 0,
-					'send_email' => 0,
-					'module_name' => pSQL($this->name),
-					'color' => 'RoyalBlue',
-					'unremovable' => 0,
-					'hidden' => 0,
-					'logable' => 1,
-					'delivery' => 0,
-					'shipped' => 0,
-					'paid' => 0,
-					'deleted' => 0
-			);
-			if (! Db::getInstance()->autoExecute(_DB_PREFIX_ . 'order_state', $values_to_insert, 'INSERT'))
-				return false;
-				$id_order_state = (int) Db::getInstance()->Insert_ID();
-				$languages = Language::getLanguages(false);
-				foreach ($languages as $language)
-					Db::getInstance()->autoExecute(_DB_PREFIX_ . 'order_state_lang', array(
-							'id_order_state' => $id_order_state,
-							'id_lang' => $language['id_lang'],
-							'name' => $this->l('ComproPago - Expired'),
-							'template' => ''
-					), 'INSERT');
-					Configuration::updateValue('COMPROPAGO_EXPIRED', $id_order_state);
-					unset($id_order_state);
+            $id_order_state = (int) Db::getInstance()->Insert_ID();
+            $languages = Language::getLanguages(false);
 
-			$values_to_insert = array(
-					'invoice' => 0,
-					'send_email' => 0,
-					'module_name' => pSQL($this->name),
-					'color' => 'RoyalBlue',
-					'unremovable' => 0,
-					'hidden' => 0,
-					'logable' => 1,
-					'delivery' => 0,
-					'shipped' => 0,
-					'paid' => 0,
-					'deleted' => 0
-			);
-			if (! Db::getInstance()->autoExecute(_DB_PREFIX_ . 'order_state', $values_to_insert, 'INSERT'))
-				return false;
-				$id_order_state = (int) Db::getInstance()->Insert_ID();
-				$languages = Language::getLanguages(false);
-				foreach ($languages as $language)
-					Db::getInstance()->autoExecute(_DB_PREFIX_ . 'order_state_lang', array(
-							'id_order_state' => $id_order_state,
-							'id_lang' => $language['id_lang'],
-							'name' => $this->l('ComproPago - Declined'),
-							'template' => ''
-					), 'INSERT');
-					Configuration::updateValue('COMPROPAGO_DECLINED', $id_order_state);
-					unset($id_order_state);
-			
-			$values_to_insert = array(
-					'invoice' => 0,
-					'send_email' => 0,
-					'module_name' => pSQL($this->name),
-					'color' => 'RoyalBlue',
-					'unremovable' => 0,
-					'hidden' => 0,
-					'logable' => 1,
-					'delivery' => 0,
-					'shipped' => 0,
-					'paid' => 0,
-					'deleted' => 0
-			);
-			if (! Db::getInstance()->autoExecute(_DB_PREFIX_ . 'order_state', $values_to_insert, 'INSERT'))
-				return false;
-				$id_order_state = (int) Db::getInstance()->Insert_ID();
-				$languages = Language::getLanguages(false);
-				foreach ($languages as $language)
-					Db::getInstance()->autoExecute(_DB_PREFIX_ . 'order_state_lang', array(
-							'id_order_state' => $id_order_state,
-							'id_lang' => $language['id_lang'],
-							'name' => $this->l('ComproPago - Deleted'),
-							'template' => ''
-					), 'INSERT');
-					Configuration::updateValue('COMPROPAGO_DELETED', $id_order_state);
-					unset($id_order_state);
-			
-			$values_to_insert = array(
-					'invoice' => 0,
-					'send_email' => 0,
-					'module_name' => pSQL($this->name),
-					'color' => 'RoyalBlue',
-					'unremovable' => 0,
-					'hidden' => 0,
-					'logable' => 1,
-					'delivery' => 0,
-					'shipped' => 0,
-					'paid' => 0,
-					'deleted' => 0
-			);
-			if (! Db::getInstance()->autoExecute(_DB_PREFIX_ . 'order_state', $values_to_insert, 'INSERT'))
-				return false;
-				$id_order_state = (int) Db::getInstance()->Insert_ID();
-				$languages = Language::getLanguages(false);
-				foreach ($languages as $language)
-					Db::getInstance()->autoExecute(_DB_PREFIX_ . 'order_state_lang', array(
-							'id_order_state' => $id_order_state,
-							'id_lang' => $language['id_lang'],
-							'name' => $this->l('ComproPago - Canceled'),
-							'template' => ''
-					), 'INSERT');
-					Configuration::updateValue('COMPROPAGO_CANCELED', $id_order_state);
-					unset($id_order_state);
-						
+            foreach ($languages as $language) {
+                Db::getInstance()->autoExecute(_DB_PREFIX_ . 'order_state_lang', array(
+                    'id_order_state' => $id_order_state,
+                    'id_lang'        => $language['id_lang'],
+                    'name'           => $this->l($state['label']),
+                    'template'       => ''
+                ), 'INSERT');
+            }
+
+            Configuration::updateValue($state['value'], $id_order_state);
+            unset($id_order_state);
+        }
+
 	}
 
 
@@ -578,11 +408,26 @@ class Compropago extends PaymentModule
 	 */
 	public function uninstall()
 	{
-		if (!Configuration::deleteByName('COMPROPAGO_PUBLICKEY') || !Configuration::deleteByName('COMPROPAGO_PRIVATEKEY') 
-		 || !Configuration::deleteByName('COMPROPAGO_MODE')  || ! Configuration::deleteByName('COMPROPAGO_PENDING') 
-		 || ! Configuration::deleteByName('COMPROPAGO_SUCCESS') || ! Configuration::deleteByName('COMPROPAGO_EXPIRED') 
-		 || ! Configuration::deleteByName('COMPROPAGO_DECLINED') ||	!parent::uninstall())
-			return false;
+        //Lets be sure compropago tables are gone
+        $queries = CompropagoSdk\Tools\TransactTables::sqlDropTables(_DB_PREFIX_);
+
+        foreach($queries as $drop){
+            Db::getInstance()->execute($drop);
+        }
+
+		if (!Configuration::deleteByName('COMPROPAGO_PUBLICKEY')
+            || !Configuration::deleteByName('COMPROPAGO_PRIVATEKEY')
+            || !Configuration::deleteByName('COMPROPAGO_MODE')
+            || !Configuration::deleteByName('COMPROPAGO_WEBHOOK')
+            || !Configuration::deleteByName('COMPROPAGO_PENDING')
+            || !Configuration::deleteByName('COMPROPAGO_SUCCESS')
+            || !Configuration::deleteByName('COMPROPAGO_EXPIRED')
+            || !Configuration::deleteByName('COMPROPAGO_DECLINED')
+            || !parent::uninstall()
+        ) {
+            return false;
+        }
+
 		return true;
 	}
 
@@ -603,8 +448,6 @@ class Compropago extends PaymentModule
 			}
 			
 		}
-
-        //$this->hookRetroalimentacion();
 	}
 
 
@@ -627,6 +470,7 @@ class Compropago extends PaymentModule
 			$myproviders=implode(',',Tools::getValue('COMPROPAGO_PROVIDERS_selected'));
 			Configuration::updateValue('COMPROPAGO_PROVIDER',$myproviders );
 		}
+
 		$this->_html .= $this->displayConfirmation($this->l('Settings updated'));
 	}
 
@@ -645,13 +489,11 @@ class Compropago extends PaymentModule
 
 	/**
 	 * Show Errors & load description, and after submit information at admin configuration page
-	 * @return html
+	 * @return mixed
 	 * @since 2.0.0
 	 */
 	public function getContent()
 	{
-        //$this->hookRetroalimentacion();
-
 		$this->_html = '';
 
 		if (Tools::isSubmit('btnSubmit'))
@@ -671,28 +513,32 @@ class Compropago extends PaymentModule
 	}
 
 
-
-	/**
-	 * Show Compropago as checkout payment method 
-	 * display front end description
-	 * @param unknown $params
-	 * @since 2.0.0
-	 */
+    /**
+     * Show Compropago as checkout payment method
+     * display front end description
+     * @param mixed $params
+     * @since 2.0.0
+     * @return bool
+     */
 	public function hookPayment($params)
 	{
-		if (!$this->active)
-			return;
-		if (!$this->checkCurrency($params['cart']))
-			return;
-		//if ComproPago is not a valid method for the operation disable it
-		if(!$this->checkCompropago())
-			return;
+		if (!$this->active) {
+            return false;
+        }
+		if (!$this->checkCurrency($params['cart'])){
+			return false;
+        }
+
+		if(!$this->checkCompropago()) {
+            return false;
+        }
 
 		$this->smarty->assign(array(
 			'this_path' => $this->_path,
 			'this_path_compropago' => $this->_path,
 			'this_path_ssl' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->name.'/'
 		));
+
 		return $this->display(__FILE__, 'payment.tpl');
 	}
 
@@ -700,19 +546,23 @@ class Compropago extends PaymentModule
 	
 	/**
 	 * Hook Compropago 
-	 * @param unknown $params
-	 * @return void|array options
+	 * @param mixed $params
+	 * @return mixed
 	 * @since 2.0.0
 	 */
 	public function hookDisplayPaymentEU($params)
 	{
-		if (!$this->active)
-			return;
-		if (!$this->checkCurrency($params['cart']))
-			return;
-		//if ComproPago is not a valid method for the operation disable it
-		if(!$this->checkCompropago())
-			return;
+		if (!$this->active) {
+            return false;
+        }
+
+		if (!$this->checkCurrency($params['cart'])) {
+            return false;
+        }
+
+		if(!$this->checkCompropago()) {
+            return false;
+        }
 
 		$payment_options = array(
 			'cta_text' => $this->l('Pay by ComproPago'),
@@ -727,92 +577,46 @@ class Compropago extends PaymentModule
 
 	/**
 	 * After payment options selected
-	 * @param unknown $params
-	 * @return html
+	 * @param mixed $params
+	 * @return mixed
 	 * @since 2.0.0
 	 */
 	public function hookPaymentReturn($params)
 	{
-		if (!$this->active)
-			return;
-		if(!$this->checkCompropago())
-			return;
+		if (!$this->active) {
+            return false;
+        }
+
+		if(!$this->checkCompropago()) {
+            return false;
+        }
 		
 		$state = $params['objOrder']->getCurrentState();
-		//COMPROPAGO Get order details
 		
 		if( !isset($_REQUEST['compropagoId']) || !isset($_REQUEST['id_cart']) || !isset($_REQUEST['id_order']) 
 		|| empty($_REQUEST['compropagoId']) || empty($_REQUEST['id_cart']) || empty($_REQUEST['id_order']) ){
-			$compropagoStatus='fail';
-			$compropagoData=null;
+			$compropagoStatus = 'fail';
 		}else{
-			$compropagoStatus='ok';
-			//$compropagoData=$params;
-            $compropagoData = null;
-			try{
-
-				$sql = "SELECT * FROM "._DB_PREFIX_."compropago_orders	WHERE storeOrderId = '".$_REQUEST['id_order']."' AND  storeCartId = '".$_REQUEST['id_cart']."' AND compropagoId = '".$_REQUEST['compropagoId']."' AND storeExtra='COMPROPAGO_PENDING'";
-				
-				if ($row = Db::getInstance()->getRow($sql)){
-					$compropagoData=json_decode(base64_decode($row['ioIn']));
-				}
-	
-				//recheck vs ComproPago
-				//$compropagoData=$this->compropagoService->verifyOrder($_REQUEST['compropagoId']);
-			}catch (Exception $e){
-				$compropagoData->status='exception';
-				$compropagoData->exception=$e->getMessage();
-				//throw new PrestaShopException
-			}
-			if($compropagoData->type=='error'){
-				$compropagoData->status='error';		
-			}
-			switch ($compropagoData->status){
-				case 'error':
-					$compropagoTpl=$this->getViewPathCompropago('raw');
-					$compropagoData->compropagoId=$_REQUEST['compropagoId'];
-					$compropagoData->Help=$this->l('We have noticed that there is a problem with your order. If you think this is an error, you can contact our').
-															' '.$this->l('customer service department.');
-				break;
-				case 'exception':
-					$compropagoTpl=$this->getViewPathCompropago('raw');
-					$compropagoData->Help=$this->l('We have noticed that there is a problem with your order. If you think this is an error, you can contact our').
-					' '.$this->l('customer service department.');
-				break;
-				case 'pending':
-					$compropagoData->exp_date=date('d-m-Y',$compropagoData->exp_date);
-					$compropagoTpl=$this->getViewPathCompropago('iframe');
-					
-					
-				break;
-				default:
-					$compropagoTpl=$this->getViewPathCompropago('raw');
-					$compropagoStatus='fail';
-					$compropagoData=null;
-			}
-			
-
+			$compropagoStatus = 'ok';
 		}
 		
 		
 		if (in_array($state, array(Configuration::get('COMPROPAGO_PENDING'), Configuration::get('PS_OS_OUTOFSTOCK'), Configuration::get('PS_OS_OUTOFSTOCK_UNPAID'))))
 		{
 			$this->smarty->assign(array(
-				'total_to_pay' => Tools::displayPrice($params['total_to_pay'], $params['currencyObj'], false),
-				'status' => $compropagoStatus,
-				'id_order' => $params['objOrder']->id,
-				'compropagoReceiptLink'=>$this->l('Click Here to view full ComproPago Receipt Details'),
-				'compropagoOrderTitle'=>$this->l('ComproPago Order Summary'),
-				'compropagoDueDate'=>$this->l('Due Date'),
-				'compropagoTpl' => $compropagoTpl,
-				'compropagoData'=> $compropagoData
-				
+				'total_to_pay'          => Tools::displayPrice($params['total_to_pay'], $params['currencyObj'], false),
+				'status'                => $compropagoStatus,
+				'id_order'              => $params['objOrder']->id,
+				'order_id'              => $_REQUEST['compropagoId'],
 			));
-			if (isset($params['objOrder']->reference) && !empty($params['objOrder']->reference))
-				$this->smarty->assign('reference', $params['objOrder']->reference);
-		}
-		else
-			$this->smarty->assign('status', 'failed');
+
+			if (isset($params['objOrder']->reference) && !empty($params['objOrder']->reference)) {
+                $this->smarty->assign('reference', $params['objOrder']->reference);
+            }
+		}else{
+            $this->smarty->assign('status', 'failed');
+        }
+
 		return $this->display(__FILE__, 'payment_return.tpl');
 	}
 
@@ -820,7 +624,7 @@ class Compropago extends PaymentModule
 	
 	/**
 	 * Check if currency is valid for the module
-	 * @param unknown $cart
+	 * @param mixed $cart
 	 * @return boolean
 	 * @since 2.0.0
 	 */
@@ -843,138 +647,105 @@ class Compropago extends PaymentModule
      */
 	public function renderForm()
 	{
-		$options = array(
-				array(
-						'id_option' => 'OXXO',      
-						'name' => 'OXXO'    
-				),
-				array(
-						'id_option' => 'SEVEN_ELEVEN',
-						'name' => 'Seven Eleven'
-				),
-				array(
-						'id_option' => 'CHEDRAUI',
-						'name' => 'Chedrahui'
-				),
-				array(
-						'id_option' => 'COPPEL',
-						'name' => 'Coppel'
-				),
-				array(
-						'id_option' => 'EXTRA',
-						'name' => 'Extra'
-				),
-				array(
-						'id_option' => 'FARMACIA_BENAVIDES',
-						'name' => 'Farmacias Benavides'
-				),
-				array(
-						'id_option' => 'FARMACIA_ESQUIVAR',
-						'name' => 'Farmacias Esquivar'
-				),
-				array(
-						'id_option' => 'ELEKTRA',
-						'name' => 'Elektra'
-				),
-				array(
-						'id_option' => 'PITICO',
-						'name' => 'Pitico'
-				),
-				array(
-						'id_option' => 'TELECOMM',
-						'name' => 'Telecomm'
-				),
-				array(
-						'id_option' => 'FARMACIA_ABC',
-						'name' => 'Farmacias ABC'
-				),
-	
-		);
+        $providers = $this->client->api->listProviders();
+
+        $options = [];
+
+        foreach ($providers as $provider){
+            $options[] = [
+                'id_option' => $provider->internal_name,
+                'name'      => $provider->name
+            ];
+        }
+
+        global $smarty;
+        $base_url = $smarty->tpl_vars['base_dir']->value;
+
+
 		$fields_form = array(
 			'form' => array(
 				'legend' => array(
 					'title' => $this->l('ComproPago details'),
 					'image' => '../modules/compropago/icono.png'
-					//'icon' => 'icon-rocket'
 				),
 				'input' => array(
 					array(
-						'type' => 'text',
-						'label' => $this->l('Public Key'),
-						'name' => 'COMPROPAGO_PUBLICKEY',
+						'type'     => 'text',
+						'label'    => $this->l('Public Key'),
+						'name'     => 'COMPROPAGO_PUBLICKEY',
 						'required' => true
 					),
 					array(
-						'type' => 'text',
-						'label' => $this->l('Private Key'),
-						'desc' => $this->l('Get your keys at ComproPago').': <a href="https://compropago.com/panel/configuracion" target="_blank">'.$this->l('ComproPago Panel').'</a>',
-						'name' => 'COMPROPAGO_PRIVATEKEY',
+						'type'     => 'text',
+						'label'    => $this->l('Private Key'),
+						'desc'     => $this->l('Get your keys at ComproPago').': <a href="https://compropago.com/panel/configuracion" target="_blank">'.$this->l('ComproPago Panel').'</a>',
+						'name'     => 'COMPROPAGO_PRIVATEKEY',
 						'required' => true
 					),
 					array(
-							'type' => 'switch',
-							'label' => $this->l('Live Mode'),
-							'desc'      => $this->l('Are you on live or testing?,Change your Keys according to the mode').':<a href="https://compropago.com/panel/configuracion" target="_blank">'.$this->l('ComproPago Panel').'</a>',   
-							'name' => 'COMPROPAGO_MODE',
-							'is_bool' => true,
-							'required' => true,
-							'values' => array(
-									array(
-											'id' => 'active_on_bv',
-											'value' => true,
-											'label' => $this->l('Live Mode')
-									),
-									array(
-											'id' => 'active_off_bv',
-											'value' => false,
-											'label' => $this->l('Testing Mode')
-									)
+						'type'     => 'switch',
+						'label'    => $this->l('Live Mode'),
+						'desc'     => $this->l('Are you on live or testing?,Change your Keys according to the mode').':<a href="https://compropago.com/panel/configuracion" target="_blank">'.$this->l('ComproPago Panel').'</a>',
+						'name'     => 'COMPROPAGO_MODE',
+						'is_bool'  => true,
+						'required' => true,
+						'values'   => array(
+							array(
+								'id'    => 'active_on_bv',
+								'value' => true,
+								'label' => $this->l('Live Mode')
+							),
+							array(
+								'id'    => 'active_off_bv',
+								'value' => false,
+								'label' => $this->l('Testing Mode')
 							)
+						)
 					),
 					array(
-							'type' =>'text',
-							'label'=> $this->l('WebHook'),
-							'name' => 'COMPROPAGO_WEBHOOK',
-							'hint' => $this->l('Set this Url at ComproPago Panel to use it  to confirm to your store when a payment has been confirmed'),
-							'desc' => $this->l('Copy & Paste this Url to WebHooks section of your ComproPago Panel to recive instant notifications when a payment is confirmed').':<a href="https://compropago.com/panel/webhooks" target="_blank">'.$this->l('ComproPago Panel').'</a>'			
-					),
-					array(
-							'type' => 'switch',
-							'label' => $this->l('Show Logos'),
-							'desc'      => $this->l('Want to show store logos or a select box?'),
-							'name' => 'COMPROPAGO_LOGOS',
-							'is_bool' => true,
-							'values' => array(
-									array(
-											'id' => 'active_on_lg',
-											'value' => true,
-											'label' => $this->l('Show store logos')
-									),
-									array(
-											'id' => 'active_off_lg',
-											'value' => false,
-											'label' => $this->l('Show select box')
-									)
+						'type'    => 'switch',
+						'label'   => $this->l('Show Logos'),
+						'desc'    => $this->l('Want to show store logos or a select box?'),
+						'name'    => 'COMPROPAGO_LOGOS',
+						'is_bool' => true,
+						'values'  => array(
+							array(
+								'id'    => 'active_on_lg',
+								'value' => true,
+								'label' => $this->l('Show store logos')
+							),
+							array(
+								'id'    => 'active_off_lg',
+								'value' => false,
+								'label' => $this->l('Show select box')
 							)
+						)
 					),
+                    array(
+                        'type'  =>'text',
+                        'label' => $this->l('WebHook'),
+                        'name'  => 'COMPROPAGO_WEBHOOK',
+                        'hint'  => $this->l('Set this Url at ComproPago Panel to use it  to confirm to your store when a payment has been confirmed'),
+                        'desc'  => $this->l('Copy & Paste this Url to WebHooks section of your ComproPago Panel to recive instant notifications when a payment is confirmed').':<a href="https://compropago.com/panel/webhooks" target="_blank">'.$this->l('ComproPago Panel').'</a>',
+                        'value' => $base_url
+                    ),
 					array(
-				  'type' => 'swap',                              
-				  'multiple' => true,
-				  'label' => $this->l('Tiendas:'),        
-				  'desc' => $this->l('Seleccione las tiendas'),
-				  'name' => 'COMPROPAGO_PROVIDERS',        
-				  
-				  'options' => array(
-				    'query' => $options,                           // $options contains the data itself.
-				    'id' => 'id_option',                           // The value of the 'id' key must be the same as the key for 'value' attribute of the <option> tag in each $options sub-array.
-				    'name' => 'name'                               // The value of the 'name' key must be the same as the key for the text content of the <option> tag in each $options sub-array.
-				  )
-				),
-				///END OF FIELDS
-				),
-				'submit' => array(
-					'title' => $this->l('Save'),
-				)
+				        'type'     => 'swap',
+				        'multiple' => true,
+				        'label'    => $this->l('Tiendas:'),
+				        'desc'     => $this->l('Seleccione las tiendas'),
+				        'name'     => 'COMPROPAGO_PROVIDERS',
+				        'options'  => array(
+				            'query' => $options, // $options contains the data itself.
+				            'id'    => 'id_option', // The value of the 'id' key must be the same as the key for 'value' attribute of the <option> tag in each $options sub-array.
+				            'name'  => 'name'     // The value of the 'name' key must be the same as the key for the text content of the <option> tag in each $options sub-array.
+				        )
+				    ),
+				    ///END OF FIELDS
+                ),
+                'submit' => array(
+                    'title' => $this->l('Save'),
+                )
 			),
 		);
 
@@ -1009,6 +780,7 @@ class Compropago extends PaymentModule
 	public function getConfigFieldsValues()
 	{
 		$providersDB=explode(',',Configuration::get('COMPROPAGO_PROVIDER') );
+
 		return array(
 			'COMPROPAGO_PUBLICKEY' => Tools::getValue('COMPROPAGO_PUBLICKEY', Configuration::get('COMPROPAGO_PUBLICKEY')),
 			'COMPROPAGO_PRIVATEKEY' => Tools::getValue('COMPROPAGO_PRIVATEKEY', Configuration::get('COMPROPAGO_PRIVATEKEY')),

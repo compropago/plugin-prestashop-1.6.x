@@ -24,8 +24,8 @@ Tools::displayFileAsDeprecated();
 include(__DIR__.'/../../header.php');
 include(__DIR__.'/compropago.php');
 
-$context = Context::getContext();
-$cart = $context->cart;
+$context  = Context::getContext();
+$cart       = $context->cart;
 $compropago = new Compropago();
 
 if ($cart->id_customer == 0 OR $cart->id_address_delivery == 0 OR $cart->id_address_invoice == 0 OR !$cheque->active)

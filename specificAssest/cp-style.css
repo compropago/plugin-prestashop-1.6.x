@@ -1,0 +1,72 @@
+#cppayment_store {
+    background: url(https://compropago.com/assets/terminal/select-input.png) no-repeat;
+    width: 298px;
+    height: 39px;
+    position: relative;
+    background-size: 100% auto;
+    max-width: 100%
+}
+#cppayment_store select.providers_list {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    outline: 0;
+    border: 0;
+    background: none;
+    height: 100%;
+    width: 100%;
+    padding-left: 62px;
+    box-sizing: border-box;
+    text-transform: uppercase;
+    font-size: 14px;
+    background-size: auto 70%;
+    background-position: 2px 6px;
+    background-repeat: no-repeat
+}
+
+ul.providers_list {
+    background: none;
+    width: 100%;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    height: auto
+}
+
+ul.providers_list label img,
+ul.providers_list label {
+    display: block;
+    width: 75px !important;
+    margin-right: 12px !important;
+    margin-bottom: 12px !important;
+    border-radius: 3px;
+    position: relative;
+    transition: all .2s linear;
+    box-shadow: none
+}
+
+ul.providers_list input[type="radio"]{
+    display: none;
+    position: absolute;
+}
+
+ul.providers_list label.provider_selected {
+    box-shadow: 0 0 6px 3px #00aaef;
+    opacity: 1;
+}
+
+ul.providers_list label {
+    display: block;
+    margin: 0 auto;
+    float: none;
+    width: 100%;
+    opacity: 0.7;
+    transition-property: all;
+    transition-duration: 0.3s;
+}
+
+ul.providers_list label:hover {
+    opacity: 1;
+}

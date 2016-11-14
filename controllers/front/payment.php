@@ -32,7 +32,8 @@ class CompropagoPaymentModuleFrontController extends ModuleFrontController
 		parent::initContent();
 
 		$cart = $this->context->cart;
-		//ComproPago valid currency?
+        $order_total = $cart->getOrderTotal(true, Cart::BOTH);
+
 		if (!$this->module->checkCurrency($cart)){
 			Tools::redirect('index.php?controller=order');
 		}
@@ -40,29 +41,25 @@ class CompropagoPaymentModuleFrontController extends ModuleFrontController
 		if (!$this->module->checkCompropago()){
 			Tools::redirect('index.php?controller=order');
 		}
-		//TPL view exists?
-		if( !$compropagoTpl=$this->module->getViewPathCompropago('providers')){
-			Tools::redirect('index.php?controller=order');
-		}
+
 		//ok with tpl config?
-		if( !$compropagoData=$this->module->getProvidersCompropago() ){
+		if( !$compropagoData = $this->module->getProvidersCompropago($order_total) ){
 			Tools::redirect('index.php?controller=order');
 		}
 
 		$this->context->smarty->assign(array(
-			'compropagoTpl' => $compropagoTpl,
-			'compropagoData' => $compropagoData,
-			'nbProducts' => $cart->nbProducts(),
-			'cust_currency' => $cart->id_currency,
-			'currencies' => $this->module->getCurrency((int)$cart->id_currency),
-			'total' => $cart->getOrderTotal(true, Cart::BOTH),
-			'isoCode' => $this->context->language->iso_code,
-			/*'chequeName' => $this->module->publicKey,
-			'chequeAddress' => Tools::nl2br($this->module->privateKey),*/
-			'this_path' => $this->module->getPathUri(),
-			//'this_path_compropago' => $this->module->getPathUri(),
+		    'providers'            => $compropagoData['providers'],
+            'show_logos'           => $compropagoData['show_logos'],
+            'description'          => $compropagoData['description'],
+            'instructions'         => $compropagoData['instrucciones'],
+			'nbProducts'           => $cart->nbProducts(),
+			'cust_currency'        => $cart->id_currency,
+			'currencies'           => $this->module->getCurrency((int)$cart->id_currency),
+			'total'                => $order_total,
+			'isoCode'              => $this->context->language->iso_code,
+			'this_path'            => $this->module->getPathUri(),
 			'this_path_compropago' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->module->name.'/',
-			'this_path_ssl' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->module->name.'/'
+			'this_path_ssl'        => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->module->name.'/'
 		));
 
 		$this->setTemplate('payment_execution.tpl');
