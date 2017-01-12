@@ -1,6 +1,6 @@
 <?php
 /*
-* Copyright 2015 Compropago. 
+* Copyright 2015 Compropago.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ $request = @file_get_contents('php://input');
 /**
  * Se valida el request y se transforma con la cadena a un objeto de tipo CpOrderInfo con el Factory
  */
-if(empty($request) || !$resp_webhook = Factory::cpOrderInfo($request)){
+if(empty($request) || !$resp_webhook = Factory::getInstanceOf("CpOrderInfo",$request)){
     die('Tipo de Request no Valido');
 }
 
@@ -89,8 +89,8 @@ try{
     $client = new Client(
         $publickey,
         $privatekey,
-        $live,
-        'plugin; cpps 2.0.0; prestashop '._PS_VERSION_.'; webhook;'
+        $live
+        //'plugin; cpps 2.0.0; prestashop '._PS_VERSION_.'; webhook;'
     );
 
     /**
@@ -106,7 +106,7 @@ try{
 /**
  * Verificamos si recivimos una peticion de prueba
  */
-if($resp_webhook->getId()=="ch_00000-000-0000-000000"){
+if($resp_webhook->id=="ch_00000-000-0000-000000"){
     die("Probando el WebHook?, Ruta correcta.");
 }
 
@@ -114,13 +114,13 @@ try{
     /**
      * Verificamos la informacion del Webhook recivido
      */
-    $response = $client->api->verifyOrder($resp_webhook->getId());
+    $response = $client->api->verifyOrder($resp_webhook->id);
 
 
     /**
      * Comprovamos que la verificacion fue exitosa
      */
-    if($response->getType() == 'error'){
+    if($response->type == 'error'){
         die('Error procesando el numero de orden');
     }
 
@@ -137,7 +137,7 @@ try{
 
 
 
-    $sql = "SELECT * FROM "._DB_PREFIX_."compropago_orders	WHERE compropagoId = '".$response->getId()."' ";
+    $sql = "SELECT * FROM "._DB_PREFIX_."compropago_orders	WHERE compropagoId = '".$response->id."' ";
 
 
     if ($row = Db::getInstance()->getRow($sql)){
@@ -145,7 +145,7 @@ try{
         /**
          * Generamos las rutinas correspondientes para cada uno de los casos posible del webhook
          */
-        switch ($response->getType()){
+        switch ($response->type){
             case 'charge.success':
                 $nomestatus = "COMPROPAGO_SUCCESS";
                 break;
@@ -172,7 +172,7 @@ try{
         /**
          * Cambio de estatus para las ordenes
          */
-        $id_order   = intval($response->getOrderInfo()->getOrderId());
+        $id_order   = intval($response->order_info->order_id);
         $recordTime = time();
 
         $order   = new Order($id_order);
@@ -190,7 +190,7 @@ try{
          * Actualizacion de base de datos
          */
         $prefix = _DB_PREFIX_;
-        $sql = "UPDATE `{$prefix}compropago_orders` SET `modified` = '$recordTime', `compropagoStatus` = '{$response->getType()}', `storeExtra` = '$nomestatus' WHERE `id` = '{$response->getId()}'";
+        $sql = "UPDATE `{$prefix}compropago_orders` SET `modified` = '$recordTime', `compropagoStatus` = '{$response->type}', `storeExtra` = '$nomestatus' WHERE `id` = '{$response->id}'";
 
         if(!Db::getInstance()->execute($sql)){
             die("Error Updating ComproPago Order Record at Store");
@@ -202,14 +202,14 @@ try{
         Db::getInstance()->autoExecute(_DB_PREFIX_ . 'compropago_transactions', array(
             'orderId' 			   => $row['id'],
             'date' 				   => $recordTime,
-            'compropagoId'		   => $response->getId(),
-            'compropagoStatus'	   => $response->getType(),
+            'compropagoId'		   => $response->id,
+            'compropagoStatus'	   => $response->type,
             'compropagoStatusLast' => $row['compropagoStatus'],
             'ioIn' 				   => $ioIn,
             'ioOut' 			   => $ioOut
         ),'INSERT');
 
-        echo('Orden '.$resp_webhook->getId().' Confirmada');
+        echo('Orden '.$resp_webhook->id.' Confirmada');
 
     }else{
         die('El número de orden no se encontro en la tienda');
@@ -219,6 +219,3 @@ try{
     //something went wrong at sdk lvl
     die($e->getMessage());
 }
-
-
-

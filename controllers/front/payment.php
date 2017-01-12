@@ -19,6 +19,7 @@
  * @author Rolando Lucio <rolando@compropago.com>
  * @since 2.0.0
  */
+ 
 class CompropagoPaymentModuleFrontController extends ModuleFrontController
 {
 	public $ssl = true;
@@ -37,7 +38,7 @@ class CompropagoPaymentModuleFrontController extends ModuleFrontController
 		if (!$this->module->checkCurrency($cart)){
 			Tools::redirect('index.php?controller=order');
 		}
-		//ComproPago valid config? 
+		//ComproPago valid config?
 		if (!$this->module->checkCompropago()){
 			Tools::redirect('index.php?controller=order');
 		}
