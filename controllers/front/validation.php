@@ -18,6 +18,7 @@
  * @author Rolando Lucio <rolando@compropago.com>
  * @since 2.0.0
  */
+
 class CompropagoValidationModuleFrontController extends ModuleFrontController
 {
 	public function postProcess()
@@ -54,17 +55,20 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
         $cpOrderName     = Configuration::get('PS_SHOP_NAME') . ', Ref:' . $this->module->currentOrder;
 
 
-        $order = new CompropagoSdk\Models\PlaceOrderInfo(
-            $this->module->currentOrder,
-            $cpOrderName,
-            $total,
-            $customer->firstname . ' ' . $customer->lastname,
-            $customer->email,
-            $compropagoStore,
-            null,
-            'prestashop',
-            _PS_VERSION_
-        );
+				$order_info = [
+					'order_id' => $this->module->currentOrder,
+					'order_name' => $cpOrderName,
+					'order_price' => $total,
+					'customer_name' => $customer->firstname . ' ' . $customer->lastname,
+					'customer_email' => $customer->email,
+					'payment_type' => $compropagoStore,
+					'currency' => $currency->iso_code,
+					'image_url' => null,
+					'app_client_name' => 'prestashop',
+					'app_client_version' => _PS_VERSION_
+					];
+
+				$order = CompropagoSdk\Factory\Factory::getInstanceOf('PlaceOrderInfo', $order_info);
 
         try {
             $response = $this->module->client->api->placeOrder($order);
@@ -72,10 +76,12 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
             die($this->module->l('This payment method is not available.', 'validation') . '<br>' . $e->getMessage());
         }
 
-        if ($response->getStatus() != 'pending') {
-            echo '<pre>';
+        if ($response->status != 'pending') {
+            /*
+						echo '<pre>';
             var_dump($response);
             echo '</pre>';
+						*/
             die($this->module->l('This payment method is not available.', 'validation'));
         }
 
@@ -91,8 +97,8 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
             Db::getInstance()->autoExecute(_DB_PREFIX_ . 'compropago_orders', array(
                 'date'             => $recordTime,
                 'modified'         => $recordTime,
-                'compropagoId'     => $response->getId(),
-                'compropagoStatus' => $response->getStatus(),
+                'compropagoId'     => $response->id,
+                'compropagoStatus' => $response->status,
                 'storeCartId'      => $cart->id,
                 'storeOrderId'     => $this->module->currentOrder,
                 'storeExtra'       => 'COMPROPAGO_PENDING',
@@ -102,11 +108,11 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
 
 
             Db::getInstance()->autoExecute(_DB_PREFIX_ . 'compropago_transactions', array(
-                'orderId'              => $response->getOrderInfo()->getOrderId(),
+                'orderId'              => $response->order_info->order_id,
                 'date'                 => $recordTime,
-                'compropagoId'         => $response->getId(),
-                'compropagoStatus'     => $response->getStatus(),
-                'compropagoStatusLast' => $response->getStatus(),
+                'compropagoId'         => $response->id,
+                'compropagoStatus'     => $response->status,
+                'compropagoStatusLast' => $response->status,
                 'ioIn'                 => $ioIn,
                 'ioOut'                => $ioOut
             ), 'INSERT');
@@ -115,6 +121,6 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
             die($this->module->l('This payment method is not available.', 'validation') . '<br>' . $e->getMessage());
         }
 
-        Tools::redirect('index.php?compropagoId=' . $response->getId() . '&controller=order-confirmation&id_cart=' . (int)$cart->id . '&id_module=' . (int)$this->module->id . '&id_order=' . $this->module->currentOrder . '&key=' . $customer->secure_key);
+        Tools::redirect('index.php?compropagoId=' . $response->id . '&controller=order-confirmation&id_cart=' . (int)$cart->id . '&id_module=' . (int)$this->module->id . '&id_order=' . $this->module->currentOrder . '&key=' . $customer->secure_key);
 	}
 }

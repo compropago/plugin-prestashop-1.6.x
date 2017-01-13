@@ -1,17 +1,17 @@
 [
     {
         "name": "compropago/php-sdk",
-        "version": "2.1.0",
-        "version_normalized": "2.1.0.0",
+        "version": "3.0.1",
+        "version_normalized": "3.0.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/compropago/compropago-php.git",
-            "reference": "efbd1b21416d04b7b6b622ee46735b5f234e86c0"
+            "reference": "5465ea298c2c442ff7c309d4639e0b9a41a4e05a"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/compropago/compropago-php/zipball/efbd1b21416d04b7b6b622ee46735b5f234e86c0",
-            "reference": "efbd1b21416d04b7b6b622ee46735b5f234e86c0",
+            "url": "https://api.github.com/repos/compropago/compropago-php/zipball/5465ea298c2c442ff7c309d4639e0b9a41a4e05a",
+            "reference": "5465ea298c2c442ff7c309d4639e0b9a41a4e05a",
             "shasum": ""
         },
         "require": {
@@ -20,10 +20,7 @@
         "require-dev": {
             "phpunit/phpunit": ">=5.3"
         },
-        "suggest": {
-            "compropago/views-sdk": "Permite la manipulacion de Listado de Proveedores, Recibos de compra y botones de pago dinamicos"
-        },
-        "time": "2016-10-26 16:14:32",
+        "time": "2017-01-10 23:45:26",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
