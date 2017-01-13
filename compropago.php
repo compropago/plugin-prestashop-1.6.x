@@ -43,7 +43,7 @@ class Compropago extends PaymentModule
 	public $filterStores;
 
 	public $client;
-	
+
 	/**
 	 * set & get module config
 	 * @since 2.0.0
@@ -52,18 +52,18 @@ class Compropago extends PaymentModule
 	{
 		//Current module version & config
 		$this->version = '2.1.0';
-		
-		
+
+
 		$this->name             = 'compropago';
 		$this->tab              = 'payments_gateways';
 		$this->author           = 'ComproPago';
 		$this->controllers      = array('payment', 'validation');
 		$this->is_eu_compatible = 1;
-		
+
 		//currencies setup
 		$this->currencies      = true;
 		$this->currencies_mode = 'checkbox';
-		
+
 		// have module been set
 		$config = Configuration::getMultiple(array('COMPROPAGO_PUBLICKEY', 'COMPROPAGO_PRIVATEKEY', 'COMPROPAGO_MODE', 'COMPROPAGO_LOGOS','COMPROPAGO_PROVIDER'));
 
@@ -77,20 +77,20 @@ class Compropago extends PaymentModule
 
 		$this->modoExec=(isset($config['COMPROPAGO_MODE']))?$config['COMPROPAGO_MODE']:false;
 		$this->showLogo=(isset($config['COMPROPAGO_LOGOS']))?$config['COMPROPAGO_LOGOS']:false;
-		
+
 		//most load selected
 		$this->filterStores = explode(',',$config['COMPROPAGO_PROVIDER'] );
-		
+
 
 		$this->bootstrap = true;
 
 		parent::__construct();
-		
+
 		//about ComproPago Module
 		$this->displayName      = $this->l('ComproPago');
 		$this->description      = $this->l('This module allows you to accept payments in Mexico stores like OXXO, 7Eleven and More.');
 		$this->confirmUninstall = $this->l('Are you sure you want to uninstall ComproPago?');
-		
+
 		// need some keys
 		if (( !isset($this->publicKey) || !isset($this->privateKey) || empty($this->publicKey) || empty($this->privateKey) ) ){
 			$this->warning = $this->l('The Public Key and Private Key must be configured before using this module.');
@@ -99,7 +99,7 @@ class Compropago extends PaymentModule
         $this->serviceFlag = $this->setComproPago($this->modoExec);
 
    		$itsBE = null;
-    
+
    	    // It's Back End?
         if($this->context->employee){
         	$itsBE = true;
@@ -196,13 +196,14 @@ class Compropago extends PaymentModule
      * @return boolean
      * @since 2.0.0
      */
-	private function setComproPago($moduleLive){
+	private function setComproPago($moduleLive)
+	{
 		try{
 			$this->client = new CompropagoSdk\Client(
 			    $this->publicKey,
                 $this->privateKey,
-                $moduleLive,
-                'plugin; cpps '.$this->version.';prestashop '._PS_VERSION_.';'
+                $moduleLive
+                //'plugin; cpps '.$this->version.';prestashop '._PS_VERSION_.';'
             );
 			return true;
 		}catch (\Exception $e) {
@@ -217,7 +218,8 @@ class Compropago extends PaymentModule
 	 * @return boolean
 	 * @since 2.0.0
 	 */
-	public function checkCompropago(){
+	public function checkCompropago()
+	{
 		try {
 			return CompropagoSdk\Tools\Validations::validateGateway($this->client);
 		}catch (\Exception $e) {
@@ -233,9 +235,12 @@ class Compropago extends PaymentModule
 	 * @return false  on Exception
 	 * @since 2.0.0
 	 */
-	public function getProvidersCompropago($limit = 0){
+	public function getProvidersCompropago($limit = 0)
+	{
 		try{
-            $compropagoData['providers']     = $this->client->api->listProviders(false, $limit);
+			global $currency;
+
+            $compropagoData['providers']     = $this->client->api->listProviders(true, $limit, $currency->iso_code);
 			$compropagoData['show_logos']    = $this->showLogo;                              //(yes|no) logos or select
 			$compropagoData['description']   = $this->l('ComproPago allows you to pay at Mexico stores like OXXO, 7Eleven and More.');  // Title to show
 			$compropagoData['instrucciones'] = $this->l('Select a Store');    // Instructions text
@@ -276,22 +281,22 @@ class Compropago extends PaymentModule
 		if (version_compare(phpversion(), '5.5.0', '<')) {
 			return false;
 		}
-		
+
 		if (Shop::isFeatureActive())
 			Shop::setContext(Shop::CONTEXT_ALL);
-		
+
 		$this->installOrderStates();
 
 		//Lets be sure compropago tables are gone
-		$queries = CompropagoSdk\Tools\TransactTables::sqlDropTables(_DB_PREFIX_);
+		$queries = CompropagoSdk\Extern\TransactTables::sqlDropTables(_DB_PREFIX_);
 
 		foreach($queries as $drop){
 			Db::getInstance()->execute($drop);
 		}
 
 		//creates compropago tables
-		$queries=CompropagoSdk\Tools\TransactTables::sqlCreateTables(_DB_PREFIX_);
-		
+		$queries=CompropagoSdk\Extern\TransactTables::sqlCreateTables(_DB_PREFIX_);
+
 		foreach($queries as $create){
 			if(!Db::getInstance()->execute($create)) {
                 die('Unable to Create ComproPago Tables, module cant be installed');
@@ -326,7 +331,7 @@ class Compropago extends PaymentModule
 
 
 	/**
-	 * Install ComproPago Order Status 
+	 * Install ComproPago Order Status
 	 * @return boolean
 	 * @since 2.0.0
 	 */
@@ -409,7 +414,7 @@ class Compropago extends PaymentModule
 	public function uninstall()
 	{
         //Lets be sure compropago tables are gone
-        $queries = CompropagoSdk\Tools\TransactTables::sqlDropTables(_DB_PREFIX_);
+        $queries = CompropagoSdk\Extern\TransactTables::sqlDropTables(_DB_PREFIX_);
 
         foreach($queries as $drop){
             Db::getInstance()->execute($drop);
@@ -434,7 +439,7 @@ class Compropago extends PaymentModule
 
 
 	/**
-	 * Validate module config form 
+	 * Validate module config form
 	 * @since 2.0.0
 	 */
 	private function _postValidation()
@@ -446,7 +451,7 @@ class Compropago extends PaymentModule
 			}elseif (!Tools::getValue('COMPROPAGO_PRIVATEKEY')){
 				$this->_postErrors[] = $this->l('The Private Key is required');
 			}
-			
+
 		}
 	}
 
@@ -543,9 +548,9 @@ class Compropago extends PaymentModule
 	}
 
 
-	
+
 	/**
-	 * Hook Compropago 
+	 * Hook Compropago
 	 * @param mixed $params
 	 * @return mixed
 	 * @since 2.0.0
@@ -590,17 +595,17 @@ class Compropago extends PaymentModule
 		if(!$this->checkCompropago()) {
             return false;
         }
-		
+
 		$state = $params['objOrder']->getCurrentState();
-		
-		if( !isset($_REQUEST['compropagoId']) || !isset($_REQUEST['id_cart']) || !isset($_REQUEST['id_order']) 
+
+		if( !isset($_REQUEST['compropagoId']) || !isset($_REQUEST['id_cart']) || !isset($_REQUEST['id_order'])
 		|| empty($_REQUEST['compropagoId']) || empty($_REQUEST['id_cart']) || empty($_REQUEST['id_order']) ){
 			$compropagoStatus = 'fail';
 		}else{
 			$compropagoStatus = 'ok';
 		}
-		
-		
+
+
 		if (in_array($state, array(Configuration::get('COMPROPAGO_PENDING'), Configuration::get('PS_OS_OUTOFSTOCK'), Configuration::get('PS_OS_OUTOFSTOCK_UNPAID'))))
 		{
 			$this->smarty->assign(array(
@@ -621,7 +626,7 @@ class Compropago extends PaymentModule
 	}
 
 
-	
+
 	/**
 	 * Check if currency is valid for the module
 	 * @param mixed $cart
@@ -631,14 +636,13 @@ class Compropago extends PaymentModule
 	public function checkCurrency($cart)
 	{
 		//Compropago just accept  Mexican Peso as currency: MXN iso 484
-		$currency_order = new Currency((int)($cart->id_currency));	
-		if($currency_order->iso_code=='MXN')
+		$currency_order = new Currency((int)($cart->id_currency));
+//Habilitar las monedas soportadas
+  	if($currency_order->iso_code=='MXN' || $currency_order->iso_code=='USD' || $currency_order->iso_code=='EUR' || $currency_order->iso_code=='GBP')
 			return true;
-		
-		return false; 		
+
+		return false;
 	}
-
-
 
     /**
      * Config form for Admin configuration page
