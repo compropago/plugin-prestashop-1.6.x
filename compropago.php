@@ -239,12 +239,30 @@ class Compropago extends PaymentModule
 	{
 		try{
 			global $currency;
+			$providers = $this->client->api->listProviders(true, $limit, $currency->iso_code);
+			$default = explode(",", Configuration::get('COMPROPAGO_PROVIDER')); 
+	        $f_providers = [];
 
-            $compropagoData['providers']     = $this->client->api->listProviders(true, $limit, $currency->iso_code);
+	        foreach ($default as $def) {
+	            foreach ($providers as $prov) {
+	                if ($def == $prov->internal_name) {
+	                    $f_providers [] = $prov;
+	                }
+	            }
+	        }
+
+	        if ($f_providers[0] == NULL){
+	            $provflag = 0;
+	            $f_providers = 0;
+	        } else {
+	            $provflag = 1;
+	        }
+
+            $compropagoData['providers']     = $f_providers;
+            $compropagoData['flag']			 = $provflag;
 			$compropagoData['show_logos']    = $this->showLogo;                              //(yes|no) logos or select
 			$compropagoData['description']   = $this->l('ComproPago allows you to pay at Mexico stores like OXXO, 7Eleven and More.');  // Title to show
 			$compropagoData['instrucciones'] = $this->l('Select a Store');    // Instructions text
-
 			return $compropagoData;
 		}catch (Exception $e) {
 			return false;
