@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+	<name>compropago</name>
+	<displayName><![CDATA[ComproPago]]></displayName>
+	<version><![CDATA[2.1.0]]></version>
+	<description><![CDATA[Con ComproPago puedes recibir pagos en OXXO, 7Eleven y muchas tiendas m&aacute;s en todo M&eacute;xico]]></description>
+	<author><![CDATA[ComproPago]]></author>
+	<tab><![CDATA[payments_gateways]]></tab>
+	<confirmUninstall><![CDATA[Está seguro de querer eliminar ComproPago?]]></confirmUninstall>
+	<is_configurable>1</is_configurable>
+	<need_instance>1</need_instance>
+	<limited_countries></limited_countries>
+</module>
