@@ -16,7 +16,7 @@ Con ComproPago puede recibir pagos en 7Eleven, Extra y muchas tiendas más en to
 
 ## Requerimientos
 * [PrestaShop 1.6.1.x +] (https://www.prestashop.com/)
-* [PHP >= 5.5] (http://www.php.net/)
+* [PHP >= 5.4] (http://www.php.net/)
 * [PHP JSON extension] (http://php.net/manual/en/book.json.php)
 * [PHP cURL extension] (http://php.net/manual/en/book.curl.php)
 
