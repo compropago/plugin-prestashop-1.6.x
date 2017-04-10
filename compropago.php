@@ -51,7 +51,7 @@ class Compropago extends PaymentModule
 	public function __construct()
 	{
 		//Current module version & config
-		$this->version = '2.1.0';
+		$this->version = ' 2.2.1.2';
 
 
 		$this->name             = 'compropago';
@@ -296,7 +296,7 @@ class Compropago extends PaymentModule
 	 */
 	public function install()
 	{
-		if (version_compare(phpversion(), '5.5.0', '<')) {
+		if (version_compare(phpversion(), '5.4.0', '<')) {
 			return false;
 		}
 
@@ -670,15 +670,26 @@ class Compropago extends PaymentModule
 	public function renderForm()
 	{
         $providers = $this->client->api->listProviders();
-
+		$oxxo[] = [
+				'id_option' => "OXXO",
+				'name' => "Oxxo"
+			];
         $options = [];
-
+		$flag = false;
         foreach ($providers as $provider){
             $options[] = [
                 'id_option' => $provider->internal_name,
                 'name'      => $provider->name
             ];
-        }
+
+		if($provider->internal_name == "OXXO"){$flag = true;}
+        
+		}
+		
+		if(!$flag){
+			$options = array_merge($oxxo,$options);		
+			}
+
 
         global $smarty;
         $base_url = $smarty->tpl_vars['base_dir']->value;
