@@ -63,16 +63,6 @@ Información de Comisiones y Horarios, como Transferir tu dinero y la Seguridad 
 3. Una vez agregada la dirección, dar click en el botón "Probar", recibira un mensaje similar a "Pruebas: El webhook esta correctamente instalado." con este mensaje la instalación queda completada.
 
 
-## Guía de Versiones
+## Documentación
 
-| Version | Status      |  PrestaShop   | PHP     | Archivo                    | 
-|---------|-------------|---------------|---------|----------------------------|
-| 1.0.0   | EOL		| 1.5.x a 1.6.0 | 5.2 +   | [v1.0.0][compropago-1-0-0] |
-| 2.0.2   | EOL      | 1.6.1.x + 	| 5.4 +   | [v2.0.2][compropago-2-0-2] |
-| 2.0.x   | Latest      | 1.6.1.x + 	| 5.5 +   | [v2.0.x][compropago-2-0-x] |
-
-
-
-[compropago-2-0-x]: https://s3.amazonaws.com/compropago/plugins/prestashop/compropago-ps-2-0-x.zip
-[compropago-2-0-2]: https://s3.amazonaws.com/compropago/plugins/prestashop/compropago-ps-2-0-2.zip
-[compropago-1-0-0]: https://s3.amazonaws.com/compropago/plugins/prestashop/compropago-ps-1-0-0.zip
+http://demo.compropago.com/list/plugins/prestashop.php
