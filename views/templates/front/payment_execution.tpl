@@ -39,9 +39,17 @@
     </div>
 </div>
 
-{**
- * Despliegue de errores
- *}
+{if $providers == 0}
+<div class="cprow">
+        <div class="cpcolumn">
+            <div class="cpalert">
+                <h1>{l s='¡Servicio temporalmente fuera de servicio!' mod='compropago'}</h1>
+                <p>{l s='Para seleccionar otro método de pago de clic en el botón.' mod='compropago'}</p>
+                <a href="{$link->getPageLink('order', true, NULL, "step=3")|escape:'html'}" class="cpbutton">{l s='Other payment methods' mod='compropago'}</a>
+            </div>
+        </div>
+    </div>
+{else}
 
 {if isset($nbProducts) && $nbProducts <= 0}
     <div class="cprow">
@@ -52,7 +60,6 @@
         </div>
     </div>
 {else}
-
 
 {* SECCION DE RESUM DE COMPRA *}
 
@@ -108,7 +115,6 @@
     <div class="cprow">
         <div class="cpcolumn">
             {if $show_logos == true}
-
                 <ul class="providers_list">
                     {foreach from=$providers item=provider}
                         <li>
@@ -152,3 +158,7 @@
     </div>
 </form>
 {/if}
+
+{/if}
+
+

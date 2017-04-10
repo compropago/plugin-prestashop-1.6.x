@@ -51,7 +51,7 @@ class Compropago extends PaymentModule
 	public function __construct()
 	{
 		//Current module version & config
-		$this->version = '2.1.0';
+		$this->version = ' 2.2.1.2';
 
 
 		$this->name             = 'compropago';
@@ -239,12 +239,30 @@ class Compropago extends PaymentModule
 	{
 		try{
 			global $currency;
+			$providers = $this->client->api->listProviders(true, $limit, $currency->iso_code);
+			$default = explode(",", Configuration::get('COMPROPAGO_PROVIDER')); 
+	        $f_providers = [];
 
-            $compropagoData['providers']     = $this->client->api->listProviders(true, $limit, $currency->iso_code);
+	        foreach ($default as $def) {
+	            foreach ($providers as $prov) {
+	                if ($def == $prov->internal_name) {
+	                    $f_providers [] = $prov;
+	                }
+	            }
+	        }
+
+	        if ($f_providers[0] == NULL){
+	            $provflag = 0;
+	            $f_providers = 0;
+	        } else {
+	            $provflag = 1;
+	        }
+
+            $compropagoData['providers']     = $f_providers;
+            $compropagoData['flag']			 = $provflag;
 			$compropagoData['show_logos']    = $this->showLogo;                              //(yes|no) logos or select
 			$compropagoData['description']   = $this->l('ComproPago allows you to pay at Mexico stores like OXXO, 7Eleven and More.');  // Title to show
 			$compropagoData['instrucciones'] = $this->l('Select a Store');    // Instructions text
-
 			return $compropagoData;
 		}catch (Exception $e) {
 			return false;
@@ -278,7 +296,7 @@ class Compropago extends PaymentModule
 	 */
 	public function install()
 	{
-		if (version_compare(phpversion(), '5.5.0', '<')) {
+		if (version_compare(phpversion(), '5.4.0', '<')) {
 			return false;
 		}
 
@@ -652,15 +670,26 @@ class Compropago extends PaymentModule
 	public function renderForm()
 	{
         $providers = $this->client->api->listProviders();
-
+		$oxxo[] = [
+				'id_option' => "OXXO",
+				'name' => "Oxxo"
+			];
         $options = [];
-
+		$flag = false;
         foreach ($providers as $provider){
             $options[] = [
                 'id_option' => $provider->internal_name,
                 'name'      => $provider->name
             ];
-        }
+
+		if($provider->internal_name == "OXXO"){$flag = true;}
+        
+		}
+		
+		if(!$flag){
+			$options = array_merge($oxxo,$options);		
+			}
+
 
         global $smarty;
         $base_url = $smarty->tpl_vars['base_dir']->value;
