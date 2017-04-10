@@ -36,6 +36,8 @@ Con ComproPago puede recibir pagos en 7Eleven, Extra y muchas tiendas más en to
 ## Documentación
 ### Documentación ComproPago Plugin Prestashop
 
+http://demo.compropago.com/list/plugins/prestashop.php
+
 ### Documentación de ComproPago
 **[API de ComproPago] (https://compropago.com/documentacion/api)**
 
@@ -61,8 +63,3 @@ Información de Comisiones y Horarios, como Transferir tu dinero y la Seguridad 
 2. Agregar una dirección Webhook e ingresar: <b> [direcciondetienda.com]</b>/modules/compropago/webhook.php cambiando "[direcciondetienda.com]" por el nombre de dominio de su tienda
 
 3. Una vez agregada la dirección, dar click en el botón "Probar", recibira un mensaje similar a "Pruebas: El webhook esta correctamente instalado." con este mensaje la instalación queda completada.
-
-
-## Documentación
-
-http://demo.compropago.com/list/plugins/prestashop.php
