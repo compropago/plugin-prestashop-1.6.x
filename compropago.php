@@ -40,6 +40,7 @@ class Compropago extends PaymentModule
 	public $extra_mail_vars;
 	public $modoExec;
 	public $showLogo;
+	public $geoLocation;
 	public $filterStores;
 
 	public $client;
@@ -65,7 +66,7 @@ class Compropago extends PaymentModule
 		$this->currencies_mode = 'checkbox';
 
 		// have module been set
-		$config = Configuration::getMultiple(array('COMPROPAGO_PUBLICKEY', 'COMPROPAGO_PRIVATEKEY', 'COMPROPAGO_MODE', 'COMPROPAGO_LOGOS','COMPROPAGO_PROVIDER'));
+		$config = Configuration::getMultiple(array('COMPROPAGO_PUBLICKEY', 'COMPROPAGO_PRIVATEKEY', 'COMPROPAGO_MODE', 'COMPROPAGO_LOGOS', 'COMPROPAGO_LOCATION', 'COMPROPAGO_PROVIDER'));
 
         if (isset($config['COMPROPAGO_PUBLICKEY'])) {
             $this->publicKey = $config['COMPROPAGO_PUBLICKEY'];
@@ -75,8 +76,9 @@ class Compropago extends PaymentModule
             $this->privateKey = $config['COMPROPAGO_PRIVATEKEY'];
         }
 
-		$this->modoExec=(isset($config['COMPROPAGO_MODE']))?$config['COMPROPAGO_MODE']:false;
-		$this->showLogo=(isset($config['COMPROPAGO_LOGOS']))?$config['COMPROPAGO_LOGOS']:false;
+		$this->modoExec 	 = (isset($config['COMPROPAGO_MODE']))?$config['COMPROPAGO_MODE']:false;
+		$this->showLogo 	 = (isset($config['COMPROPAGO_LOGOS']))?$config['COMPROPAGO_LOGOS']:true;
+		$this->geoLocation   = (isset($config['COMPROPAGO_LOCATION']))?$config['COMPROPAGO_LOCATION']:true;
 
 		//most load selected
 		$this->filterStores = explode(',',$config['COMPROPAGO_PROVIDER'] );
@@ -261,8 +263,10 @@ class Compropago extends PaymentModule
             $compropagoData['providers']     = $f_providers;
             $compropagoData['flag']			 = $provflag;
 			$compropagoData['show_logos']    = $this->showLogo;                              //(yes|no) logos or select
+			$compropagoData['location']      = $this->geoLocation;
 			$compropagoData['description']   = $this->l('ComproPago allows you to pay at Mexico stores like OXXO, 7Eleven and More.');  // Title to show
 			$compropagoData['instrucciones'] = $this->l('Select a Store');    // Instructions text
+
 			return $compropagoData;
 		}catch (Exception $e) {
 			return false;
@@ -441,6 +445,7 @@ class Compropago extends PaymentModule
 		if (!Configuration::deleteByName('COMPROPAGO_PUBLICKEY')
             || !Configuration::deleteByName('COMPROPAGO_PRIVATEKEY')
             || !Configuration::deleteByName('COMPROPAGO_MODE')
+			|| !Configuration::deleteByName('COMPROPAGO_LOCATION')
             || !Configuration::deleteByName('COMPROPAGO_WEBHOOK')
             || !Configuration::deleteByName('COMPROPAGO_PENDING')
             || !Configuration::deleteByName('COMPROPAGO_SUCCESS')
@@ -490,6 +495,7 @@ class Compropago extends PaymentModule
 			Configuration::updateValue('COMPROPAGO_PRIVATEKEY', Tools::getValue('COMPROPAGO_PRIVATEKEY'));
 			Configuration::updateValue('COMPROPAGO_MODE', Tools::getValue('COMPROPAGO_MODE'));
 			Configuration::updateValue('COMPROPAGO_LOGOS', Tools::getValue('COMPROPAGO_LOGOS'));
+			Configuration::updateValue('COMPROPAGO_LOCATION', Tools::getValue('COMPROPAGO_LOCATION'));
 			$myproviders=implode(',',Tools::getValue('COMPROPAGO_PROVIDERS_selected'));
 			Configuration::updateValue('COMPROPAGO_PROVIDER',$myproviders );
 		}
@@ -631,6 +637,7 @@ class Compropago extends PaymentModule
 				'status'                => $compropagoStatus,
 				'id_order'              => $params['objOrder']->id,
 				'order_id'              => $_REQUEST['compropagoId'],
+				'location'				=> $this->geoLocation
 			));
 
 			if (isset($params['objOrder']->reference) && !empty($params['objOrder']->reference)) {
@@ -754,6 +761,25 @@ class Compropago extends PaymentModule
 							)
 						)
 					),
+					array(
+						'type'    => 'switch',
+						'label'   => $this->l('Geolocalización'),
+						'desc'    => $this->l('Obtiene la ubicación del cliente para mostrar los establecimientos cercanos a el, agiliza las notificaciones de pago y reduce el tiempo de confirmación'),
+						'name'    => 'COMPROPAGO_LOCATION',
+						'is_bool' => true,
+						'values'  => array(
+							array(
+								'id'    => 'active_on_lgl',
+								'value' => true,
+								'label' => $this->l('Show store logos')
+							),
+							array(
+								'id'    => 'active_off_lgl',
+								'value' => false,
+								'label' => $this->l('Show select box')
+							)
+						)
+					),
                     array(
                         'type'  =>'text',
                         'label' => $this->l('WebHook'),
@@ -820,6 +846,7 @@ class Compropago extends PaymentModule
 			'COMPROPAGO_MODE' => Tools::getValue('COMPROPAGO_MODE', Configuration::get('COMPROPAGO_MODE')),
 			'COMPROPAGO_WEBHOOK' =>  Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->name.'/webhook.php',
 			'COMPROPAGO_LOGOS' =>  Tools::getValue('COMPROPAGO_LOGOS', Configuration::get('COMPROPAGO_LOGOS')),
+			'COMPROPAGO_LOCATION' =>  Tools::getValue('COMPROPAGO_LOCATION', Configuration::get('COMPROPAGO_LOCATION')),
 			'COMPROPAGO_PROVIDERS' =>  Tools::getValue('COMPROPAGO_PROVIDERS_selected',$providersDB),
 		);
 	}
