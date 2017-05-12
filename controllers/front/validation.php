@@ -41,6 +41,7 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
         }
 
         $customer = new Customer($cart->id_customer);
+        $address = new Address($cart->id_address_invoice);
 
         if (!Validate::isLoadedObject($customer)) {
             Tools::redirect('index.php?controller=order&step=1');
@@ -49,7 +50,10 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
         $currency = $this->context->currency;
         $total    = (float)$cart->getOrderTotal(true, Cart::BOTH);
 
-        $compropagoStore = (!isset($_REQUEST['compropagoProvider']) || empty($_REQUEST['compropagoProvider'])) ? 'OXXO' : $_REQUEST['compropagoProvider'];
+        $compropagoStore = (!isset($_REQUEST['compropagoProvider']) || empty($_REQUEST['compropagoProvider'])) ? 'SEVEN_ELEVEN' : $_REQUEST['compropagoProvider'];
+        $compropagoLatitude = (!isset($_REQUEST['compropago_latitude']) || empty($_REQUEST['compropago_latitude'])) ? '' : $_REQUEST['compropago_latitude'];
+        $compropagoLongitude = (!isset($_REQUEST['compropago_longitude']) || empty($_REQUEST['compropago_longitude'])) ? '' : $_REQUEST['compropago_longitude'];
+
         $mailVars        = array('{compropago_msj}' => 'En breve recibirá un email de ComproPago con su orden de pago ');
         $result          = $this->module->validateOrder((int)$cart->id, Configuration::get('COMPROPAGO_PENDING'), $total, $this->module->displayName, NULL, $mailVars, (int)$currency->id, false, $customer->secure_key);
         $cpOrderName     = Configuration::get('PS_SHOP_NAME') . ', Ref:' . $this->module->currentOrder;
@@ -65,7 +69,10 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
 					'currency' => $currency->iso_code,
 					'image_url' => null,
 					'app_client_name' => 'prestashop',
-					'app_client_version' => _PS_VERSION_
+					'app_client_version' => _PS_VERSION_,
+                    'latitude'  => $compropagoLatitude,
+                    'longitude' => $compropagoLongitude,
+                    'cp' => $address->postcode
 					];
 
 				$order = CompropagoSdk\Factory\Factory::getInstanceOf('PlaceOrderInfo', $order_info);
