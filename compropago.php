@@ -253,7 +253,7 @@ class Compropago extends PaymentModule
 	            }
 	        }
 
-	        if ($f_providers[0] == NULL){
+	        if (isset($f_providers[0]) && ($f_providers[0] == NULL)) {
 	            $provflag = 0;
 	            $f_providers = 0;
 	        } else {
