@@ -4,12 +4,6 @@ namespace CompropagoSdk\Factory;
 
 class Factory
 {
-    /**
-     * @param $class
-     * @param array $data
-     * @return mixed
-     * @throws \Exception
-     */
     public static function getInstanceOf($class, $data=array())
     {
         if (is_string($data)) {
