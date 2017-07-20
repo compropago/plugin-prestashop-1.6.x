@@ -4,10 +4,13 @@ namespace CompropagoSdk;
 
 class Client
 {
-    const VERSION="3.0.4";
+    const VERSION="3.0.0";
 
     const API_LIVE_URI='http://api.compropago.com/v1/';
     const API_SANDBOX_URI='http://api.compropago.com/v1/';
+
+    #const API_LIVE_URI='http://api-staging-compropago.herokuapp.com/v1/';
+    #const API_SANDBOX_URI='http://api-staging-compropago.herokuapp.com/v1/';
 
     public $publickey;
     public $privatekey;
@@ -36,5 +39,10 @@ class Client
     public function getPass()
     {
         return $this->publickey;
+    }
+
+    public function getFullAuth()
+    {
+        return $this->privatekey.':'.$this->publickey;
     }
 }

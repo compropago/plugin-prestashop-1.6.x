@@ -15,7 +15,6 @@ require_once __DIR__ .'/../Factory/Models/InstructionDetails.php';
 require_once __DIR__ .'/../Factory/Models/Instructions.php';
 require_once __DIR__ .'/../Factory/Models/NewOrderInfo.php';
 require_once __DIR__ .'/../Factory/Models/OrderInfo.php';
-require_once __DIR__ .'/../Factory/Models/Exchange.php';
 require_once __DIR__ .'/../Factory/Models/PlaceOrderInfo.php';
 require_once __DIR__ .'/../Factory/Models/Provider.php';
 require_once __DIR__ .'/../Factory/Models/SmsData.php';

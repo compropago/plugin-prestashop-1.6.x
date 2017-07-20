@@ -6,7 +6,7 @@ La librería de `ComproPago PHP SDK` le permite interactuar con el API de Compro
 También cuenta con los métodos necesarios para facilitarle su desarrollo por medio de los servicios 
 más utilizados (SDK).
 
-Con ComproPago puede recibir pagos en 7Eleven, Extra y muchas tiendas más en todo México.
+Con ComproPago puede recibir pagos en OXXO, 7Eleven y muchas tiendas más en todo México.
 
 [Registrarse en ComproPago](https://compropago.com)
 
@@ -56,9 +56,6 @@ el acceso a todas las clases del SDK.
 ```php
 <?php
 require_once 'CompropagoSdk/UnitTest/autoload.php';
-
-use CompropagoSdk\Client;
-use CompropagoSdk\Factory\Factory;
 ```
 
 ### Instalación pro Composer
@@ -75,17 +72,6 @@ O si lo prefiere puede incluirlo directamente en su archivo composer.json
     "compropago/php-sdk": "3.0.0"
   }
 }
-```
-
-Para poder hacer uso de la librería es necesario incluir el archivo principal del SDK
-
-```php
-<?php
-
-require 'vendor/autoload.php';
-
-use CompropagoSdk\Client;
-use CompropagoSdk\Factory\Factory;
 ```
 
 ## Documentación
@@ -115,6 +101,16 @@ Información de Comisiones y Horarios, como Transferir tu dinero y la Seguridad 
 
 Se debe contar con una cuenta activa de ComproPago. [Registrarse en ComproPago](https://compropago.com)
 
+### General
+
+Para poder hacer uso de la librería es necesario incluir la libreria principales del SDK
+
+```php
+<?php
+
+require 'vendor/autoload.php';
+```
+
 ### Configuración del Cliente
 
 Para poder hacer uso de la gema y llamados al API es necesario que primero configure sus Llaves de conexión y crear 
@@ -128,6 +124,7 @@ un instancia de Client.
 # @param string publickey     Llave publica correspondiente al modo de la tienda
 # @param string privatekey    Llave privada correspondiente al modo de la tienda
 # @param bool   live          Modo de la tienda (false = Test | true = Live)
+
 $client = new Client(
     'pk_test_5989d8209974e2d62',  # publickey
     'sk_test_6ff4e982253c44c42',  # privatekey
@@ -136,6 +133,10 @@ $client = new Client(
 ```
 
 ### Uso Básico de la Libreria
+
+> Consulte la documentación de la librería PHP de ComproPago para conocer más de sus capacidades, configuraciones y 
+métodos.
+
 
 #### Llamados al los servicios por SDK
 
@@ -152,30 +153,21 @@ de la variable **client** como se muestra a continuación.
 <?php
 
 # Se genera el objeto con la informacion de la orden
-/**
- * @param string order_id          Id de la orden
- * @param string order_name        Nombre del producto o productos de la orden
- * @param float  order_price       Monto total de la orden
- * @param string customer_name     Nombre completo del cliente
- * @param string customer_email    Correo electronico del cliente
- * @param string payment_type      (default = SEVEN_ELEVEN) Valor del atributo internal_name' de un objeto 'Provider'
- * @param string currency          (default = MXN) Codigo de la moneda con la que se esta creando el cargo
- * @param int    expiration_time   (default = null) Fecha en formato Epoch la cual indica la fecha de expiración de la orden
- */
+
 $order_info = [
     'order_id' => 12,
     'order_name' => 'M4 php sdk',
     'order_price' => 123.45,
     'customer_name' => 'Eduardo',
     'customer_email' => 'asd@asd.com',
-    'payment_type' => 'SEVEN_ELEVEN',
-    'currency' => 'MXN',
-    'expiration_time' => 1484799158
+    'payment_type' => 'OXXO',
+    'currency' => 'MXN'
 ];
-$order = Factory::getInstanceOf('PlaceOrderInfo', $order_info);
+$order = \CompropagoSdk\Factory\Factory::getInstanceOf('PlaceOrderInfo', $order_info);
 
 
 # Llamada al metodo 'place_order' del API para generar la orden
+
 # @param [PlaceOrderInfo] order
 # @return [NewOrderInfo]
 $neworder = $client->api->placeOrder($order);
@@ -242,12 +234,13 @@ $providers = $client->api->listProviders();
 ```php
 <?php
 /**
- * @param $limit
- * @param $currency (Default="MXN") Supported Currencies "USD", "EUR" & "GBP"
+ * @param bool $auth
+ * @param int $limit
+ * @param bool $fetch
  * @return array
  * @throws \Exception
  */
-public function listProviders($limit = 0, $currency = 'MXN'){}
+public function listProviders($auth = false, $limit = 0){}
 ```
 
 ##### Envio de instrucciones SMS
@@ -294,7 +287,7 @@ logica de aprobacion en su tienda en linea. El proceso que siguenes el siguiente
 ```php
 <?php
 # $cadena_obtenida es un String
-$info = Factory::getInstanceOf('CpOrderInfo', $cadena_obtenida);
+$info = \CompropagoSdk\Factory\Factory::getInstanceOf('CpOrderInfo', $cadena_obtenida);
 ```
 
 3. Generar la logica de aprovacion correspondiente al estatus de la orden.
@@ -329,7 +322,7 @@ atributo **api** del objeto **Client** y el cual regresa una instancia de tipo *
 
 ```php
 <?php
-$updated_webhook = $client->api->updateWebhook($webhook->id, 'http://sitio.com/nuevo_webhook');
+$updated_webhook = $client->api->updateWebhook($webhook->getId(), 'http://sitio.com/nuevo_webhook');
 ```
 
 ###### Prototipo del metodo updateWebhook()

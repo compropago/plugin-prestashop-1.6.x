@@ -23,7 +23,6 @@ class CpOrderInfo
     public $amount_refunded;
     public $description;
     public $dispute;
-    public $api_version;
 
     public function __construct()
     {

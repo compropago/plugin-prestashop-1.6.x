@@ -21,7 +21,6 @@ class NewOrderInfo
     public $order_info;
     public $fee_details;
     public $instructions;
-    public $api_version;
 
     public function __construct()
     {

@@ -30,7 +30,7 @@
 {**
  * Seccion de Link
  *}
-{$flag}
+
 <div class="cprow">
     <div class="cpcolumn">
         {capture name=path}
@@ -125,10 +125,6 @@
                             </label>
                         </li>
                     {/foreach}
-                    {if $provider->location != 1}
-                        <input type="hidden" name="compropago_latitude" id="compropago_latitude" value="compropago_latitude">
-                        <input type="hidden" name="compropago_longitude" id="compropago_longitude" value="compropago_longitude">
-                    {/if}
                 </ul>
 
             {else}
@@ -139,10 +135,6 @@
                             <option value="{$provider->internal_name}">{$provider->name}</option>
                         {/foreach}
                     </select>
-                    {if $provider->location != 1}
-                        <input type="hidden" name="compropago_latitude" id="compropago_latitude" value="compropago_latitude">
-                        <input type="hidden" name="compropago_longitude" id="compropago_longitude" value="compropago_longitude">
-                    {/if}
                 </div>
 
             {/if}
@@ -164,19 +156,6 @@
             <input type="submit" class="cpbutton cpbutton-primary" value="{l s='I confirm my order' mod='compropago'}">
         </div>
     </div>
-     <script>
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(e){
-                var latitud = e.coords.latitude;
-                var longitud = e.coords.longitude;
-                document.getElementById("compropago_latitude").value = latitud;
-                document.getElementById("compropago_longitude").value = longitud;
-            }, function(errorCode){
-                console.log("Error code localization: ");
-                console.log(errorCode);
-            });
-        }
-    </script>
 </form>
 {/if}
 
