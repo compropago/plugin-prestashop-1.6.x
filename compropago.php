@@ -620,8 +620,8 @@ class Compropago extends PaymentModule
 	 */
 	public function checkCurrency($cart)
 	{
-	//Compropago just accept  Mexican Peso as currency: MXN iso 484
-	$currency_order = new Currency((int)($cart->id_currency));
+		//Compropago just accept  Mexican Peso as currency: MXN iso 484
+		$currency_order = new Currency((int)($cart->id_currency));
 	//Habilitar las monedas soportadas
   	if($currency_order->iso_code=='MXN' || $currency_order->iso_code=='USD' || $currency_order->iso_code=='EUR' || $currency_order->iso_code=='GBP')
 			return true;
