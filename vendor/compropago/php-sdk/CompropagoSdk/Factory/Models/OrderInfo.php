@@ -5,13 +5,11 @@ namespace CompropagoSdk\Factory\Models;
 class OrderInfo
 {
     public $order_id;
-    public $order_name;
     public $order_price;
+    public $order_name;
+    public $payment_method;
+    public $store;
+    public $country;
     public $image_url;
-    public $exchage;
-
-    public function __construct()
-    {
-        $this->exchage = new Exchange();
-    }
+    public $success_url;
 }
