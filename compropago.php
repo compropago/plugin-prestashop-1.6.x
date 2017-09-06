@@ -25,9 +25,6 @@ if (!defined('_PS_VERSION_')) {
 
 require_once __DIR__.'/vendor/autoload.php';
 
-
-
-
 class Compropago extends PaymentModule
 {
 	private $_html = '';
@@ -105,7 +102,6 @@ class Compropago extends PaymentModule
         	$itsBE = true;
         }
 
-
         if($itsBE){
             $hook_data = $this->hookRetro(true, $this->publicKey, $this->privateKey, $this->modoExec);
 
@@ -141,7 +137,8 @@ class Compropago extends PaymentModule
                         $publickey,
                         $privatekey,
                         $live
-                    );
+					);
+					
                     $compropagoResponse = CompropagoSdk\Tools\Validations::evalAuth($client);
                     //eval keys
                     if(!CompropagoSdk\Tools\Validations::validateGateway($client)){
@@ -183,7 +180,6 @@ class Compropago extends PaymentModule
             $error[2] = 'no';
             $error[0] = true;
         }
-
         return $error;
     }
 

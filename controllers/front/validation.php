@@ -19,6 +19,8 @@
  * @since 2.0.0
  */
 
+use CompropagoSdk\Factory\Factory;
+
 class CompropagoValidationModuleFrontController extends ModuleFrontController
 {
 	public function postProcess()
@@ -35,11 +37,11 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
                 break;
             }
         }
-
+        
         if (!$authorized) {
             die($this->module->l('This payment method is not available.', 'validation'));
         }
-
+        
         $customer = new Customer($cart->id_customer);
 
         if (!Validate::isLoadedObject($customer)) {
@@ -53,40 +55,35 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
         $mailVars        = array('{compropago_msj}' => 'En breve recibirá un email de ComproPago con su orden de pago ');
         $result          = $this->module->validateOrder((int)$cart->id, Configuration::get('COMPROPAGO_PENDING'), $total, $this->module->displayName, NULL, $mailVars, (int)$currency->id, false, $customer->secure_key);
         $cpOrderName     = Configuration::get('PS_SHOP_NAME') . ', Ref:' . $this->module->currentOrder;
+        
+            $order_info = [
+                'order_id' => $this->module->currentOrder,
+                'order_name' => $cpOrderName,
+                'order_price' => $total,
+                'customer_name' => $customer->firstname . ' ' . $customer->lastname,
+                'customer_email' => $customer->email,
+                'payment_type' => $compropagoStore,
+                'currency' => $currency->iso_code,
+            ];
 
-
-				$order_info = [
-					'order_id' => $this->module->currentOrder,
-					'order_name' => $cpOrderName,
-					'order_price' => $total,
-					'customer_name' => $customer->firstname . ' ' . $customer->lastname,
-					'customer_email' => $customer->email,
-					'payment_type' => $compropagoStore,
-					'currency' => $currency->iso_code,
-					'image_url' => null,
-					'app_client_name' => 'prestashop',
-					'app_client_version' => _PS_VERSION_
-					];
-
-				$order = CompropagoSdk\Factory\Factory::getInstanceOf('PlaceOrderInfo', $order_info);
-
+            $order = Factory::getInstanceOf('PlaceOrderInfo', $order_info);
         try {
             $response = $this->module->client->api->placeOrder($order);
         } catch (Exception $e) {
-            die($this->module->l('This payment method is not available.', 'validation') . '<br>' . $e->getMessage());
+            die($this->module->l('This payment method is not available .', 'validation') . '<br>' . $e->getMessage());
         }
 
-        if ($response->status != 'pending') {
-            /*
-						echo '<pre>';
-            var_dump($response);
-            echo '</pre>';
-						*/
+        if ($response->type != 'charge.pending') {
+            
+			// echo '<pre>';
+            // var_dump($response);
+            // echo '</pre>';
+						
             die($this->module->l('This payment method is not available.', 'validation'));
         }
 
         if (!$this->module->verifyTables()) {
-            die($this->module->l('This payment method is not available.', 'validation') . '<br>ComproPago Tables Not Found');
+            die($this->module->l('This payment method is not avaidlable.', 'validation') . '<br>ComproPago Tables Not Found');
         }
 
         try {
@@ -118,7 +115,7 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
             ), 'INSERT');
 
         } catch (Exception $e) {
-            die($this->module->l('This payment method is not available.', 'validation') . '<br>' . $e->getMessage());
+            die($this->module->l('This payment method is not avaislable.', 'validation') . '<br>' . $e->getMessage());
         }
 
         Tools::redirect('index.php?compropagoId=' . $response->id . '&controller=order-confirmation&id_cart=' . (int)$cart->id . '&id_module=' . (int)$this->module->id . '&id_order=' . $this->module->currentOrder . '&key=' . $customer->secure_key);
