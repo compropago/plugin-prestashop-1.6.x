@@ -72,8 +72,8 @@ class Compropago extends PaymentModule
             $this->privateKey = $config['COMPROPAGO_PRIVATEKEY'];
         }
 
-		$this->modoExec=(isset($config['COMPROPAGO_MODE']))?$config['COMPROPAGO_MODE']:false;
-		$this->showLogo=(isset($config['COMPROPAGO_LOGOS']))?$config['COMPROPAGO_LOGOS']:false;
+		$this->modoExec=(isset($config['COMPROPAGO_MODE'])) ? $config['COMPROPAGO_MODE'] : false;
+		$this->showLogo=(isset($config['COMPROPAGO_LOGOS'])) ? $config['COMPROPAGO_LOGOS'] : false;
 
 		//most load selected
 		$this->filterStores = explode(',',$config['COMPROPAGO_PROVIDER'] );
@@ -92,8 +92,8 @@ class Compropago extends PaymentModule
 		if (( !isset($this->publicKey) || !isset($this->privateKey) || empty($this->publicKey) || empty($this->privateKey) ) ){
 			$this->warning = $this->l('The Public Key and Private Key must be configured before using this module.');
 		}
-
-        $this->serviceFlag = $this->setComproPago($this->modoExec);
+		
+		$this->serviceFlag = $this->setComproPago($this->modoExec);
 
    		$itsBE = null;
 
@@ -101,6 +101,7 @@ class Compropago extends PaymentModule
         if($this->context->employee){
         	$itsBE = true;
         }
+
 
         if($itsBE){
             $hook_data = $this->hookRetro(true, $this->publicKey, $this->privateKey, $this->modoExec);
@@ -137,8 +138,7 @@ class Compropago extends PaymentModule
                         $publickey,
                         $privatekey,
                         $live
-					);
-					
+                    );
                     $compropagoResponse = CompropagoSdk\Tools\Validations::evalAuth($client);
                     //eval keys
                     if(!CompropagoSdk\Tools\Validations::validateGateway($client)){
@@ -180,6 +180,7 @@ class Compropago extends PaymentModule
             $error[2] = 'no';
             $error[0] = true;
         }
+
         return $error;
     }
 
@@ -191,17 +192,20 @@ class Compropago extends PaymentModule
      */
 	private function setComproPago($moduleLive)
 	{
-		try{
-			$this->client = new CompropagoSdk\Client(
-			    $this->publicKey,
-                $this->privateKey,
-                $moduleLive
-                //'plugin; cpps '.$this->version.';prestashop '._PS_VERSION_.';'
-            );
-			return true;
-		}catch (\Exception $e) {
-			return false;
+		if($this->publicKey && $this->privateKey){
+			try{
+				$this->client = new CompropagoSdk\Client(
+					$this->publicKey,
+					$this->privateKey,
+					$moduleLive
+					//'plugin; cpps '.$this->version.';prestashop '._PS_VERSION_.';'
+				);
+				return true;
+			}catch (\Exception $e) {
+				return false;
+			}
 		}
+		
 	}
 
 	/**
@@ -631,8 +635,14 @@ class Compropago extends PaymentModule
      * @since 2.0.0
      */
 	public function renderForm()
-	{
-        $providers = $this->client->api->listProviders();
+	{	
+		if(!$this->publicKey && !$this->privateKey){
+			$this->client = new CompropagoSdk\Client();
+			$providers = $this->client->api->listDefaultProviders();
+		}else{
+			$providers = $this->client->api->listProviders();
+		}
+		
 		$oxxo[] = [
 				'id_option' => "OXXO",
 				'name' => "Oxxo"
