@@ -40,12 +40,12 @@
  header('Content-Type: application/json');
  
  if(!$resp_webhook = Factory::getInstanceOf('CpOrderInfo', $request)){
-     echo json_encode([
+     die(json_encode([
        "status"     => "error",
        "message"    => "invalid request",
        "short_id"   => null,
        "reference"  => null
-     ]);
+     ]));
  }
 
  /**
@@ -61,12 +61,12 @@
  try{
      $client = new Client($publickey, $privatekey, $live);
      if($resp_webhook->short_id == "000000"){
-         echo json_encode([
+         die( json_encode([
            "status" => "success",
            "message" => "test success",
            "short_id" => $resp_webhook->short_id,
            "reference" => null
-         ]);
+         ]));
      }
 
      $response = $client->api->verifyOrder($resp_webhook->id);
@@ -138,20 +138,20 @@
         'ioOut' 			   => $ioOut
     ),'INSERT');
 
-    echo('Orden '.$resp_webhook->id.' Confirmada');
+    die('Orden '.$resp_webhook->id.' Confirmada');
 
-    echo json_encode([
+    die(json_encode([
     "status"    => "success",
     "message"   => "OK",
     "short_id"  => $response->short_id,
     "reference" => 'internal-1234'
-    ]);
+    ]));
  }catch (Exception $e) {
-     echo json_encode([
+     die(json_encode([
        "status"     => "error",
        "message"    => $e->getMessage(),
        "short_id"   => $resp_webhook->short_id,
        "reference"  => null
-     ]);
+     ]));
  }
 
