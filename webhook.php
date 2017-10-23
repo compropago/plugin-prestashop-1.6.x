@@ -142,9 +142,9 @@
         "status"    => "success",
         "message"   => "Orden ".$resp_webhook->id.' confirmada.',
         "short_id"  => $response->short_id,
-        "reference" => null
+        "reference" => $response->order_info->order_id
     ]));
-    
+
  }catch (Exception $e) {
      die(json_encode([
        "status"     => "error",
