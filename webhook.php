@@ -21,7 +21,7 @@
  */
 
  
- require_once 'vendor/autoload.php';
+ require_once __DIR__.'/vendor/autoload.php';
  require_once __DIR__.'/../../config/config.inc.php';
  require_once __DIR__.'/../../init.php';
  require_once __DIR__.'/../../classes/PrestaShopLogger.php';
@@ -37,7 +37,7 @@
  use CompropagoSdk\Tools\Validations;
  
  $request = @file_get_contents('php://input');
- header('Content-Type: application/json');
+ //header('Content-Type: application/json');
  
  if(!$resp_webhook = Factory::getInstanceOf('CpOrderInfo', $request)){
      die(json_encode([
@@ -138,14 +138,13 @@
         'ioOut' 			   => $ioOut
     ),'INSERT');
 
-    die('Orden '.$resp_webhook->id.' Confirmada');
-
     die(json_encode([
-    "status"    => "success",
-    "message"   => "OK",
-    "short_id"  => $response->short_id,
-    "reference" => 'internal-1234'
+        "status"    => "success",
+        "message"   => "Orden ".$resp_webhook->id.' confirmada.',
+        "short_id"  => $response->short_id,
+        "reference" => null
     ]));
+    
  }catch (Exception $e) {
      die(json_encode([
        "status"     => "error",
