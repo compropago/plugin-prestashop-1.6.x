@@ -62,7 +62,25 @@ class Compropago extends PaymentModule
 		$this->currencies_mode = 'checkbox';
 
 		// have module been set
-		$config = Configuration::getMultiple(array('COMPROPAGO_PUBLICKEY', 'COMPROPAGO_PRIVATEKEY', 'COMPROPAGO_MODE', 'COMPROPAGO_LOGOS','COMPROPAGO_PROVIDER'));
+		if (Tools::isSubmit('btnSubmit')){
+            $config = [
+                'COMPROPAGO_PUBLICKEY'  => Tools::getValue('COMPROPAGO_PUBLICKEY'), 
+                'COMPROPAGO_PRIVATEKEY' => Tools::getValue('COMPROPAGO_PRIVATEKEY'), 
+                'COMPROPAGO_MODE'       => Tools::getValue('COMPROPAGO_MODE'), 
+                'COMPROPAGO_LOGOS'      => Tools::getValue('COMPROPAGO_LOGOS'), 
+                'COMPROPAGO_CHECKLOGO'  => Tools::getValue('COMPROPAGO_CHECKLOGO'), 
+                'COMPROPAGO_PROVIDER'   => Tools::getValue('COMPROPAGO_PROVIDER')
+            ];
+        } else {
+            $config = Configuration::getMultiple([
+                'COMPROPAGO_PUBLICKEY', 
+                'COMPROPAGO_PRIVATEKEY', 
+                'COMPROPAGO_MODE', 
+                'COMPROPAGO_LOGOS', 
+                'COMPROPAGO_CHECKLOGO', 
+                'COMPROPAGO_PROVIDER'
+            ]);
+        }
 
         if (isset($config['COMPROPAGO_PUBLICKEY'])) {
             $this->publicKey = $config['COMPROPAGO_PUBLICKEY'];
