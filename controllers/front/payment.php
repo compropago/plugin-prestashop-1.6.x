@@ -20,6 +20,10 @@
  * @since 2.0.0
  */
  
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 class CompropagoPaymentModuleFrontController extends ModuleFrontController
 {
 	public $ssl = true;
@@ -30,6 +34,10 @@ class CompropagoPaymentModuleFrontController extends ModuleFrontController
 	 */
 	public function initContent()
 	{
+
+		$logger = new FileLogger(0); //0 == debug level, logDebug() won’t work without this.
+		$logger->setFilename("/tmp/compropago.log");
+
 		parent::initContent();
 
 		$cart = $this->context->cart;
@@ -40,13 +48,17 @@ class CompropagoPaymentModuleFrontController extends ModuleFrontController
 		}
 		//ComproPago valid config?
 		if (!$this->module->checkCompropago()){
+			$this->logger->logDebug( 'conf invalid [1].' );
 			Tools::redirect('index.php?controller=order');
 		}
 
 		//ok with tpl config?
 		if( !$compropagoData = $this->module->getProvidersCompropago($order_total) ){
+			$this->logger->logDebug( 'conf invalid [2].' );
 			Tools::redirect('index.php?controller=order');
 		}
+
+		$this->logger->logDebug( 'experiment....' );
 
 		$this->context->smarty->assign(array(
 		    'providers'            => $compropagoData['providers'],
