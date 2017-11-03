@@ -19,10 +19,6 @@
  * @author Rolando Lucio <rolando@compropago.com>
  * @since 2.0.0
  */
- 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 
 class CompropagoPaymentModuleFrontController extends ModuleFrontController
 {
@@ -35,9 +31,6 @@ class CompropagoPaymentModuleFrontController extends ModuleFrontController
 	public function initContent()
 	{
 
-		$logger = new FileLogger(0); //0 == debug level, logDebug() won’t work without this.
-		$logger->setFilename("/tmp/compropago.log");
-
 		$compropagoData = NULL;
 
 		parent::initContent();
@@ -46,30 +39,18 @@ class CompropagoPaymentModuleFrontController extends ModuleFrontController
         $order_total = $cart->getOrderTotal(true, Cart::BOTH);
 
 		if (!$this->module->checkCurrency($cart)){
-			$logger->logDebug( 'conf invalid [0].' );
 			Tools::redirect('index.php?controller=order');
 		}
 		//ComproPago valid config?
 		if (!$this->module->checkCompropago()){
-			$logger->logDebug( 'conf invalid [1].' );
 			Tools::redirect('index.php?controller=order');
 		}
 
-
+		// we need to validate if compropagoData is empty.
 		$compropagoData = $this->module->getProvidersCompropago();
 		if( empty($compropagoData) ){
-			$logger->logDebug( "We haven't providers. Check what's happening." );
+			
 		}
-		//$logger->logDebug( print_r( $compropagoData ,true) );
-
-
-		//ok with tpl config?
-		/*if( !$compropagoData = $this->module->getProvidersCompropago($order_total) ){
-			$logger->logDebug( 'conf invalid [2].' );
-			Tools::redirect('index.php?controller=order');
-		}*/
-
-		$logger->logDebug( 'experiment....' );
 
 		$this->context->smarty->assign(array(
 		    'providers'            => $compropagoData['providers'],
@@ -85,8 +66,6 @@ class CompropagoPaymentModuleFrontController extends ModuleFrontController
 			'this_path_compropago' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->module->name.'/',
 			'this_path_ssl'        => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->module->name.'/'
 		));
-
-		$logger->logDebug( 'experiment...2222.' );
 
 		$this->setTemplate('payment_execution.tpl');
 	}
