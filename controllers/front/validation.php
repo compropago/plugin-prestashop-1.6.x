@@ -23,12 +23,6 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
 {
 	public function postProcess()
 	{
-
-        $logger = new FileLogger(0); //0 == debug level, logDebug() won’t work without this.
-        $logger->setFilename("/tmp/compropago.log");
-
-        $logger->logDebug( 'validation:::a' );
-
 		$cart = $this->context->cart;
 
 		if ($cart->id_customer == 0 || $cart->id_address_delivery == 0 || $cart->id_address_invoice == 0 || !$this->module->active) {
@@ -61,20 +55,20 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
         $cpOrderName     = Configuration::get('PS_SHOP_NAME') . ', Ref:' . $this->module->currentOrder;
 
 
-				$order_info = [
-					'order_id' => $this->module->currentOrder,
-					'order_name' => $cpOrderName,
-					'order_price' => $total,
-					'customer_name' => $customer->firstname . ' ' . $customer->lastname,
-					'customer_email' => $customer->email,
-					'payment_type' => $compropagoStore,
-					'currency' => $currency->iso_code,
-					'image_url' => null,
-					'app_client_name' => 'prestashop',
-					'app_client_version' => _PS_VERSION_
-					];
+		$order_info = [
+			'order_id' => $this->module->currentOrder,
+			'order_name' => $cpOrderName,
+			'order_price' => $total,
+			'customer_name' => $customer->firstname . ' ' . $customer->lastname,
+			'customer_email' => $customer->email,
+			'payment_type' => $compropagoStore,
+			'currency' => $currency->iso_code,
+			'image_url' => null,
+			'app_client_name' => 'prestashop',
+			'app_client_version' => _PS_VERSION_
+		];
 
-				$order = CompropagoSdk\Factory\Factory::getInstanceOf('PlaceOrderInfo', $order_info);
+		$order = CompropagoSdk\Factory\Factory::getInstanceOf('PlaceOrderInfo', $order_info);
 
         try {
             $response = $this->module->client->api->placeOrder($order);
@@ -83,11 +77,6 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
         }
 
         if ($response->type != 'charge.pending') {
-            /*
-						echo '<pre>';
-            var_dump($response);
-            echo '</pre>';
-						*/
             die($this->module->l('This payment method is not available.', 'validation'));
         }
 
@@ -97,8 +86,8 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
 
         try {
             $recordTime = time();
-            $ioIn = base64_encode(serialize($response));
-            $ioOut = base64_encode(serialize($order));
+            $ioIn       = base64_encode(serialize($response));
+            $ioOut      = base64_encode(serialize($order));
 
             Db::getInstance()->autoExecute(_DB_PREFIX_ . 'compropago_orders', array(
                 'date'             => $recordTime,
@@ -127,22 +116,13 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
             die($this->module->l('This payment method is not available.', 'validation') . '<br>' . $e->getMessage());
         }
 
-        //Tools::redirect('confirmacion-pedido?compropagoId=' . $response->id . '&controller=order-confirmation&id_cart=' . (int)$cart->id . '&id_module=' . (int)$this->module->id . '&id_order=' . $this->module->currentOrder . '&key=' . $customer->secure_key);
-
-        $logger->logDebug(
-            Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.
-            'confirmacion-pedido?id_cart=' . (int)$cart->id  .
-            '&id_module=' . (int)$this->module->id . 
-            '&id_order='  . $this->module->currentOrder . 
-            '&key=' . $customer->secure_key
-        );
-
         Tools::redirect(
-            Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.
-            'confirmacion-pedido?id_cart=' . (int)$cart->id  .
-            '&id_module=' . (int)$this->module->id . 
-            '&id_order='  . $this->module->currentOrder . 
-            '&key=' . $customer->secure_key
+            Tools::getShopDomainSsl(true, true) .__PS_BASE_URI__.
+            'confirmacion-pedido?id_cart='      . (int)$cart->id  .
+            '&id_module='                       . (int)$this->module->id . 
+            '&id_order='                        . $this->module->currentOrder . 
+            '&compropagoId='                    . $response->id . 
+            '&key='                             . $customer->secure_key
         );
 
 	}
