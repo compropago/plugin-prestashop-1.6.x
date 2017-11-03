@@ -38,27 +38,38 @@ class CompropagoPaymentModuleFrontController extends ModuleFrontController
 		$logger = new FileLogger(0); //0 == debug level, logDebug() won’t work without this.
 		$logger->setFilename("/tmp/compropago.log");
 
+		$compropagoData = NULL;
+
 		parent::initContent();
 
 		$cart = $this->context->cart;
         $order_total = $cart->getOrderTotal(true, Cart::BOTH);
 
 		if (!$this->module->checkCurrency($cart)){
+			$logger->logDebug( 'conf invalid [0].' );
 			Tools::redirect('index.php?controller=order');
 		}
 		//ComproPago valid config?
 		if (!$this->module->checkCompropago()){
-			$this->logger->logDebug( 'conf invalid [1].' );
+			$logger->logDebug( 'conf invalid [1].' );
 			Tools::redirect('index.php?controller=order');
 		}
+
+
+		$compropagoData = $this->module->getProvidersCompropago();
+		if( empty($compropagoData) ){
+			$logger->logDebug( "We haven't providers. Check what's happening." );
+		}
+		//$logger->logDebug( print_r( $compropagoData ,true) );
+
 
 		//ok with tpl config?
-		if( !$compropagoData = $this->module->getProvidersCompropago($order_total) ){
-			$this->logger->logDebug( 'conf invalid [2].' );
+		/*if( !$compropagoData = $this->module->getProvidersCompropago($order_total) ){
+			$logger->logDebug( 'conf invalid [2].' );
 			Tools::redirect('index.php?controller=order');
-		}
+		}*/
 
-		$this->logger->logDebug( 'experiment....' );
+		$logger->logDebug( 'experiment....' );
 
 		$this->context->smarty->assign(array(
 		    'providers'            => $compropagoData['providers'],
@@ -74,6 +85,8 @@ class CompropagoPaymentModuleFrontController extends ModuleFrontController
 			'this_path_compropago' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->module->name.'/',
 			'this_path_ssl'        => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->module->name.'/'
 		));
+
+		$logger->logDebug( 'experiment...2222.' );
 
 		$this->setTemplate('payment_execution.tpl');
 	}

@@ -169,22 +169,27 @@ class Compropago extends PaymentModule
                     if(!CompropagoSdk\Tools\Validations::validateGateway($client)){
                         $error[1] = 'Invalid Keys, The Public Key and Private Key must be valid before using this module.';
                         $error[0] = true;
+                        $this->logger->logDebug( 'error->' . $error[1] );
                     }else{
                         if($compropagoResponse->mode_key != $compropagoResponse->livemode){
                             $error[1] = 'Your Keys and Your ComproPago account are set to different Modes.';
                             $error[0] = true;
+                            $this->logger->logDebug( 'error->' . $error[1] );
                         }else{
                             if($live != $compropagoResponse->livemode){
                                 $error[1] = 'Your Store and Your ComproPago account are set to different Modes.';
                                 $error[0] = true;
+                                $this->logger->logDebug( 'error->' . $error[1] );
                             }else{
                                 if($live != $compropagoResponse->mode_key){
                                     $error[1] = 'ComproPago ALERT:Your Keys are for a different Mode.';
                                     $error[0] = true;
+                                    $this->logger->logDebug( 'error->' . $error[1] );
                                 }else{
                                     if(!$compropagoResponse->mode_key && !$compropagoResponse->livemode){
                                         $error[1] = 'WARNING: ComproPago account is Running in TEST Mode, NO REAL OPERATIONS';
                                         $error[0] = true;
+                                        $this->logger->logDebug( 'error->' . $error[1] );
                                     }
                                 }
                             }
@@ -194,16 +199,19 @@ class Compropago extends PaymentModule
                     $error[2] = 'no';
                     $error[1] = $e->getMessage();
                     $error[0] = true;
+                    $this->logger->logDebug( 'error->' . $error[1] );
                 }
             }else{
                 $error[1] = 'The Public Key and Private Key must be set before using ComproPago';
                 $error[2] = 'no';
                 $error[0] = true;
+                $this->logger->logDebug( 'The Public Key and Private Key must be set before using ComproPago' );
             }
         }else{
             $error[1] = 'ComproPago is not Enabled';
             $error[2] = 'no';
             $error[0] = true;
+            $this->logger->logDebug( 'ComproPago is not Enabled' );
         }
 
         return $error;
@@ -278,7 +286,7 @@ class Compropago extends PaymentModule
 			$compropagoData['instrucciones'] = $this->l('Selecciona una tienda');    // Instructions text
 			return $compropagoData;
 		}catch (Exception $e) {
-			return false;
+			return NULL;
 		}
 	}
 
@@ -615,7 +623,7 @@ class Compropago extends PaymentModule
         }
 
 		$state = $params['objOrder']->getCurrentState();
-		$this->logger->logDebug( 'state_1->' . $state . '|state_2->' .  $params['order']->getCurrentState() );
+		$this->logger->logDebug( 'state->' . $state );
 
 		if( !isset($_REQUEST['compropagoId']) || !isset($_REQUEST['id_cart']) || !isset($_REQUEST['id_order']) || empty($_REQUEST['compropagoId']) || empty($_REQUEST['id_cart']) || empty($_REQUEST['id_order']) ){
 			$compropagoStatus = 'fail';

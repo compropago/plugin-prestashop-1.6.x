@@ -23,6 +23,12 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
 {
 	public function postProcess()
 	{
+
+        $logger = new FileLogger(0); //0 == debug level, logDebug() won’t work without this.
+        $logger->setFilename("/tmp/compropago.log");
+
+        $logger->logDebug( 'validation:::a' );
+
 		$cart = $this->context->cart;
 
 		if ($cart->id_customer == 0 || $cart->id_address_delivery == 0 || $cart->id_address_invoice == 0 || !$this->module->active) {
@@ -121,6 +127,23 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
             die($this->module->l('This payment method is not available.', 'validation') . '<br>' . $e->getMessage());
         }
 
-        Tools::redirect('index.php?compropagoId=' . $response->id . '&controller=order-confirmation&id_cart=' . (int)$cart->id . '&id_module=' . (int)$this->module->id . '&id_order=' . $this->module->currentOrder . '&key=' . $customer->secure_key);
+        //Tools::redirect('confirmacion-pedido?compropagoId=' . $response->id . '&controller=order-confirmation&id_cart=' . (int)$cart->id . '&id_module=' . (int)$this->module->id . '&id_order=' . $this->module->currentOrder . '&key=' . $customer->secure_key);
+
+        $logger->logDebug(
+            Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.
+            'confirmacion-pedido?id_cart=' . (int)$cart->id  .
+            '&id_module=' . (int)$this->module->id . 
+            '&id_order='  . $this->module->currentOrder . 
+            '&key=' . $customer->secure_key
+        );
+
+        Tools::redirect(
+            Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.
+            'confirmacion-pedido?id_cart=' . (int)$cart->id  .
+            '&id_module=' . (int)$this->module->id . 
+            '&id_order='  . $this->module->currentOrder . 
+            '&key=' . $customer->secure_key
+        );
+
 	}
 }
