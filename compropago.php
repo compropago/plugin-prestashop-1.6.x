@@ -19,10 +19,6 @@
  * @since 2.0.0
  */
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -249,7 +245,8 @@ class Compropago extends PaymentModule
 	{
 		try{
 			global $currency;
-			$providers = $this->client->api->listProviders(true, $limit, $currency->iso_code);
+			//$providers = $this->client->api->listProviders(true, $limit, $currency->iso_code);
+			$providers = $this->client->api->listProviders($limit, $currency->iso_code);
 			$default = explode(",", Configuration::get('COMPROPAGO_PROVIDER')); 
 	        $f_providers = [];
 
@@ -303,7 +300,7 @@ class Compropago extends PaymentModule
 	 */
 	public function install()
 	{
-		if (version_compare(phpversion(), '5.4.0', '<')) {
+		if (version_compare(phpversion(), '5.5.0', '<')) {
 			return false;
 		}
 
@@ -327,7 +324,6 @@ class Compropago extends PaymentModule
                 die('Unable to Create ComproPago Tables, module cant be installed');
             }
 		}
-
 
 		if (!parent::install() || !$this->registerHook('payment') || !$this->registerHook('displayPaymentEU') || !$this->registerHook('paymentReturn') || !$this->registerHook('displayHeader')) {
             return false;
@@ -513,11 +509,14 @@ class Compropago extends PaymentModule
 		if (Tools::isSubmit('btnSubmit'))
 		{
 			$this->_postValidation();
-			if (!count($this->_postErrors))
+			if (!count($this->_postErrors)){
 				$this->_postProcess();
-			else
-				foreach ($this->_postErrors as $err)
+			}
+			else{
+				foreach ($this->_postErrors as $err){
 					$this->_html .= $this->displayError($err);
+				}
+			}
 		}
 
 		$this->_html .= $this->_displayCompropago();
@@ -639,9 +638,10 @@ class Compropago extends PaymentModule
 	{
 		//Compropago just accept  Mexican Peso as currency: MXN iso 484
 		$currency_order = new Currency((int)($cart->id_currency));
-	//Habilitar las monedas soportadas
-  	if($currency_order->iso_code=='MXN' || $currency_order->iso_code=='USD' || $currency_order->iso_code=='EUR' || $currency_order->iso_code=='GBP')
-			return true;
+		//Habilitar las monedas soportadas
+	  	if($currency_order->iso_code=='MXN' || $currency_order->iso_code=='USD' || $currency_order->iso_code=='EUR' || $currency_order->iso_code=='GBP'){
+				return true;
+		}
 
 		return false;
 	}
@@ -671,7 +671,7 @@ class Compropago extends PaymentModule
                 'id_option' => $provider->internal_name,
                 'name'      => $provider->name
             ];
-
+        }
         global $smarty;
         $base_url =  ( isset( $smarty->tpl_vars['base_dir']->value ) ) ? $smarty->tpl_vars['base_dir']->value : __DIR__;
 
@@ -778,13 +778,13 @@ class Compropago extends PaymentModule
 				            'id'    => 'id_option', // The value of the 'id' key must be the same as the key for 'value' attribute of the <option> tag in each $options sub-array.
 				            'name'  => 'name'     // The value of the 'name' key must be the same as the key for the text content of the <option> tag in each $options sub-array.
 				        )
-				    ),
+				    )
 				    ///END OF FIELDS
                 ),
                 'submit' => array(
                     'title' => $this->l('Save'),
                 )
-			),
+			)
 		);
 
 		$helper = new HelperForm();
@@ -825,7 +825,9 @@ class Compropago extends PaymentModule
 			'COMPROPAGO_WEBHOOK' =>  Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->name.'/webhook.php',
 			'COMPROPAGO_LOCATION'   => Tools::getValue('COMPROPAGO_LOCATION', Configuration::get('COMPROPAGO_LOCATION')),
 			'COMPROPAGO_LOGOS' =>  Tools::getValue('COMPROPAGO_LOGOS', Configuration::get('COMPROPAGO_LOGOS')),
-			'COMPROPAGO_PROVIDERS' =>  Tools::getValue('COMPROPAGO_PROVIDERS_selected',$providersDB),
+			'COMPROPAGO_PROVIDERS' =>  Tools::getValue('COMPROPAGO_PROVIDERS_selected',$providersDB)
 		);
 	}
 }
+
+?>
