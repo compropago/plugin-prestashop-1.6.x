@@ -353,56 +353,124 @@ class Compropago extends PaymentModule
 	 */
 	protected function installOrderStates()
 	{
+        $cp_order_states = array(
+        	array(
+        		'label'		=>		'ComproPago - Pending Payment',
+        		'value' 	=> 		'COMPROPAGO_PENDING',
+        		'color' 	=> 		array(
+        			'invoice'     => 0,
+					'send_email'  => 0,
+					'module_name' => pSQL($this->name),
+					'color'       => '#FFFF7F',
+					'unremovable' => 0,
+					'hidden'      => 0,
+					'logable'     => 1,
+					'delivery'    => 0,
+					'shipped'     => 0,
+					'paid'        => 0,
+					'deleted'     => 0
+        		)
+        	),
+        	array(
+        		'label'		=>		'ComproPago - Payment received',
+        		'value' 	=> 		'COMPROPAGO_SUCCESS',
+        		'color' 	=> 		array(
+        			'invoice'     => 0,
+					'send_email'  => 0,
+					'module_name' => pSQL($this->name),
+					'color'       => '#CCFF00',
+					'unremovable' => 0,
+					'hidden'      => 0,
+					'logable'     => 1,
+					'delivery'    => 0,
+					'shipped'     => 0,
+					'paid'        => 0,
+					'deleted'     => 0
+        		)
+        	),
+        	array(
+        		'label'		=>		'ComproPago - Expired',
+        		'value' 	=> 		'COMPROPAGO_EXPIRED',
+        		'color' 	=> 		array(
+        			'invoice'     => 0,
+					'send_email'  => 0,
+					'module_name' => pSQL($this->name),
+					'color'       => '#FF3300',
+					'unremovable' => 0,
+					'hidden'      => 0,
+					'logable'     => 1,
+					'delivery'    => 0,
+					'shipped'     => 0,
+					'paid'        => 0,
+					'deleted'     => 0
+        		)
+        	),
+        	array(
+        		'label'		=>		'ComproPago - Declined',
+        		'value' 	=> 		'COMPROPAGO_DECLINED',
+        		'color' 	=> 		array(
+        			'invoice'     => 0,
+					'send_email'  => 0,
+					'module_name' => pSQL($this->name),
+					'color'       => '#FF3300',
+					'unremovable' => 0,
+					'hidden'      => 0,
+					'logable'     => 1,
+					'delivery'    => 0,
+					'shipped'     => 0,
+					'paid'        => 0,
+					'deleted'     => 0
+        		)
+        	),
+        	array(
+        		'label'		=>		'ComproPago - Deleted',
+        		'value' 	=> 		'COMPROPAGO_DELETED',
+        		'color' 	=> 		array(
+        			'invoice'     => 0,
+					'send_email'  => 0,
+					'module_name' => pSQL($this->name),
+					'color'       => '#FF3300',
+					'unremovable' => 0,
+					'hidden'      => 0,
+					'logable'     => 1,
+					'delivery'    => 0,
+					'shipped'     => 0,
+					'paid'        => 0,
+					'deleted'     => 0
+        		)
+        	),
+        	array(
+        		'label'		=>		'ComproPago - Canceled',
+        		'value' 	=> 		'COMPROPAGO_CANCELED',
+        		'color' 	=> 		array(
+        			'invoice'     => 0,
+					'send_email'  => 0,
+					'module_name' => pSQL($this->name),
+					'color'       => '#FF3300',
+					'unremovable' => 0,
+					'hidden'      => 0,
+					'logable'     => 1,
+					'delivery'    => 0,
+					'shipped'     => 0,
+					'paid'        => 0,
+					'deleted'     => 0
+        		)
+        	)
+        );
 
-        $cp_order_states = [
-            [
-                'label' => 'ComproPago - Pending Payment',
-                'value' => 'COMPROPAGO_PENDING'
-            ],
-            [
-                'label' => 'ComproPago - Payment received',
-                'value' => 'COMPROPAGO_SUCCESS'
-            ],
-            [
-                'label' => 'ComproPago - Expired',
-                'value' => 'COMPROPAGO_EXPIRED'
-            ],
-            [
-                'label' => 'ComproPago - Declined',
-                'value' => 'COMPROPAGO_DECLINED'
-            ],
-            [
-                'label' => 'ComproPago - Deleted',
-                'value' => 'COMPROPAGO_DELETED'
-            ],
-            [
-                'label' => 'ComproPago - Canceled',
-                'value' => 'COMPROPAGO_CANCELED'
-            ],
-        ];
-
-		$values_to_insert = array(
-			'invoice'     => 0,
-			'send_email'  => 0,
-			'module_name' => pSQL($this->name),
-			'color'       => 'RoyalBlue',
-			'unremovable' => 0,
-			'hidden'      => 0,
-			'logable'     => 1,
-			'delivery'    => 0,
-			'shipped'     => 0,
-			'paid'        => 0,
-			'deleted'     => 0
-		);
-
-
+        /*
+         *
+         * Now we need to iterate each state to accomplish the following points: 
+         * 1. Insert order state color  
+         * 2. Insert Compropago order states and attach state color using identifier 
+         */
         foreach ($cp_order_states as $state){
-            if (! Db::getInstance()->autoExecute(_DB_PREFIX_ . 'order_state', $values_to_insert, 'INSERT')) {
-                return false;
-            }
+        	// Check if we can insert order state color
+        	if (! Db::getInstance()->autoExecute(_DB_PREFIX_ . 'order_state', $state['color'], 'INSERT')) { return false; }
 
-            $id_order_state = (int) Db::getInstance()->Insert_ID();
-            $languages = Language::getLanguages(false);
+        	// Get ID and insert compropago order state.
+			$id_order_state 	= (int) Db::getInstance()->Insert_ID();
+            $languages 			= Language::getLanguages(false);
 
             foreach ($languages as $language) {
                 Db::getInstance()->autoExecute(_DB_PREFIX_ . 'order_state_lang', array(
@@ -414,7 +482,7 @@ class Compropago extends PaymentModule
             }
 
             Configuration::updateValue($state['value'], $id_order_state);
-            unset($id_order_state);
+            unset($id_order_state);        	
         }
 
 	}
