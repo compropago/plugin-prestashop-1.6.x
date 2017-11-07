@@ -9,8 +9,9 @@ Este modulo permite la integración del servicio de ComproPago en tu eCommerce d
 Con ComproPago puede recibir pagos en OXXO, 7Eleven y muchas tiendas más en todo México.
 
 [Registrarse en ComproPago ](https://compropago.com)
+[Comisiones](https://compropago.com/comisiones/)
 
-## Ayuda y Soporte de ComproPago
+## Ayuda
 
 - [Centro de ayuda y soporte](https://compropago.com/ayuda-y-soporte)
 - [Solicitar Integración](https://compropago.com/integracion)
@@ -37,7 +38,7 @@ ComproPago te ofrece un API REST para integrar pagos en efectivo en tu comercio 
 
 Información de Comisiones y Horarios, como Transferir tu dinero y la Seguridad que proporciona ComproPago.
 
-**Otras formas de integración**
+**(Otras formas de integración)[https://compropago.com/soluciones/https://compropago.com/soluciones/]**
 * [Botón de pago](https://compropago.com/documentacion/boton-pago)
 * [Librerías > sección SDK](http://demo.compropago.com/)
 * [Plugins > sección Plugins](http://demo.compropago.com/)
