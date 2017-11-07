@@ -4,12 +4,12 @@ Plugin para PrestaShop ( 1.6.1.x )
 **Nota.-Este plugin sólo funcionará con cuentas de ComproPago generadas a partir de Agosto del 2017. Si tienes una cuenta creada anterior a esta fecha por favor utilizar la versión 2.2.2.3 del plugin.**
 
 ## Descripción
-Este modulo permite la integración del servicio de ComproPago en tu eCommerce de PrestaShop. 
+Este módulo permite la integración del servicio de ComproPago en tu eCommerce de PrestaShop. 
 
 Con ComproPago puede recibir pagos en OXXO, 7Eleven y muchas tiendas más en todo México.
 
-[Registrarse en ComproPago ](https://compropago.com)
-[Comisiones](https://compropago.com/comisiones/)
+[Registrarse en ComproPago ](https://compropago.com/)
+[Comisiones](https://www.compropago.com/comisiones/)
 
 ## Ayuda
 
@@ -38,7 +38,7 @@ ComproPago te ofrece un API REST para integrar pagos en efectivo en tu comercio 
 
 Información de Comisiones y Horarios, como Transferir tu dinero y la Seguridad que proporciona ComproPago.
 
-**(Otras formas de integración)[https://compropago.com/soluciones/https://compropago.com/soluciones/]**
+**[Otras formas de integración](https://compropago.com/soluciones/https://compropago.com/soluciones/)**
 * [Botón de pago](https://compropago.com/documentacion/boton-pago)
 * [Librerías > sección SDK](http://demo.compropago.com/)
 * [Plugins > sección Plugins](http://demo.compropago.com/)
