@@ -19,7 +19,7 @@
  * @author Rolando Lucio <rolando@compropago.com>
  * @since 2.0.0
  */
- 
+
 class CompropagoPaymentModuleFrontController extends ModuleFrontController
 {
 	public $ssl = true;
@@ -30,6 +30,9 @@ class CompropagoPaymentModuleFrontController extends ModuleFrontController
 	 */
 	public function initContent()
 	{
+
+		$compropagoData = NULL;
+
 		parent::initContent();
 
 		$cart = $this->context->cart;
@@ -43,9 +46,10 @@ class CompropagoPaymentModuleFrontController extends ModuleFrontController
 			Tools::redirect('index.php?controller=order');
 		}
 
-		//ok with tpl config?
-		if( !$compropagoData = $this->module->getProvidersCompropago($order_total) ){
-			Tools::redirect('index.php?controller=order');
+		// we need to validate if compropagoData is empty.
+		$compropagoData = $this->module->getProvidersCompropago();
+		if( empty($compropagoData) ){
+			
 		}
 
 		$this->context->smarty->assign(array(

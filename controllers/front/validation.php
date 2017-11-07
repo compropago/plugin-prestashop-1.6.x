@@ -55,20 +55,20 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
         $cpOrderName     = Configuration::get('PS_SHOP_NAME') . ', Ref:' . $this->module->currentOrder;
 
 
-				$order_info = [
-					'order_id' => $this->module->currentOrder,
-					'order_name' => $cpOrderName,
-					'order_price' => $total,
-					'customer_name' => $customer->firstname . ' ' . $customer->lastname,
-					'customer_email' => $customer->email,
-					'payment_type' => $compropagoStore,
-					'currency' => $currency->iso_code,
-					'image_url' => null,
-					'app_client_name' => 'prestashop',
-					'app_client_version' => _PS_VERSION_
-					];
+		$order_info = [
+			'order_id' => $this->module->currentOrder,
+			'order_name' => $cpOrderName,
+			'order_price' => $total,
+			'customer_name' => $customer->firstname . ' ' . $customer->lastname,
+			'customer_email' => $customer->email,
+			'payment_type' => $compropagoStore,
+			'currency' => $currency->iso_code,
+			'image_url' => null,
+			'app_client_name' => 'prestashop',
+			'app_client_version' => _PS_VERSION_
+		];
 
-				$order = CompropagoSdk\Factory\Factory::getInstanceOf('PlaceOrderInfo', $order_info);
+		$order = CompropagoSdk\Factory\Factory::getInstanceOf('PlaceOrderInfo', $order_info);
 
         try {
             $response = $this->module->client->api->placeOrder($order);
@@ -76,12 +76,7 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
             die($this->module->l('This payment method is not available.', 'validation') . '<br>' . $e->getMessage());
         }
 
-        if ($response->status != 'pending') {
-            /*
-						echo '<pre>';
-            var_dump($response);
-            echo '</pre>';
-						*/
+        if ($response->type != 'charge.pending') {
             die($this->module->l('This payment method is not available.', 'validation'));
         }
 
@@ -91,14 +86,14 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
 
         try {
             $recordTime = time();
-            $ioIn = base64_encode(serialize($response));
-            $ioOut = base64_encode(serialize($order));
+            $ioIn       = base64_encode(serialize($response));
+            $ioOut      = base64_encode(serialize($order));
 
             Db::getInstance()->autoExecute(_DB_PREFIX_ . 'compropago_orders', array(
                 'date'             => $recordTime,
                 'modified'         => $recordTime,
                 'compropagoId'     => $response->id,
-                'compropagoStatus' => $response->status,
+                'compropagoStatus' => $response->type,
                 'storeCartId'      => $cart->id,
                 'storeOrderId'     => $this->module->currentOrder,
                 'storeExtra'       => 'COMPROPAGO_PENDING',
@@ -111,8 +106,8 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
                 'orderId'              => $response->order_info->order_id,
                 'date'                 => $recordTime,
                 'compropagoId'         => $response->id,
-                'compropagoStatus'     => $response->status,
-                'compropagoStatusLast' => $response->status,
+                'compropagoStatus'     => $response->type,
+                'compropagoStatusLast' => $response->type,
                 'ioIn'                 => $ioIn,
                 'ioOut'                => $ioOut
             ), 'INSERT');
@@ -121,6 +116,14 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
             die($this->module->l('This payment method is not available.', 'validation') . '<br>' . $e->getMessage());
         }
 
-        Tools::redirect('index.php?compropagoId=' . $response->id . '&controller=order-confirmation&id_cart=' . (int)$cart->id . '&id_module=' . (int)$this->module->id . '&id_order=' . $this->module->currentOrder . '&key=' . $customer->secure_key);
+        Tools::redirect(
+            Tools::getShopDomainSsl(true, true) .__PS_BASE_URI__.
+            'confirmacion-pedido?id_cart='      . (int)$cart->id  .
+            '&id_module='                       . (int)$this->module->id . 
+            '&id_order='                        . $this->module->currentOrder . 
+            '&compropagoId='                    . $response->id . 
+            '&key='                             . $customer->secure_key
+        );
+
 	}
 }
