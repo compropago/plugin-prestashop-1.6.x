@@ -20,7 +20,7 @@ Con ComproPago puede recibir pagos en OXXO, 7Eleven y muchas tiendas más en tod
 - [Información de contacto](https://compropago.com/contacto)
 
 ## Requerimientos
-* [PrestaShop 1.6.1.15, 1.6.1.16 o 1.6.1.17](https://www.prestashop.com/)
+* [PrestaShop 1.6.1.15 - 1.6.1.17](https://www.prestashop.com/)
 * [PHP >= 5.5](http://www.php.net/)
 * [PHP JSON extension](http://php.net/manual/en/book.json.php)
 * [PHP cURL extension](http://php.net/manual/en/book.curl.php)
