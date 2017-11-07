@@ -7,7 +7,7 @@ Este modulo provee el servicio de ComproPago para poder generar intenciones de p
 
 Con ComproPago puede recibir pagos en OXXO, 7Eleven y muchas tiendas más en todo México.
 
-[Registrarse en ComproPago ] (https://compropago.com)
+[Registrarse en ComproPago ](https://compropago.com)
 
 ## Ayuda y Soporte de ComproPago
 
@@ -17,10 +17,10 @@ Con ComproPago puede recibir pagos en OXXO, 7Eleven y muchas tiendas más en tod
 - [Información de Contacto](https://compropago.com/contacto)
 
 ## Requerimientos
-* [PrestaShop 1.6.1.x +] (https://www.prestashop.com/)
-* [PHP >= 5.5] (http://www.php.net/)
-* [PHP JSON extension] (http://php.net/manual/en/book.json.php)
-* [PHP cURL extension] (http://php.net/manual/en/book.curl.php)
+* [PrestaShop 1.6.1.15, 1.6.1.16 o 1.6.1.17](https://www.prestashop.com/)
+* [PHP >= 5.5](http://www.php.net/)
+* [PHP JSON extension](http://php.net/manual/en/book.json.php)
+* [PHP cURL extension](http://php.net/manual/en/book.curl.php)
 
 **Nota.-Este plugin sólo funcionará con cuentas de ComproPago generadas a partir de Agosto del 2017. Si tienes una cuenta creada anteior a esta fecha por favor utilizar la versión 2.2.2.3 del plugin.**
 
