@@ -22,6 +22,7 @@ Con ComproPago puede recibir pagos en OXXO, 7Eleven y muchas tiendas más en tod
 * [PHP JSON extension] (http://php.net/manual/en/book.json.php)
 * [PHP cURL extension] (http://php.net/manual/en/book.curl.php)
 
+**Nota.-Este plugin sólo funcionará con cuentas de ComproPago generadas a partir de Agosto del 2017. Si tienes una cuenta creada anteior a esta fecha por favor utilizar la versión 2.2.2.3 del plugin.**
 
 ## Instalación
 
