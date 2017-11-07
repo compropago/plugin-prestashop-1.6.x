@@ -15,9 +15,9 @@ Con ComproPago puede recibir pagos en OXXO, 7Eleven y muchas tiendas más en tod
 ## Ayuda
 
 - [Centro de ayuda y soporte](https://compropago.com/ayuda-y-soporte)
-- [Solicitar Integración](https://compropago.com/integracion)
-- [Guía para Empezar a usar ComproPago](https://compropago.com/ayuda-y-soporte/como-comenzar-a-usar-compropago)
-- [Información de Contacto](https://compropago.com/contacto)
+- [Solicitar integración](https://compropago.com/integracion)
+- [Guía para empezar a usar ComproPago](https://compropago.com/ayuda-y-soporte/como-comenzar-a-usar-compropago)
+- [Información de contacto](https://compropago.com/contacto)
 
 ## Requerimientos
 * [PrestaShop 1.6.1.15, 1.6.1.16 o 1.6.1.17](https://www.prestashop.com/)
@@ -37,7 +37,7 @@ ComproPago te ofrece un API REST para integrar pagos en efectivo en tu comercio 
 
 **[General](https://compropago.com/documentacion)**
 
-Información de Comisiones y Horarios, como Transferir tu dinero y la Seguridad que proporciona ComproPago.
+Información de comisiones y horarios, como transferir tu dinero y la seguridad que proporciona ComproPago.
 
 **[Otras formas de integración](https://compropago.com/soluciones/)**
 * [Botón de pago](https://compropago.com/documentacion/boton-pago)
