@@ -39,7 +39,7 @@ ComproPago te ofrece un API REST para integrar pagos en efectivo en tu comercio 
 
 Información de Comisiones y Horarios, como Transferir tu dinero y la Seguridad que proporciona ComproPago.
 
-**[Otras formas de integración](https://compropago.com/soluciones/https://compropago.com/soluciones/)**
+**[Otras formas de integración](https://compropago.com/soluciones/)**
 * [Botón de pago](https://compropago.com/documentacion/boton-pago)
 * [Librerías > sección SDK](http://demo.compropago.com/)
 * [Plugins > sección Plugins](http://demo.compropago.com/)
