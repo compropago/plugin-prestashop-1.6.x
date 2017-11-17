@@ -112,7 +112,7 @@ class Compropago extends PaymentModule
         $this->serviceFlag = $this->setComproPago($this->modoExec);
 
         if($this->context->employee){
-            $hook_data = $this->hookRetro(true, $this->publicKey, $this->privateKey, $this->execMode);
+            $hook_data = $this->hookRetro(true, $this->publicKey, $this->privateKey, true);
             if($hook_data[0]){
                 $this->warning = $this->l($hook_data[1]);
                 $this->stop = $hook_data[2];
@@ -451,7 +451,7 @@ class Compropago extends PaymentModule
 	 * @since 2.0.0
 	 */
 	private function _postProcess()
-    { var_dump(Tools::getValue('COMPROPAGO_MODE')); die();
+    { 
         if (Tools::isSubmit('btnSubmit'))
         {   
 			Configuration::updateValue('COMPROPAGO_PUBLICKEY', Tools::getValue('COMPROPAGO_PUBLICKEY'));
