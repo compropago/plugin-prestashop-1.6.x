@@ -4,6 +4,16 @@ namespace CompropagoSdk\Factory;
 
 class Factory
 {
+    /**
+     * Generate an instance of a class from sorce data
+     * 
+     * @param $class
+     * @param array $data
+     * @return mixed
+     * @throws \Exception
+     * 
+     * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
+     */
     public static function getInstanceOf($class, $data=array())
     {
         if (is_string($data)) {

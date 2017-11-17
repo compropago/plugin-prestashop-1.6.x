@@ -25,9 +25,6 @@ if (!defined('_PS_VERSION_')) {
 
 require_once __DIR__.'/vendor/autoload.php';
 
-
-
-
 class Compropago extends PaymentModule
 {
 	private $_html = '';
@@ -51,9 +48,7 @@ class Compropago extends PaymentModule
 	public function __construct()
 	{
 		//Current module version & config
-		$this->version = ' 2.2.1.2';
-
-
+		$this->version 			= '2.2.2.4';
 		$this->name             = 'compropago';
 		$this->tab              = 'payments_gateways';
 		$this->author           = 'ComproPago';
@@ -61,11 +56,29 @@ class Compropago extends PaymentModule
 		$this->is_eu_compatible = 1;
 
 		//currencies setup
-		$this->currencies      = true;
-		$this->currencies_mode = 'checkbox';
+		$this->currencies      	= true;
+		$this->currencies_mode 	= 'checkbox';
 
 		// have module been set
-		$config = Configuration::getMultiple(array('COMPROPAGO_PUBLICKEY', 'COMPROPAGO_PRIVATEKEY', 'COMPROPAGO_MODE', 'COMPROPAGO_LOGOS','COMPROPAGO_PROVIDER'));
+		if (Tools::isSubmit('btnSubmit')){
+            $config = [
+                'COMPROPAGO_PUBLICKEY'  => Tools::getValue('COMPROPAGO_PUBLICKEY'), 
+                'COMPROPAGO_PRIVATEKEY' => Tools::getValue('COMPROPAGO_PRIVATEKEY'), 
+                'COMPROPAGO_MODE'       => Tools::getValue('COMPROPAGO_MODE'), 
+                'COMPROPAGO_LOGOS'      => Tools::getValue('COMPROPAGO_LOGOS'), 
+                'COMPROPAGO_CHECKLOGO'  => Tools::getValue('COMPROPAGO_CHECKLOGO'), 
+                'COMPROPAGO_PROVIDER'   => Tools::getValue('COMPROPAGO_PROVIDER')
+            ];
+        } else {
+            $config = Configuration::getMultiple([
+                'COMPROPAGO_PUBLICKEY', 
+                'COMPROPAGO_PRIVATEKEY', 
+                'COMPROPAGO_MODE', 
+                'COMPROPAGO_LOGOS', 
+                'COMPROPAGO_CHECKLOGO', 
+                'COMPROPAGO_PROVIDER'
+            ]);
+        }
 
         if (isset($config['COMPROPAGO_PUBLICKEY'])) {
             $this->publicKey = $config['COMPROPAGO_PUBLICKEY'];
@@ -74,7 +87,7 @@ class Compropago extends PaymentModule
 		if (isset($config['COMPROPAGO_PRIVATEKEY'])) {
             $this->privateKey = $config['COMPROPAGO_PRIVATEKEY'];
         }
-
+		
 		$this->modoExec=(isset($config['COMPROPAGO_MODE']))?$config['COMPROPAGO_MODE']:false;
 		$this->showLogo=(isset($config['COMPROPAGO_LOGOS']))?$config['COMPROPAGO_LOGOS']:false;
 
@@ -98,22 +111,13 @@ class Compropago extends PaymentModule
 
         $this->serviceFlag = $this->setComproPago($this->modoExec);
 
-   		$itsBE = null;
-
-   	    // It's Back End?
         if($this->context->employee){
-        	$itsBE = true;
-        }
-
-
-        if($itsBE){
-            $hook_data = $this->hookRetro(true, $this->publicKey, $this->privateKey, $this->modoExec);
-
+            $hook_data = $this->hookRetro(true, $this->publicKey, $this->privateKey, $this->execMode);
             if($hook_data[0]){
                 $this->warning = $this->l($hook_data[1]);
+                $this->stop = $hook_data[2];
             }
         }
-
 
 		if (!count(Currency::checkPaymentCurrencies($this->id))) {
             $this->warning = $this->l('No currency has been set for this module.');
@@ -354,19 +358,7 @@ class Compropago extends PaymentModule
             [
                 'label' => 'ComproPago - Expired',
                 'value' => 'COMPROPAGO_EXPIRED'
-            ],
-            [
-                'label' => 'ComproPago - Declined',
-                'value' => 'COMPROPAGO_DECLINED'
-            ],
-            [
-                'label' => 'ComproPago - Deleted',
-                'value' => 'COMPROPAGO_DELETED'
-            ],
-            [
-                'label' => 'ComproPago - Canceled',
-                'value' => 'COMPROPAGO_CANCELED'
-            ],
+            ]
         ];
 
 		$values_to_insert = array(
@@ -459,22 +451,38 @@ class Compropago extends PaymentModule
 	 * @since 2.0.0
 	 */
 	private function _postProcess()
-	{
-		if (Tools::isSubmit('btnSubmit'))
-		{
-			/**
-			 * Update values at database from form values Tools::getValue(form_field)
-			 */
+    { var_dump(Tools::getValue('COMPROPAGO_MODE')); die();
+        if (Tools::isSubmit('btnSubmit'))
+        {   
 			Configuration::updateValue('COMPROPAGO_PUBLICKEY', Tools::getValue('COMPROPAGO_PUBLICKEY'));
 			Configuration::updateValue('COMPROPAGO_PRIVATEKEY', Tools::getValue('COMPROPAGO_PRIVATEKEY'));
 			Configuration::updateValue('COMPROPAGO_MODE', Tools::getValue('COMPROPAGO_MODE'));
+			Configuration::updateValue('COMPROPAGO_WEBHOOK', Tools::getValue('COMPROPAGO_WEBHOOK'));
 			Configuration::updateValue('COMPROPAGO_LOGOS', Tools::getValue('COMPROPAGO_LOGOS'));
 			$myproviders=implode(',',Tools::getValue('COMPROPAGO_PROVIDERS_selected'));
 			Configuration::updateValue('COMPROPAGO_PROVIDER',$myproviders );
-		}
-
-		$this->_html .= $this->displayConfirmation($this->l('Settings updated'));
-	}
+        }
+        if ($this->stop) {
+            if (!Tools::getValue('COMPROPAGO_PUBLICKEY') && !Tools::getValue('COMPROPAGO_PRIVATEKEY')) {
+                return false;
+            } else {
+                try {
+                    $newWebhook = $this->client->api->createWebhook(Tools::getValue('COMPROPAGO_WEBHOOK'));
+                    $this->_html .= $this->displayConfirmation($this->l('Opciones actualizadas'));
+                } catch (\Exception $e) {
+                        $this->_html .= $this->displayError($e->getMessage());
+                }
+            }
+            $this->_html .= $this->displayError($this->warning);
+        } else {
+            try {
+                $newWebhook = $this->client->api->createWebhook(Tools::getValue('COMPROPAGO_WEBHOOK'));
+                $this->_html .= $this->displayConfirmation($this->l('Opciones actualizadas'));
+            } catch (\Exception $e) {
+                    $this->_html .= $this->displayError($e->getMessage());
+            }
+        }
+    }
 
 	/**
 	 * Display Compropago description TPL at module configuration
@@ -721,14 +729,6 @@ class Compropago extends PaymentModule
 							)
 						)
 					),
-                    array(
-                        'type'  =>'text',
-                        'label' => $this->l('WebHook'),
-                        'name'  => 'COMPROPAGO_WEBHOOK',
-                        'hint'  => $this->l('Set this Url at ComproPago Panel to use it  to confirm to your store when a payment has been confirmed'),
-                        'desc'  => $this->l('Copy & Paste this Url to WebHooks section of your ComproPago Panel to recive instant notifications when a payment is confirmed').':<a href="https://compropago.com/panel/webhooks" target="_blank">'.$this->l('ComproPago Panel').'</a>',
-                        'value' => $base_url
-                    ),
 					array(
 				        'type'     => 'swap',
 				        'multiple' => true,
@@ -780,12 +780,12 @@ class Compropago extends PaymentModule
 		$providersDB=explode(',',Configuration::get('COMPROPAGO_PROVIDER') );
 
 		return array(
-			'COMPROPAGO_PUBLICKEY' => Tools::getValue('COMPROPAGO_PUBLICKEY', Configuration::get('COMPROPAGO_PUBLICKEY')),
+			'COMPROPAGO_PUBLICKEY' 	=> Tools::getValue('COMPROPAGO_PUBLICKEY', Configuration::get('COMPROPAGO_PUBLICKEY')),
 			'COMPROPAGO_PRIVATEKEY' => Tools::getValue('COMPROPAGO_PRIVATEKEY', Configuration::get('COMPROPAGO_PRIVATEKEY')),
-			'COMPROPAGO_MODE' => Tools::getValue('COMPROPAGO_MODE', Configuration::get('COMPROPAGO_MODE')),
-			'COMPROPAGO_WEBHOOK' =>  Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->name.'/webhook.php',
-			'COMPROPAGO_LOGOS' =>  Tools::getValue('COMPROPAGO_LOGOS', Configuration::get('COMPROPAGO_LOGOS')),
-			'COMPROPAGO_PROVIDERS' =>  Tools::getValue('COMPROPAGO_PROVIDERS_selected',$providersDB),
+			'COMPROPAGO_MODE' 		=> Tools::getValue('COMPROPAGO_MODE', Configuration::get('COMPROPAGO_MODE')),
+			'COMPROPAGO_WEBHOOK' 	=>  Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->name.'/webhook.php',
+			'COMPROPAGO_LOGOS' 		=>  Tools::getValue('COMPROPAGO_LOGOS', Configuration::get('COMPROPAGO_LOGOS')),
+			'COMPROPAGO_PROVIDERS' 	=>  Tools::getValue('COMPROPAGO_PROVIDERS_selected',$providersDB),
 		);
 	}
 }

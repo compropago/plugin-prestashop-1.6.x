@@ -62,7 +62,6 @@ Información de Comisiones y Horarios, como Transferir tu dinero y la Seguridad 
 
 3. Una vez agregada la dirección, dar click en el botón "Probar", recibira un mensaje similar a "Pruebas: El webhook esta correctamente instalado." con este mensaje la instalación queda completada.
 
-* Colaborator: @Rolige - compropago.php
 
 ## Guía de Versiones
 
