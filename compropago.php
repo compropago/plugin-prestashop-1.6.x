@@ -112,7 +112,7 @@ class Compropago extends PaymentModule
         $this->serviceFlag = $this->setComproPago($this->modoExec);
 
         if($this->context->employee){
-            $hook_data = $this->hookRetro(true, $this->publicKey, $this->privateKey, true);
+            $hook_data = $this->hookRetro(true, $this->publicKey, $this->privateKey, $this->modoExec);
             if($hook_data[0]){
                 $this->warning = $this->l($hook_data[1]);
                 $this->stop = $hook_data[2];
@@ -644,7 +644,7 @@ class Compropago extends PaymentModule
      */
 	public function renderForm()
 	{
-        $providers = $this->client->api->listProviders();
+        $providers = $this->client->api->listDefaultProviders();
 		$oxxo[] = [
 				'id_option' => "OXXO",
 				'name' => "Oxxo"
