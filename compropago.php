@@ -31,14 +31,12 @@ class Compropago extends PaymentModule
 	private $_postErrors = array();
 
     private $serviceFlag;
-
 	public $publicKey;
 	public $privateKey;
 	public $extra_mail_vars;
 	public $modoExec;
 	public $showLogo;
 	public $filterStores;
-
 	public $client;
 
 	/**
@@ -48,7 +46,9 @@ class Compropago extends PaymentModule
 	public function __construct()
 	{
 		//Current module version & config
-		$this->version 			= '2.2.2.4';
+		$this->version = ' 2.2.1.2';
+
+
 		$this->name             = 'compropago';
 		$this->tab              = 'payments_gateways';
 		$this->author           = 'ComproPago';
@@ -56,8 +56,8 @@ class Compropago extends PaymentModule
 		$this->is_eu_compatible = 1;
 
 		//currencies setup
-		$this->currencies      	= true;
-		$this->currencies_mode 	= 'checkbox';
+		$this->currencies      = true;
+		$this->currencies_mode = 'checkbox';
 
 		// have module been set
 		if (Tools::isSubmit('btnSubmit')){
@@ -87,7 +87,7 @@ class Compropago extends PaymentModule
 		if (isset($config['COMPROPAGO_PRIVATEKEY'])) {
             $this->privateKey = $config['COMPROPAGO_PRIVATEKEY'];
         }
-		
+
 		$this->modoExec=(isset($config['COMPROPAGO_MODE']))?$config['COMPROPAGO_MODE']:false;
 		$this->showLogo=(isset($config['COMPROPAGO_LOGOS']))?$config['COMPROPAGO_LOGOS']:false;
 
@@ -112,7 +112,7 @@ class Compropago extends PaymentModule
         $this->serviceFlag = $this->setComproPago($this->modoExec);
 
         if($this->context->employee){
-            $hook_data = $this->hookRetro(true, $this->publicKey, $this->privateKey, $this->modoExec);
+			$hook_data = $this->hookRetro(true, $this->publicKey, $this->privateKey, $this->modoExec);
             if($hook_data[0]){
                 $this->warning = $this->l($hook_data[1]);
                 $this->stop = $hook_data[2];
@@ -271,7 +271,7 @@ class Compropago extends PaymentModule
 	 * @param mixed $params
 	 * @since 2.0.0
 	 */
-	public function hookDisplayHeader($params)
+	public function hookDisplayHeader()
     {
 		//add css
 		//$this->context->controller->addCSS($this->_path.'vendor/compropago/php-sdk/assets/css/compropago.css', 'all');
@@ -297,24 +297,9 @@ class Compropago extends PaymentModule
 		if (Shop::isFeatureActive())
 			Shop::setContext(Shop::CONTEXT_ALL);
 
+		$this->getDefaultProviders();
 		$this->installOrderStates();
-
-		//Lets be sure compropago tables are gone
-		$queries = CompropagoSdk\Extern\TransactTables::sqlDropTables(_DB_PREFIX_);
-
-		foreach($queries as $drop){
-			Db::getInstance()->execute($drop);
-		}
-
-		//creates compropago tables
-		$queries=CompropagoSdk\Extern\TransactTables::sqlCreateTables(_DB_PREFIX_);
-
-		foreach($queries as $create){
-			if(!Db::getInstance()->execute($create)) {
-                die('Unable to Create ComproPago Tables, module cant be installed');
-            }
-		}
-
+		$this->installTables();
 
 		if (!parent::install() || !$this->registerHook('payment') || !$this->registerHook('displayPaymentEU') || !$this->registerHook('paymentReturn') || !$this->registerHook('displayHeader')) {
             return false;
@@ -322,6 +307,71 @@ class Compropago extends PaymentModule
 
 		return true;
 	}
+
+	/**
+    * Get the providers by default
+    * @return array
+    */
+    public function getDefaultProviders()
+    {
+        global $currency;
+        
+        $providers = $this->client->api->listDefaultProviders();
+        $options = [];
+        foreach ($providers as $provider){
+            $options[] = $provider->internal_name;
+        }
+        $defaultProvider = implode(",", $options);
+        Configuration::updateValue('COMPROPAGO_PROVIDER', $defaultProvider);
+        Configuration::updateValue('COMPROPAGO_LOGOS', 1);
+        Configuration::updateValue('COMPROPAGO_WEBHOOK',Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->name.'/webhook.php');
+	}
+	
+	/**
+    * Install the tables to save the ComproPago order
+    */
+    public function installTables()
+    {
+        Db::getInstance()->execute('DROP TABLE IF EXISTS `' . _DB_PREFIX_ . 'compropago_orders`;');
+        Db::getInstance()->execute('DROP TABLE IF EXISTS `' . _DB_PREFIX_ . 'compropago_transactions`;');
+        Db::getInstance()->execute('DROP TABLE IF EXISTS `' . _DB_PREFIX_ . 'compropago_webhook_transactions`;');
+        
+        Db::getInstance()->execute(
+            'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_  . 'compropago_orders` (
+            `id` int(11) NOT NULL AUTO_INCREMENT,
+            `date` int(11) NOT NULL,
+            `modified` int(11) NOT NULL,
+            `compropagoId` varchar(50) NOT NULL,
+            `compropagoStatus`varchar(50) NOT NULL,
+            `storeCartId` varchar(255) NOT NULL,
+            `storeOrderId` varchar(255) NOT NULL,
+            `storeExtra` varchar(255) NOT NULL,
+            `ioIn` mediumtext,
+            `ioOut` mediumtext,
+            PRIMARY KEY (`id`), UNIQUE KEY (`compropagoId`)
+            )ENGINE=MyISAM DEFAULT CHARSET=utf8  DEFAULT COLLATE utf8_general_ci  AUTO_INCREMENT=1 ;');
+        Db::getInstance()->execute(
+            'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'compropago_transactions` (
+            `id` int(11) NOT NULL AUTO_INCREMENT,
+            `orderId` int(11) NOT NULL,
+            `date` int(11) NOT NULL,
+            `compropagoId` varchar(50) NOT NULL,
+            `compropagoStatus` varchar(50) NOT NULL,
+            `compropagoStatusLast` varchar(50) NOT NULL,
+            `ioIn` mediumtext,
+            `ioOut` mediumtext,
+            PRIMARY KEY (`id`)
+            )ENGINE=MyISAM DEFAULT CHARSET=utf8  DEFAULT COLLATE utf8_general_ci  AUTO_INCREMENT=1 ;');
+        Db::getInstance()->execute(
+            'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'compropago_webhook_transactions` (
+            `id` integer not null auto_increment,
+            `webhookId` varchar(50) not null,
+            `webhookUrl` varchar(300) not null,
+            `updated` integer not null,
+            `status` varchar(50) not null,
+            primary key(id)
+            )ENGINE=MyISAM DEFAULT CHARSET=utf8  DEFAULT COLLATE utf8_general_ci  AUTO_INCREMENT=1 ;');
+    }
 
 	/**
 	 * Vertify is compropago tables exists
@@ -406,28 +456,26 @@ class Compropago extends PaymentModule
 	 */
 	public function uninstall()
 	{
-        //Lets be sure compropago tables are gone
-        $queries = CompropagoSdk\Extern\TransactTables::sqlDropTables(_DB_PREFIX_);
-
-        foreach($queries as $drop){
-            Db::getInstance()->execute($drop);
-        }
-
-		if (!Configuration::deleteByName('COMPROPAGO_PUBLICKEY')
-            || !Configuration::deleteByName('COMPROPAGO_PRIVATEKEY')
-            || !Configuration::deleteByName('COMPROPAGO_MODE')
-            || !Configuration::deleteByName('COMPROPAGO_WEBHOOK')
-            || !Configuration::deleteByName('COMPROPAGO_PENDING')
-            || !Configuration::deleteByName('COMPROPAGO_SUCCESS')
-            || !Configuration::deleteByName('COMPROPAGO_EXPIRED')
-            || !Configuration::deleteByName('COMPROPAGO_DECLINED')
-            || !parent::uninstall()
-        ) {
-            return false;
-        }
-
-		return true;
+      return Configuration::deleteByName('COMPROPAGO_PUBLICKEY')
+            && Configuration::deleteByName('COMPROPAGO_PRIVATEKEY')
+            && Configuration::deleteByName('COMPROPAGO_MODE')
+            && Configuration::deleteByName('COMPROPAGO_WEBHOOK')
+            && Configuration::deleteByName('COMPROPAGO_LOGOS')
+            && Configuration::deleteByName('COMPROPAGO_CHECKLOGO')
+            && Configuration::deleteByName('COMPROPAGO_PROVIDER')
+            && Configuration::deleteByName('COMPROPAGO_PENDING')
+            && Configuration::deleteByName('COMPROPAGO_SUCCESS')
+            && Configuration::deleteByName('COMPROPAGO_EXPIRED')
+            && $this->uninstallTables()
+            && parent::uninstall();
 	}
+
+	public function uninstallTables()
+    {
+        Db::getInstance()->execute('DROP TABLE IF EXISTS `' . _DB_PREFIX_ . 'compropago_orders`;');
+        Db::getInstance()->execute('DROP TABLE IF EXISTS `' . _DB_PREFIX_ . 'compropago_transactions`;');
+        Db::getInstance()->execute('DROP TABLE IF EXISTS `' . _DB_PREFIX_ . 'compropago_webhook_transactions`;');
+    }
 
 	/**
 	 * Validate module config form
@@ -451,38 +499,47 @@ class Compropago extends PaymentModule
 	 * @since 2.0.0
 	 */
 	private function _postProcess()
-    { 
-        if (Tools::isSubmit('btnSubmit'))
-        {   
+	{
+		if (Tools::isSubmit('btnSubmit'))
+		{
+			/**
+			 * Update values at database from form values Tools::getValue(form_field)
+			 */
 			Configuration::updateValue('COMPROPAGO_PUBLICKEY', Tools::getValue('COMPROPAGO_PUBLICKEY'));
 			Configuration::updateValue('COMPROPAGO_PRIVATEKEY', Tools::getValue('COMPROPAGO_PRIVATEKEY'));
-			Configuration::updateValue('COMPROPAGO_MODE', Tools::getValue('COMPROPAGO_MODE'));
 			Configuration::updateValue('COMPROPAGO_WEBHOOK', Tools::getValue('COMPROPAGO_WEBHOOK'));
+			Configuration::updateValue('COMPROPAGO_MODE', Tools::getValue('COMPROPAGO_MODE'));
 			Configuration::updateValue('COMPROPAGO_LOGOS', Tools::getValue('COMPROPAGO_LOGOS'));
 			$myproviders=implode(',',Tools::getValue('COMPROPAGO_PROVIDERS_selected'));
 			Configuration::updateValue('COMPROPAGO_PROVIDER',$myproviders );
-        }
-        if ($this->stop) {
+		}
+
+		if ($this->stop) {
             if (!Tools::getValue('COMPROPAGO_PUBLICKEY') && !Tools::getValue('COMPROPAGO_PRIVATEKEY')) {
                 return false;
             } else {
                 try {
-                    $newWebhook = $this->client->api->createWebhook(Tools::getValue('COMPROPAGO_WEBHOOK'));
+					$this->client->api->createWebhook(Tools::getValue('COMPROPAGO_WEBHOOK'));
+					
                     $this->_html .= $this->displayConfirmation($this->l('Opciones actualizadas'));
                 } catch (\Exception $e) {
-                        $this->_html .= $this->displayError($e->getMessage());
+                    if ($e->getMessage() != 'Error: conflict.urls.create') {
+                    	$this->_html .= $this->displayError($e->getMessage());
+                	}
                 }
             }
             $this->_html .= $this->displayError($this->warning);
         } else {
             try {
-                $newWebhook = $this->client->api->createWebhook(Tools::getValue('COMPROPAGO_WEBHOOK'));
+                $this->client->api->createWebhook(Tools::getValue('COMPROPAGO_WEBHOOK'));
                 $this->_html .= $this->displayConfirmation($this->l('Opciones actualizadas'));
             } catch (\Exception $e) {
+                if ($e->getMessage() != 'Error: conflict.urls.create') {
                     $this->_html .= $this->displayError($e->getMessage());
+                }
             }
         }
-    }
+	}
 
 	/**
 	 * Display Compropago description TPL at module configuration
@@ -643,7 +700,7 @@ class Compropago extends PaymentModule
      * @since 2.0.0
      */
 	public function renderForm()
-	{
+	{	$this->getDefaultProviders();
         $providers = $this->client->api->listDefaultProviders();
 		$oxxo[] = [
 				'id_option' => "OXXO",
@@ -665,11 +722,6 @@ class Compropago extends PaymentModule
 			$options = array_merge($oxxo,$options);		
 			}
 
-
-        global $smarty;
-        $base_url = $smarty->tpl_vars['base_dir']->value;
-
-
 		$fields_form = array(
 			'form' => array(
 				'legend' => array(
@@ -690,6 +742,11 @@ class Compropago extends PaymentModule
 						'name'     => 'COMPROPAGO_PRIVATEKEY',
 						'required' => true
 					),
+					array(
+						'type'     => 'hidden',
+						'name'     => 'COMPROPAGO_WEBHOOK',
+						'required' => false
+                    ),
 					array(
 						'type'     => 'switch',
 						'label'    => $this->l('Live Mode'),
@@ -783,9 +840,9 @@ class Compropago extends PaymentModule
 			'COMPROPAGO_PUBLICKEY' 	=> Tools::getValue('COMPROPAGO_PUBLICKEY', Configuration::get('COMPROPAGO_PUBLICKEY')),
 			'COMPROPAGO_PRIVATEKEY' => Tools::getValue('COMPROPAGO_PRIVATEKEY', Configuration::get('COMPROPAGO_PRIVATEKEY')),
 			'COMPROPAGO_MODE' 		=> Tools::getValue('COMPROPAGO_MODE', Configuration::get('COMPROPAGO_MODE')),
-			'COMPROPAGO_WEBHOOK' 	=>  Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->name.'/webhook.php',
-			'COMPROPAGO_LOGOS' 		=>  Tools::getValue('COMPROPAGO_LOGOS', Configuration::get('COMPROPAGO_LOGOS')),
-			'COMPROPAGO_PROVIDERS' 	=>  Tools::getValue('COMPROPAGO_PROVIDERS_selected',$providersDB),
+			'COMPROPAGO_WEBHOOK'    => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->name.'/webhook.php',
+			'COMPROPAGO_LOGOS' 		=> Tools::getValue('COMPROPAGO_LOGOS', Configuration::get('COMPROPAGO_LOGOS')),
+			'COMPROPAGO_PROVIDERS' 	=> Tools::getValue('COMPROPAGO_PROVIDERS_selected',$providersDB),
 		);
 	}
 }

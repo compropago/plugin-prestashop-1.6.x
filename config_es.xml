@@ -2,7 +2,7 @@
 <module>
 	<name>compropago</name>
 	<displayName><![CDATA[ComproPago]]></displayName>
-	<version><![CDATA[2.2.2.4]]></version>
+	<version><![CDATA[ 2.2.1.2]]></version>
 	<description><![CDATA[Con ComproPago puedes recibir pagos en OXXO, 7Eleven y muchas tiendas m&aacute;s en todo M&eacute;xico]]></description>
 	<author><![CDATA[ComproPago]]></author>
 	<tab><![CDATA[payments_gateways]]></tab>
