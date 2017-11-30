@@ -399,35 +399,59 @@ class Compropago extends PaymentModule
         $cp_order_states = [
             [
                 'label' => 'ComproPago - Pending Payment',
-                'value' => 'COMPROPAGO_PENDING'
+				'value' => 'COMPROPAGO_PENDING',
+				'vti'	=> [
+					'invoice'     => 0,
+					'send_email'  => 0,
+					'module_name' => pSQL($this->name),
+					'color'       => '#BCE8F1',
+					'unremovable' => 0,
+					'hidden'      => 0,
+					'logable'     => 1,
+					'delivery'    => 0,
+					'shipped'     => 0,
+					'paid'        => 0,
+					'deleted'     => 0
+				]
             ],
             [
                 'label' => 'ComproPago - Payment received',
-                'value' => 'COMPROPAGO_SUCCESS'
+				'value' => 'COMPROPAGO_SUCCESS',
+				'vti'	=> [
+					'invoice'     => 0,
+					'send_email'  => 0,
+					'module_name' => pSQL($this->name),
+					'color'       => '#DFF0D8',
+					'unremovable' => 0,
+					'hidden'      => 0,
+					'logable'     => 1,
+					'delivery'    => 0,
+					'shipped'     => 0,
+					'paid'        => 0,
+					'deleted'     => 0
+				]
             ],
             [
                 'label' => 'ComproPago - Expired',
-                'value' => 'COMPROPAGO_EXPIRED'
+				'value' => 'COMPROPAGO_EXPIRED',
+				'vti'	=> [
+					'invoice'     => 0,
+					'send_email'  => 0,
+					'module_name' => pSQL($this->name),
+					'color'       => '#FCF8E3',
+					'unremovable' => 0,
+					'hidden'      => 0,
+					'logable'     => 1,
+					'delivery'    => 0,
+					'shipped'     => 0,
+					'paid'        => 0,
+					'deleted'     => 0
+				]
             ]
         ];
 
-		$values_to_insert = array(
-			'invoice'     => 0,
-			'send_email'  => 0,
-			'module_name' => pSQL($this->name),
-			'color'       => 'RoyalBlue',
-			'unremovable' => 0,
-			'hidden'      => 0,
-			'logable'     => 1,
-			'delivery'    => 0,
-			'shipped'     => 0,
-			'paid'        => 0,
-			'deleted'     => 0
-		);
-
-
         foreach ($cp_order_states as $state){
-            if (! Db::getInstance()->autoExecute(_DB_PREFIX_ . 'order_state', $values_to_insert, 'INSERT')) {
+            if (! Db::getInstance()->autoExecute(_DB_PREFIX_ . 'order_state', $state['vti'], 'INSERT')) {
                 return false;
             }
 
@@ -700,7 +724,7 @@ class Compropago extends PaymentModule
      * @since 2.0.0
      */
 	public function renderForm()
-	{	$this->getDefaultProviders();
+	{	
         $providers = $this->client->api->listDefaultProviders();
 		$oxxo[] = [
 				'id_option' => "OXXO",
