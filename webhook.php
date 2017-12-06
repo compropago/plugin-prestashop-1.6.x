@@ -19,6 +19,7 @@
  * @author Rolando Lucio <rolando@compropago.com>
  * @since 2.0.0
  */
+
 require_once __DIR__.'/vendor/autoload.php';
 require_once __DIR__.'/../../config/config.inc.php';
 require_once __DIR__.'/../../init.php';
@@ -29,6 +30,7 @@ require_once __DIR__.'/../../classes/order/OrderHistory.php';
 if (!defined('_PS_VERSION_')){
     die("No se pudo inicializar Prestashop");
 }
+
 use CompropagoSdk\Client;
 use CompropagoSdk\Factory\Factory;
 use CompropagoSdk\Tools\Validations;
@@ -43,6 +45,7 @@ if(!$resp_webhook = Factory::getInstanceOf('CpOrderInfo', $request)){
       "reference" => null
     ]);
 }
+
 $config = Configuration::getMultiple(array('COMPROPAGO_PUBLICKEY', 'COMPROPAGO_PRIVATEKEY','COMPROPAGO_MODE'));
 $publickey     = $config['COMPROPAGO_PUBLICKEY'];
 $privatekey    = $config['COMPROPAGO_PRIVATEKEY'];
@@ -57,6 +60,7 @@ try{
 
 try{
     $client = new Client($publickey, $privatekey, $live);
+
     if($resp_webhook->id == "ch_00000-000-0000-000000"){
         die(json_encode([
             "status" => "success",
@@ -65,15 +69,14 @@ try{
             "reference" => null
             ]));
     }
-   if($response->type == 'error'){
-       die('Error procesando el numero de orden');
-   }
+
    if(
        !Db::getInstance()->execute("SHOW TABLES LIKE '"._DB_PREFIX_ ."compropago_orders'") ||
        !Db::getInstance()->execute("SHOW TABLES LIKE '"._DB_PREFIX_ ."compropago_transactions'")
    ){
        die('ComproPago Tables Not Found');
    }
+
    $response = $client->api->verifyOrder($resp_webhook->id);
    
    $sql = "SELECT * FROM "._DB_PREFIX_."compropago_orders  WHERE compropagoId = '".$response->id."' ";
@@ -92,7 +95,7 @@ try{
             echo json_encode([
               "status" => "error",
               "message" => "invalid request type",
-              "short_id" => $response->short_id,
+              "short_id" => $response->id,
               "reference" => null
             ]);
             }
@@ -130,7 +133,7 @@ try{
            echo json_encode([
                "status" => "success",
                "message" => "OK",
-               "short_id" => $response->short_id,
+               "short_id" => $response->id,
                "reference" => $id_order
            ]);
    
@@ -142,7 +145,7 @@ try{
     echo json_encode([
       "status" => "error",
       "message" => $e->getMessage(),
-      "short_id" => $resp_webhook->short_id,
+      "short_id" => null,
       "reference" => null
     ]);
 }
