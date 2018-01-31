@@ -115,15 +115,6 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
         } catch (Exception $e) {
             die($this->module->l('This payment method is not available.', 'validation') . '<br>' . $e->getMessage());
         }
-
-        Tools::redirect(
-            Tools::getShopDomainSsl(true, true) .__PS_BASE_URI__.
-            'confirmacion-pedido?id_cart='      . (int)$cart->id  .
-            '&id_module='                       . (int)$this->module->id . 
-            '&id_order='                        . $this->module->currentOrder . 
-            '&compropagoId='                    . $response->id . 
-            '&key='                             . $customer->secure_key
-        );
-
+        Tools::redirect('index.php?controller=order-confirmation&id_cart='.(int)$cart->id.'&id_module='.(int)$this->module->id.'&id_order='.$this->module->currentOrder.'&key='.$customer->secure_key.'&compropagoId=' . $response->id);
 	}
 }
