@@ -49,7 +49,11 @@ class Compropago extends PaymentModule
 	public function __construct()
 	{
 		//Current module version & config
+<<<<<<< HEAD
 		$this->version = '2.4.0';
+=======
+		$this->version = ' 2.3.0.1';
+>>>>>>> e91f7b416c2db88bb01ef26bcda79d2411a696bd
 
 		$this->name             = 'compropago';
 		$this->tab              = 'payments_gateways';
@@ -112,6 +116,20 @@ class Compropago extends PaymentModule
 		}
 		
 		$this->setComproPago($this->modoExec);
+<<<<<<< HEAD
+=======
+
+   		$itsBE = null;
+
+   	    // It's Back End?
+        if($this->context->employee){
+        	$itsBE = true;
+        }
+
+
+        if($itsBE){
+            $hook_data = $this->hookRetro(true, $this->publicKey, $this->privateKey, $this->modoExec);
+>>>>>>> e91f7b416c2db88bb01ef26bcda79d2411a696bd
 
    		if($this->context->employee){
             $hook_data = $this->hookRetro(true, $this->publicKey, $this->privateKey, $this->execMode);
