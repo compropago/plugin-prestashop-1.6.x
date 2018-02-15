@@ -18,6 +18,10 @@
  * @author Rolando Lucio <rolando@compropago.com>
  */
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 /* SSL Management */
 $useSSL = true;
 
