@@ -67,7 +67,7 @@ error_reporting(E_ALL);
      if($resp_webhook->short_id == "000000"){
          die( json_encode([
            "status" => "success",
-           "message" => "test success",
+           "message" => "test OK",
            "short_id" => $resp_webhook->short_id,
            "reference" => null
          ]));
@@ -144,7 +144,7 @@ error_reporting(E_ALL);
 
     die(json_encode([
         "status"    => "success",
-        "message"   => "Orden ".$resp_webhook->id.' confirmada.',
+        "message"   => "OK - " . $response->type,
         "short_id"  => $response->short_id,
         "reference" => $response->order_info->order_id
     ]));

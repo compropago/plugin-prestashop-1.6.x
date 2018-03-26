@@ -37,7 +37,6 @@ class Compropago extends PaymentModule
 	public $privateKey;
 	public $extra_mail_vars;
 	public $modoExec;
-	public $showLogo;
 	public $filterStores;
 
 	public $client;
@@ -49,7 +48,7 @@ class Compropago extends PaymentModule
 	public function __construct()
 	{
 		//Current module version & config
-		$this->version = ' 2.3.0.1';
+		$this->version = '2.4.1';
 
 		$this->name             = 'compropago';
 		$this->tab              = 'payments_gateways';
@@ -67,8 +66,6 @@ class Compropago extends PaymentModule
                 'COMPROPAGO_PUBLICKEY'  => Tools::getValue('COMPROPAGO_PUBLICKEY'), 
                 'COMPROPAGO_PRIVATEKEY' => Tools::getValue('COMPROPAGO_PRIVATEKEY'), 
                 'COMPROPAGO_MODE'       => Tools::getValue('COMPROPAGO_MODE'), 
-                'COMPROPAGO_LOGOS'      => Tools::getValue('COMPROPAGO_LOGOS'), 
-                'COMPROPAGO_CHECKLOGO'  => Tools::getValue('COMPROPAGO_CHECKLOGO'), 
                 'COMPROPAGO_PROVIDER'   => Tools::getValue('COMPROPAGO_PROVIDER')
             ];
         } else {
@@ -76,8 +73,6 @@ class Compropago extends PaymentModule
                 'COMPROPAGO_PUBLICKEY', 
                 'COMPROPAGO_PRIVATEKEY', 
                 'COMPROPAGO_MODE', 
-                'COMPROPAGO_LOGOS', 
-                'COMPROPAGO_CHECKLOGO', 
                 'COMPROPAGO_PROVIDER'
             ]);
         }
@@ -91,7 +86,6 @@ class Compropago extends PaymentModule
         }
 
 		$this->modoExec=(isset($config['COMPROPAGO_MODE'])) ? $config['COMPROPAGO_MODE'] : false;
-		$this->showLogo=(isset($config['COMPROPAGO_LOGOS'])) ? $config['COMPROPAGO_LOGOS'] : false;
 
 		//most load selected
 		$this->filterStores = explode(',',$config['COMPROPAGO_PROVIDER'] );
@@ -113,19 +107,11 @@ class Compropago extends PaymentModule
 		
 		$this->setComproPago($this->modoExec);
 
-   		$itsBE = null;
-
-   	    // It's Back End?
-        if($this->context->employee){
-        	$itsBE = true;
-        }
-
-
-        if($itsBE){
-            $hook_data = $this->hookRetro(true, $this->publicKey, $this->privateKey, $this->modoExec);
-
+   		if($this->context->employee){
+            $hook_data = $this->hookRetro(true, $this->publicKey, $this->privateKey, $this->execMode);
             if($hook_data[0]){
                 $this->warning = $this->l($hook_data[1]);
+                $this->stop = $hook_data[2];
             }
         }
 
@@ -267,7 +253,6 @@ class Compropago extends PaymentModule
 
             $compropagoData['providers']     = $f_providers;
             $compropagoData['flag']			 = $provflag;
-			$compropagoData['show_logos']    = $this->showLogo;                              //(yes|no) logos or select
 			$compropagoData['description']   = $this->l('ComproPago te permite pagar en tiendas de México como OXXO, 7Eleven y más.');  // Title to show
 			$compropagoData['instrucciones'] = $this->l('Selecciona una tienda');    // Instructions text
 			return $compropagoData;
@@ -548,12 +533,34 @@ class Compropago extends PaymentModule
 			Configuration::updateValue('COMPROPAGO_PUBLICKEY', Tools::getValue('COMPROPAGO_PUBLICKEY'));
 			Configuration::updateValue('COMPROPAGO_PRIVATEKEY', Tools::getValue('COMPROPAGO_PRIVATEKEY'));
 			Configuration::updateValue('COMPROPAGO_MODE', Tools::getValue('COMPROPAGO_MODE'));
-			Configuration::updateValue('COMPROPAGO_LOGOS', Tools::getValue('COMPROPAGO_LOGOS'));
 			$myproviders=implode(',',Tools::getValue('COMPROPAGO_PROVIDERS_selected'));
 			Configuration::updateValue('COMPROPAGO_PROVIDER',$myproviders );
 		}
 
-		$this->_html .= $this->displayConfirmation($this->l('Settings updated'));
+		if ($this->stop) {
+            if (!Tools::getValue('COMPROPAGO_PUBLICKEY') && !Tools::getValue('COMPROPAGO_PRIVATEKEY')) {
+                return false;
+            } else {
+                try {
+                    $this->client->api->createWebhook(Tools::getValue('COMPROPAGO_WEBHOOK'));
+                    $this->_html .= $this->displayConfirmation($this->l('Opciones actualizadas'));
+                } catch (\Exception $e) {
+                    if ($e->getMessage() != 'Error: conflict.urls.create') {
+                        $this->_html .= $this->displayError($e->getMessage());
+                    }
+                }
+            }
+            $this->_html .= $this->displayError($this->warning);
+        } else {
+            try {
+                $this->client->api->createWebhook(Tools::getValue('COMPROPAGO_WEBHOOK'));
+                $this->_html .= $this->displayConfirmation($this->l('Opciones actualizadas'));
+            } catch (\Exception $e) {
+                if ($e->getMessage() != 'Error: conflict.urls.create') {
+                    $this->_html .= $this->displayError($e->getMessage());
+                }
+            }
+        }
 	}
 
 	/**
@@ -789,53 +796,6 @@ class Compropago extends PaymentModule
 						)
 					),
 					array(
-                        'type'    => 'switch',
-                        'label'   => $this->l('Logo'),
-                        'desc'    => $this->l('Esta opción te permite mostrar el logo de Compro Pago en el checkout.'),
-                        'name'    => 'COMPROPAGO_CHECKLOGO',
-                        'is_bool' => true,
-                        'values'  => array(
-                            array(
-                                'id'    => 'active_on_ls',
-                                'value' => true,
-                                'label' => $this->l('YES')
-                            ),
-                            array(
-                                'id'    => 'active_off_ls',
-                                'value' => false,
-                                'label' => $this->l('NO')
-                            )
-                        )
-                    ),
-					array(
-						'type'    => 'switch',
-						'label'   => $this->l('Show Logos'),
-						'desc'    => $this->l('Want to show store logos or a select box?'),
-						'name'    => 'COMPROPAGO_LOGOS',
-						'is_bool' => true,
-						'values'  => array(
-							array(
-								'id'    => 'active_on_lg',
-								'value' => true,
-								'label' => $this->l('Show store logos')
-							),
-							array(
-								'id'    => 'active_off_lg',
-								'value' => false,
-								'label' => $this->l('Show select box')
-							)
-						)
-					),
-                    
-                    array(
-                        'type'  =>'text',
-                        'label' => $this->l('WebHook'),
-                        'name'  => 'COMPROPAGO_WEBHOOK',
-                        'hint'  => $this->l('Set this Url at ComproPago Panel to use it  to confirm to your store when a payment has been confirmed'),
-                        'desc'  => $this->l('Copy & Paste this Url to WebHooks section of your ComproPago Panel to recive instant notifications when a payment is confirmed').':<a href="https://compropago.com/panel/webhooks" target="_blank">'.$this->l('ComproPago Panel').'</a>',
-                        'value' => $base_url
-                    ),
-					array(
 				        'type'     => 'swap',
 				        'multiple' => true,
 				        'label'    => $this->l('Tiendas:'),
@@ -855,7 +815,7 @@ class Compropago extends PaymentModule
 			)
 		);
 
-		$helper = new HelperForm();
+		$helper = new HelperForm();	
 		$helper->show_toolbar = false;
 		$helper->table = $this->table;
 		$lang = new Language((int)Configuration::get('PS_LANG_DEFAULT'));
@@ -889,10 +849,7 @@ class Compropago extends PaymentModule
 			'COMPROPAGO_PUBLICKEY' => Tools::getValue('COMPROPAGO_PUBLICKEY', Configuration::get('COMPROPAGO_PUBLICKEY')),
 			'COMPROPAGO_PRIVATEKEY' => Tools::getValue('COMPROPAGO_PRIVATEKEY', Configuration::get('COMPROPAGO_PRIVATEKEY')),
 			'COMPROPAGO_MODE' => Tools::getValue('COMPROPAGO_MODE', Configuration::get('COMPROPAGO_MODE')),
-			'COMPROPAGO_CHECKLOGO'  => Tools::getValue('COMPROPAGO_CHECKLOGO', Configuration::get('COMPROPAGO_CHECKLOGO')),
 			'COMPROPAGO_WEBHOOK' =>  Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->name.'/webhook.php',
-			'COMPROPAGO_LOCATION'   => Tools::getValue('COMPROPAGO_LOCATION', Configuration::get('COMPROPAGO_LOCATION')),
-			'COMPROPAGO_LOGOS' =>  Tools::getValue('COMPROPAGO_LOGOS', Configuration::get('COMPROPAGO_LOGOS')),
 			'COMPROPAGO_PROVIDERS' =>  Tools::getValue('COMPROPAGO_PROVIDERS_selected',$providersDB)
 		);
 	}
