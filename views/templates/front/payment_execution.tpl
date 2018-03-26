@@ -51,113 +51,51 @@
     </div>
 {else}
 
-{if isset($nbProducts) && $nbProducts <= 0}
-    <div class="cprow">
-        <div class="cpcolumn">
-            <div class="cpalert">
-                {l s='Your shopping cart is empty.' mod='compropago'}
+    {if isset($nbProducts) && $nbProducts <= 0}
+        <div class="cprow">
+            <div class="cpcolumn">
+                <div class="cpalert">
+                    {l s='Your shopping cart is empty.' mod='compropago'}
+                </div>
             </div>
         </div>
-    </div>
-{else}
+    {else}
 
-{* SECCION DE RESUM DE COMPRA *}
-
-<div class="cprow">
-    <div class="ten cpcolumns">
-        <h3>{$description}</h3>
-    </div>
-    <div class="two cpcolumns">
-        <img src="{$this_path_compropago}logo-badge.png" alt="{l s='ComproPago' mod='compropago'}" width="86" height="49" style="float:left; margin: 0px 10px 5px 0px;" />
-    </div>
-</div>
-
-<form action="{$link->getModuleLink('compropago', 'validation', [], true)|escape:'html'}" method="post">
-    <div class="cprow">
-        <div class="cpcolumn">
-            <h4>{l s='You have chosen to pay by ComproPago.' mod='compropago'}</h4>
-            <hr>
-            <h4>{l s='Here is a short summary of your order:' mod='compropago'}</h4>
+    {* SECCION DE RESUM DE COMPRA *}
+   
+    <form action="{$link->getModuleLink('compropago', 'validation', [], true)|escape:'html'}" method="post">
+        <div class="cprow">
+            <div class="cpcolumn">
+            <br>
+                <h4 style="color:#000">{l s="¿Dónde quieres pagar?<sup>*</sup>" d='Modules.Compropago.Shop'}</h4>
+            </div>
         </div>
-    </div>
 
-    <div class="cprow">
-        <div class="cpcolumn">
-            <table class="cptable">
-                <thead>
-                    <tr>
-                        <th style="width: 60%">Detalle</th>
-                        <th>Total</th>
-                        <th>Extra</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>{l s='The total amount of your order comes to:' mod='compropago'}</td>
-                        <td>{displayPrice price=$total}</td>
-                        <td>
-                            {if $use_taxes == 1}
-                                {l s='(tax incl.)' mod='compropago'}
-                            {/if}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="cprow">
-        <div class="cpcolumn">
-            <h4>{$instructions}</h4>
-        </div>
-    </div>
-
-    <div class="cprow">
-        <div class="cpcolumn">
-            {if $show_logos == true}
-                <ul class="providers_list">
-                    {foreach from=$providers item=provider}
-                        <li>
-                            <input name="compropagoProvider" id="cp_{$provider->internal_name}" type="radio" value="{$provider->internal_name}">
-
-                            <label class="cp-provider" for="cp_{$provider->internal_name}">
-                                <img src="{$provider->image_medium}" alt="{$provider->name}">
-                            </label>
-                        </li>
-                    {/foreach}
-                </ul>
-
-            {else}
-
+        <div class="cprow">
+            <div class="cpcolumn">
                 <div id="cppayment_store">
+                <form action="{$link->getModuleLink('compropago', 'validation', [], true)|escape:'html'}" method="post">
                     <select name="compropagoProvider" class="providers_list">
                         {foreach from=$providers item=provider}
                             <option value="{$provider->internal_name}">{$provider->name}</option>
                         {/foreach}
                     </select>
                 </div>
-
-            {/if}
+                <div class="cppayment_text">
+                <br><br>
+                    <p style="font-size:12px; color: #8f8f8f"><sup>*</sup>Comisionistas <a href="https://compropago.com/legal/corresponsales_cnbv.pdf" target="_blank" style="font-size:12px; color: #8f8f8f; font-weight:bold">autorizados por la CNBV</a> como corresponsales bancarios.</p>
+                </div> <br>
+            </div>
         </div>
-    </div>
 
-
-    <div class="cprow">
-        <div class="cpcolumn" style="text-align: center">
-            <h4>{l s='ComproPago payment information will be displayed on the next page.' mod='compropago'}</h4>
-            <br>
+        <div class="cprow">
+            <div class="cpcolumn" >
+                <a href="{$link->getPageLink('order', true, NULL, "step=3")|escape:'html'}" class="cpbutton">{l s='Other payment methods' mod='compropago'}</a>
+                <input type="submit" class="cpbutton cpbutton-primary" value="{l s='I confirm my order' mod='compropago'}">
+            </div>
         </div>
-    </div>
-
-
-    <div class="cprow">
-        <div class="cpcolumn" style="text-align: center">
-            <a href="{$link->getPageLink('order', true, NULL, "step=3")|escape:'html'}" class="cpbutton">{l s='Other payment methods' mod='compropago'}</a>
-            <input type="submit" class="cpbutton cpbutton-primary" value="{l s='I confirm my order' mod='compropago'}">
-        </div>
-    </div>
-</form>
-{/if}
+    </form>
+    {/if}
 
 {/if}
 

@@ -25,7 +25,7 @@ $_MODULE = array();
 
 //[modulePath]/compropago.php 
 $_MODULE['<{compropago}prestashop>compropago_51364ec58cec9ee5f07941677781c917'] = 'ComproPago';
-$_MODULE['<{compropago}prestashop>compropago_689256bbd6f0a9e1b86e5cee6b7a038d'] = 'Con ComproPago puedes recibir pagos en OXXO, 7Eleven y muchas tiendas más en todo México';
+$_MODULE['<{compropago}prestashop>compropago_689256bbd6f0a9e1b86e5cee6b7a038d'] = 'Con ComproPago puedes recibir pagos en efectivo en todo México';
 $_MODULE['<{compropago}prestashop>compropago_90c823bb4829305115ec38cce1386eb2'] = 'Está seguro de querer eliminar ComproPago?';
 $_MODULE['<{compropago}prestashop>compropago_e058afb19ca0e428bc7f052bd54b666d'] = 'Se debe configurar la a llave Pública y la llave Privada antes de poder usar este módulo';
 $_MODULE['<{compropago}prestashop>compropago_a02758d758e8bec77a33d7f392eb3f8a'] = 'No se ha definido una moneda para este módulo';
@@ -73,7 +73,7 @@ $_MODULE['<{compropago}prestashop>compropago_14c841eea7774b78caf79c58989f9625'] 
 $_MODULE['<{compropago}prestashop>validation_e2b7dec8fa4b498156dfee6e4c84b156'] = 'Método de pago no disponible';
 
 // [modulePath]/views/templates/hook/info.tpl
-$_MODULE['<{compropago}prestashop>infos_689256bbd6f0a9e1b86e5cee6b7a038d'] = 'Con ComproPago puedes recibir pagos en OXXO, 7Eleven y muchas tiendas más en todo México';
+$_MODULE['<{compropago}prestashop>infos_689256bbd6f0a9e1b86e5cee6b7a038d'] = 'Con ComproPago puedes recibir pagos en efectivo en todo México';
 $_MODULE['<{compropago}prestashop>infos_e444fe40d43bccfad255cf62ddc8d18f'] = 'El estatus de las órdenes realizadas por este método quedarán registradas como \'Pago Pendiente.\'';
 $_MODULE['<{compropago}prestashop>infos_a9da016950bfa3ec48d35f3cd6d8f26c'] = 'ComproPago confirmará  la orden por WebHook una vez confirmada la recepción del pago';
 

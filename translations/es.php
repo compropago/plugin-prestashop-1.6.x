@@ -57,7 +57,7 @@ $_MODULE['<{compropago}prestashop>compropago_29ae04aab28446966bbf8f3747ed9c28'] 
 $_MODULE['<{compropago}prestashop>compropago_3c806855da7cb66fe2ac79520cfcecff'] = 'Desea mostrar los logos de tiendas o una caja de selección';
 $_MODULE['<{compropago}prestashop>compropago_1de3387305731f8c72e505c4718a4696'] = 'Mostrar logos de tiendas';
 $_MODULE['<{compropago}prestashop>compropago_e7557a784a60ec1cf471e8e79b7d1b81'] = 'Mostrar caja de selección';
-$_MODULE['<{compropago}prestashop>compropago_271929827c34180cb9457f4b3524c55a'] = '- ComproPago le permite pagar en OXXO, 7Eleven y muchas tiendas más en todo México';
+$_MODULE['<{compropago}prestashop>compropago_271929827c34180cb9457f4b3524c55a'] = '- ComproPago le permite pagar en efectivo en todo México';
 $_MODULE['<{compropago}prestashop>compropago_0ef78bed29538b444578bf4af627d0da'] = 'Seleccione una tienda';
 $_MODULE['<{compropago}prestashop>compropago_2e009a7853de34d3bc5b712f71e8e1ce'] = 'ComproPago - Pago Pendiente';
 $_MODULE['<{compropago}prestashop>compropago_02f0eeddb6cd88fa1dadfdd75c96d7cb'] = 'ComproPago - Pago Recibido';
@@ -73,14 +73,14 @@ $_MODULE['<{compropago}prestashop>compropago_14c841eea7774b78caf79c58989f9625'] 
 $_MODULE['<{compropago}prestashop>validation_e2b7dec8fa4b498156dfee6e4c84b156'] = 'Método de pago no disponible';
 
 // [modulePath]/views/templates/hook/info.tpl
-$_MODULE['<{compropago}prestashop>infos_689256bbd6f0a9e1b86e5cee6b7a038d'] = 'Con ComproPago puedes recibir pagos en OXXO, 7Eleven y muchas tiendas más en todo México';
+$_MODULE['<{compropago}prestashop>infos_689256bbd6f0a9e1b86e5cee6b7a038d'] = 'Con ComproPago puedes recibir pagos en efectivo en todo México';
 $_MODULE['<{compropago}prestashop>infos_e444fe40d43bccfad255cf62ddc8d18f'] = 'El estatus de las órdenes realizadas por este método quedarán registradas como \'Pago Pendiente.\'';
 $_MODULE['<{compropago}prestashop>infos_a9da016950bfa3ec48d35f3cd6d8f26c'] = 'ComproPago confirmará  la orden por WebHook una vez confirmada la recepción del pago';
 
 // [modulePath]/views/templates/hook/payment.tpl
-$_MODULE['<{compropago}prestashop>payment_8bdb2b157c2e8364f7251fb3053650d0'] = 'Pagar por ComproPago';
+$_MODULE['<{compropago}prestashop>payment_8bdb2b157c2e8364f7251fb3053650d0'] = '- Pagos en efectivo';
 $_MODULE['<{compropago}prestashop>payment_4e1fb9f4b46556d64db55d50629ee301'] = '(pagar en OXXO, 7Eleven, etc.)';
-$_MODULE['<{compropago}prestashop>payment_c59f69fbb2b7f6ea888bfd17427f086a'] = 'Pagar por ComproPago.';
+$_MODULE['<{compropago}prestashop>payment_c59f69fbb2b7f6ea888bfd17427f086a'] = '- Pagos en efectivo';
 
 // [modulePath]/views/templates/front/payment_execution.tpl
 $_MODULE['<{compropago}prestashop>payment_execution_644818852b4dd8cf9da73543e30f045a'] = 'Regresar al Checkout';
