@@ -25,7 +25,7 @@ $_MODULE = array();
 
 //[modulePath]/compropago.php 
 $_MODULE['<{compropago}prestashop>compropago_51364ec58cec9ee5f07941677781c917'] = 'ComproPago';
-$_MODULE['<{compropago}prestashop>compropago_689256bbd6f0a9e1b86e5cee6b7a038d'] = 'Con ComproPago puedes recibir pagos en OXXO, 7Eleven y muchas tiendas más en todo México';
+$_MODULE['<{compropago}prestashop>compropago_689256bbd6f0a9e1b86e5cee6b7a038d'] = 'Con ComproPago puedes recibir pagos en efectivo en todo México';
 $_MODULE['<{compropago}prestashop>compropago_90c823bb4829305115ec38cce1386eb2'] = 'Está seguro de querer eliminar ComproPago?';
 $_MODULE['<{compropago}prestashop>compropago_e058afb19ca0e428bc7f052bd54b666d'] = 'Se debe configurar la a llave Pública y la llave Privada antes de poder usar este módulo';
 $_MODULE['<{compropago}prestashop>compropago_a02758d758e8bec77a33d7f392eb3f8a'] = 'No se ha definido una moneda para este módulo';
