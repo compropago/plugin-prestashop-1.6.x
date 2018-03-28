@@ -728,6 +728,7 @@ class Compropago extends PaymentModule
      */
 	public function renderForm()
 	{	
+		try {
 		if(!$this->publicKey && !$this->privateKey){
 			$this->client = new CompropagoSdk\Client(
 				$this->publicKey,
@@ -737,6 +738,13 @@ class Compropago extends PaymentModule
 			$providers = $this->client->api->listDefaultProviders();
 		}else{
 			$providers = $this->client->api->listProviders();
+		}
+
+		if (Configuration::get('COMPROPAGO_SUCCESS') == false 
+                || Configuration::get('COMPROPAGO_PENDING') == false 
+                || Configuration::get('COMPROPAGO_EXPIRED') == false)
+		{
+			$this->installOrderStates();
 		}
 		
         $options = [];
@@ -753,8 +761,8 @@ class Compropago extends PaymentModule
 		$fields_form = array(
 			'form' => array(
 				'legend' => array(
-					'title' => $this->l('ComproPago details'),
-					'image' => '../modules/compropago/icono.png'
+					'title' => $this->l('Configuración'),
+					'image' => '../modules/compropago/icon.png'
 				),
 				'input' => array(
 					array(
@@ -834,6 +842,10 @@ class Compropago extends PaymentModule
 		);
 
 		return $helper->generateForm(array($fields_form));
+
+		} catch (\Exception $e) {
+			die("Error al generar el formulario" . $e->message);
+		}
 	}
 
 	/**
