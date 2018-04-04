@@ -108,7 +108,7 @@ class Compropago extends PaymentModule
 		$this->setComproPago($this->modoExec);
 
    		if($this->context->employee){
-            $hook_data = $this->hookRetro(true, $this->publicKey, $this->privateKey, $this->execMode);
+            $hook_data = $this->hookRetro(true, $this->publicKey, $this->privateKey, $this->modoExec);
             if($hook_data[0]){
                 $this->warning = $this->l($hook_data[1]);
                 $this->stop = $hook_data[2];
