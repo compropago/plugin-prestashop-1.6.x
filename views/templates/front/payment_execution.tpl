@@ -40,7 +40,7 @@
 </div>
 
 {if $providers == 0}
-<div class="cprow">
+    <div class="cprow">
         <div class="cpcolumn">
             <div class="cpalert">
                 <h1>{l s='¡Servicio temporalmente fuera de servicio!' mod='compropago'}</h1>
@@ -60,43 +60,113 @@
             </div>
         </div>
     {else}
+        {* SECCION DE RESUM DE COMPRA *}
 
-    {* SECCION DE RESUM DE COMPRA *}
-   
-    <form action="{$link->getModuleLink('compropago', 'validation', [], true)|escape:'html'}" method="post">
-        <div class="cprow">
-            <div class="cpcolumn">
-            <br>
-                <h4 style="color:#000">{l s="¿Dónde quieres pagar?<sup>*</sup>" d='Modules.Compropago.Shop'}</h4>
+        <h3>
+            Seleccione un metodo de pago
+            <small style="float: right">
+                <a href="{$link->getPageLink('order', true, NULL, "step=3")|escape:'html'}" style="color: #33c3f0;font-size: 1.1em;line-height: 40px;">
+                    Regresar a los métodos de pago
+                </a>
+            </small>
+        </h3>
+        <hr>
+
+        <form name="formCp" action="{$link->getModuleLink('compropago', 'validation', [], true)|escape:'html'}" method="post">
+            <div class="cprow">
+                <section class="cash-section">
+                    <div class="cover">
+                        <img src="https://cdn.compropago.com/assets/v150/button/money-C.svg" alt="Money-c">
+                    </div>
+
+                    <div class="body">
+                        <div id="cppayment_store">
+                            <h4 style="color:#000">{l s="¿Dónde quieres pagar?<sup>*</sup>" d='Modules.Compropago.Shop'}</h4>
+
+                            <select title="Providers" id="select-provider" class="providers_list">
+                                <option value="0">Seleccione un establecimiento</option>
+                                {foreach from=$providers item=provider}
+                                    <option value="{$provider->internal_name}">{$provider->name}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+
+                        <br><br>
+
+                        <div class="cppayment_text">
+                            <p style="font-size:12px; color: #8f8f8f"><sup>*</sup>Comisionistas <a href="https://compropago.com/legal/corresponsales_cnbv.pdf" target="_blank" style="font-size:12px; color: #8f8f8f; font-weight:bold">autorizados por la CNBV</a> como corresponsales bancarios.</p>
+                        </div> <br>
+                    </div>
+
+                    <div class="footer">
+                        Paga en tiendas de conveniencia y bancos
+                    </div>
+                </section>
+
+                <section class="spei-section">
+                    <div class="cover">
+                        <img src="https://cdn.compropago.com/assets/v150/button/SPEI.png" alt="SPEI">
+                    </div>
+
+                    <div class="body">
+                        <img src="https://cdn.compropago.com/assets/v150/button/SPEI.png" alt="SPEI"><br>
+                        <p style="color: #333085;margin: 10px;font-size: 1.2em;">
+                            Transferencia Electónica 
+                        </p>
+                    </div>
+
+                    <div class="footer">
+                        Paga desde tu banco en linea
+                    </div>
+                </section>
             </div>
-        </div>
 
-        <div class="cprow">
-            <div class="cpcolumn">
-                <div id="cppayment_store">
-                <form action="{$link->getModuleLink('compropago', 'validation', [], true)|escape:'html'}" method="post">
-                    <select name="compropagoProvider" class="providers_list">
-                        {foreach from=$providers item=provider}
-                            <option value="{$provider->internal_name}">{$provider->name}</option>
-                        {/foreach}
-                    </select>
+            <br><br>
+
+            <div class="cprow">
+                <div class="cpcolumn" style="text-align: center">
+                    <input type="button" class="cpbutton cpbutton-primary" id="send-data" value="{l s='I confirm my order' mod='compropago'}">
                 </div>
-                <div class="cppayment_text">
-                <br><br>
-                    <p style="font-size:12px; color: #8f8f8f"><sup>*</sup>Comisionistas <a href="https://compropago.com/legal/corresponsales_cnbv.pdf" target="_blank" style="font-size:12px; color: #8f8f8f; font-weight:bold">autorizados por la CNBV</a> como corresponsales bancarios.</p>
-                </div> <br>
             </div>
-        </div>
 
-        <div class="cprow">
-            <div class="cpcolumn" >
-                <a href="{$link->getPageLink('order', true, NULL, "step=3")|escape:'html'}" class="cpbutton">{l s='Other payment methods' mod='compropago'}</a>
-                <input type="submit" class="cpbutton cpbutton-primary" value="{l s='I confirm my order' mod='compropago'}">
-            </div>
-        </div>
-    </form>
+            <input type="hidden" name="compropagoProvider" id="provider" value="">
+        </form>
+
+        <script>
+            window.onload = function () {
+                document.querySelector('.spei-section').addEventListener('click', function () {
+                    document.querySelector('.cash-section').classList.remove('active');
+                    this.classList.add('active');
+
+                    document.querySelector('#provider').value = 'SPEI';
+                });
+
+                document.querySelector('.cash-section').addEventListener('click', function () {
+                    document.querySelector('.spei-section').classList.remove('active');
+                    this.classList.add('active');
+
+                    document.querySelector('#provider').value = document.querySelector('#select-provider').value;
+                });
+
+                document.querySelector('#select-provider').addEventListener('change', function() {
+                    document.querySelector('#provider').value = this.value;
+                });
+
+                document.querySelector('#send-data').addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    const value = document.querySelector('#provider').value;
+
+                    if (value === '' || value === '0') {
+                        alert('Seleccione un establecimiento antes de continuar');
+                        return;
+                    }
+
+                    document.formCp.submit();
+                })
+            };
+        </script>
     {/if}
-
 {/if}
 
 

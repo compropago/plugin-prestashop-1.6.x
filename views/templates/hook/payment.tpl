@@ -1,4 +1,4 @@
-{*
+ {*
 * Copyright 2015 Compropago.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,7 @@
 
 <p class="payment_module">
 	<a href="{$link->getModuleLink('compropago', 'payment', [], true)|escape:'html'}" title="{l s='Pay by ComproPago' mod='compropago'}">
-		<img src="https://compropago.com/plugins/logo.png" alt="{l s='Pay by ComproPago' mod='compropago'}"  height="35" />
+		<img src="{$this_path_compropago}gateway-logo.png" alt="{l s='Pay by ComproPago' mod='compropago'}" />
 		{l s='Pay by ComproPago' mod='compropago'} 
 	</a>
 </p>
