@@ -1,19 +1,4 @@
 <?php
-/*
-* Copyright 2015 Compropago.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
 /**
  * @author Rolando Lucio <rolando@compropago.com>
  * @since 2.0.0
@@ -21,6 +6,9 @@
 
 class CompropagoValidationModuleFrontController extends ModuleFrontController
 {
+
+    const PLUGIN_VERSION = "2.5.0.0";
+
 	public function postProcess()
 	{
 		$cart = $this->context->cart;
@@ -28,7 +16,9 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
 		if ($cart->id_customer == 0 || $cart->id_address_delivery == 0 || $cart->id_address_invoice == 0 || !$this->module->active) {
             Tools::redirect('index.php?controller=order&step=1');
         }
+
         $authorized = false;
+
         foreach (Module::getPaymentModules() as $module) {
             if ($module['name'] == 'compropago') {
                 $authorized = true;
@@ -46,75 +36,203 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
             Tools::redirect('index.php?controller=order&step=1');
         }
 
-        $currency = $this->context->currency;
-        $total    = (float)$cart->getOrderTotal(true, Cart::BOTH);
+        $compropagoStore = (!isset($_REQUEST['compropagoProvider']) || empty($_REQUEST['compropagoProvider'])) ?
+            'OXXO' : $_REQUEST['compropagoProvider'];
 
-        $compropagoStore = (!isset($_REQUEST['compropagoProvider']) || empty($_REQUEST['compropagoProvider'])) ? 'OXXO' : $_REQUEST['compropagoProvider'];
-        $mailVars        = array('{compropago_msj}' => 'En breve recibirá un email de ComproPago con su orden de pago ');
-        $result          = $this->module->validateOrder((int)$cart->id, Configuration::get('COMPROPAGO_PENDING'), $total, $this->module->displayName, NULL, $mailVars, (int)$currency->id, false, $customer->secure_key);
-        $cpOrderName     = Configuration::get('PS_SHOP_NAME') . ', Ref:' . $this->module->currentOrder;
+        $mailVars  = array('{compropago_msj}' => 'En breve recibirá un email de ComproPago con su orden de pago ');
 
+        $this->module->validateOrder(
+            (int)$cart->id,
+            Configuration::get('COMPROPAGO_PENDING'),
+            $cart->getOrderTotal(true, Cart::BOTH),
+            $this->module->displayName,
+            NULL,
+            $mailVars,
+            (int)$this->context->currency->id,
+            false,
+            $customer->secure_key
+        );
 
-		$order_info = [
-			'order_id' => $this->module->currentOrder,
-			'order_name' => $cpOrderName,
-			'order_price' => $total,
-			'customer_name' => $customer->firstname . ' ' . $customer->lastname,
-			'customer_email' => $customer->email,
-			'payment_type' => $compropagoStore,
-			'currency' => $currency->iso_code,
-			'image_url' => null,
-			'app_client_name' => 'prestashop',
-			'app_client_version' => _PS_VERSION_
-		];
-
-		$order = CompropagoSdk\Factory\Factory::getInstanceOf('PlaceOrderInfo', $order_info);
+        $cpId = null;
 
         try {
-            $response = $this->module->client->api->placeOrder($order);
+            if ($compropagoStore == 'SPEI') {
+                $cpId = $this->proccessSpei();
+            } else {
+                $cpId = $this->proccessCash($compropagoStore);
+            }
         } catch (Exception $e) {
+            echo $e->getTraceAsString();
             die($this->module->l('This payment method is not available.', 'validation') . '<br>' . $e->getMessage());
         }
 
-        if ($response->type != 'charge.pending') {
-            die($this->module->l('This payment method is not available.', 'validation'));
+        $url = "index.php?controller=order-confirmation" .
+            "&id_cart={$cart->id}" .
+            "&id_module={$this->module->id}" .
+            "&id_order={$this->module->currentOrder}" .
+            "&compropagoId={$cpId}" .
+            "&key={$customer->secure_key}";
+
+        Tools::redirect($url);
+        return;
+	}
+
+    /**
+     * @throws Exception
+     */
+	private function proccessSpei()
+    {
+        $cart = $this->context->cart;
+        $customer = new Customer($cart->id_customer);
+        $orderName = 'Ref: ' . $this->module->currentOrder;
+
+        $orderInfo = [
+            "product" => [
+                "id" => "{$this->module->currentOrder}",
+                "price" => floatval($cart->getOrderTotal(true, Cart::BOTH)),
+                "name" => $orderName,
+                "url" => "",
+                "currency" => $this->context->currency->iso_code
+            ],
+            "customer" => [
+                "name" => $customer->firstname . ' ' . $customer->lastname,
+                "email" => $customer->email,
+                "phone" => ""
+            ],
+            "client" => [
+                "name" => "prestashop",
+                "version" => self::PLUGIN_VERSION
+            ],
+            "payment" =>  [
+                "type" => "SPEI"
+            ]
+        ];
+
+        $response = $this->speiRequest($orderInfo);
+
+        if ($response->status != 'PENDING') {
+            throw new \Exception($this->module->l('This payment method is not available.', 'validation'));
         }
 
         if (!$this->module->verifyTables()) {
-            die($this->module->l('This payment method is not available.', 'validation') . '<br>ComproPago Tables Not Found');
+            throw new \Exception($this->module->l('This payment method is not available.', 'validation'));
         }
 
-        try {
-            $recordTime = time();
-            $ioIn       = base64_encode(serialize($response));
-            $ioOut      = base64_encode(serialize($order));
+        $this->addTransaction($cart, $response, $orderInfo, $response->status, 2);
 
-            Db::getInstance()->autoExecute(_DB_PREFIX_ . 'compropago_orders', array(
-                'date'             => $recordTime,
-                'modified'         => $recordTime,
-                'compropagoId'     => $response->id,
-                'compropagoStatus' => $response->type,
-                'storeCartId'      => $cart->id,
-                'storeOrderId'     => $this->module->currentOrder,
-                'storeExtra'       => 'COMPROPAGO_PENDING',
-                'ioIn'             => $ioIn,
-                'ioOut'            => $ioOut
-            ), 'INSERT');
+        return $response->id;
+    }
 
+    /**
+     * @param $data
+     * @return string
+     * @throws Exception
+     */
+    private function speiRequest($data)
+    {
+        $url = 'https://api.compropago.com/v2/orders';
 
-            Db::getInstance()->autoExecute(_DB_PREFIX_ . 'compropago_transactions', array(
-                'orderId'              => $response->order_info->order_id,
-                'date'                 => $recordTime,
-                'compropagoId'         => $response->id,
-                'compropagoStatus'     => $response->type,
-                'compropagoStatusLast' => $response->type,
-                'ioIn'                 => $ioIn,
-                'ioOut'                => $ioOut
-            ), 'INSERT');
+        $auth = [
+            "user" => Configuration::get('COMPROPAGO_PRIVATEKEY'),
+            "pass" => Configuration::get('COMPROPAGO_PUBLICKEY')
+        ];
 
-        } catch (Exception $e) {
-            die($this->module->l('This payment method is not available.', 'validation') . '<br>' . $e->getMessage());
+        $response = CompropagoSdk\Tools\Request::post($url, $data, array(), $auth);
+
+        if ($response->statusCode != 200) {
+            throw new \Exception("SPEI Error #: {$response->statusCode}");
         }
-        Tools::redirect('index.php?controller=order-confirmation&id_cart='.(int)$cart->id.'&id_module='.(int)$this->module->id.'&id_order='.$this->module->currentOrder.'&key='.$customer->secure_key.'&compropagoId=' . $response->id);
-	}
+
+        $body = json_decode($response->body);
+
+        return $body->data;
+    }
+
+    /**
+     * @param $store
+     * @return string
+     * @throws Exception
+     */
+	private function proccessCash($store)
+    {
+        $cart = $this->context->cart;
+        $customer = new Customer($cart->id_customer);
+        $orderName = 'Ref: ' . $this->module->currentOrder;
+
+        $order_info = [
+            'order_id' => $this->module->currentOrder,
+            'order_name' => $orderName,
+            'order_price' => $cart->getOrderTotal(true, Cart::BOTH),
+            'customer_name' => $customer->firstname . ' ' . $customer->lastname,
+            'customer_email' => $customer->email,
+            'payment_type' => $store,
+            'currency' => $this->context->currency->iso_code,
+            'image_url' => null,
+            'app_client_name' => 'prestashop',
+            'app_client_version' => self::PLUGIN_VERSION
+        ];
+
+        $order = CompropagoSdk\Factory\Factory::getInstanceOf('PlaceOrderInfo', $order_info);
+
+        $response = $this->module->client->api->placeOrder($order);
+
+        echo json_encode($response) . "\n";
+
+        if ($response->type != 'charge.pending') {
+            echo "charge pending\n";
+            throw new \Exception($this->module->l('This payment method is not available.', 'validation'));
+        }
+
+        if (!$this->module->verifyTables()) {
+            echo "verify tables\n";
+            throw new \Exception($this->module->l('This payment method is not available.', 'validation'));
+        }
+
+        $this->addTransaction($cart, $response, $order, $response->type, 1);
+
+        return $response->id;
+    }
+
+    /**
+     * @param $cart
+     * @param $response
+     * @param $order
+     * @param $api
+     */
+    private function addTransaction($cart, $response, $order, $status, $api)
+    {
+        $recordTime = time();
+        $ioIn       = base64_encode(serialize($response));
+        $ioOut      = base64_encode(serialize($order));
+
+        $type = 'INSERT';
+        $tableOrders = _DB_PREFIX_ . 'compropago_orders';
+        $tableTransactions = _DB_PREFIX_ . 'compropago_transactions';
+
+        $insertOrder = array(
+            'date'             => $recordTime,
+            'modified'         => $recordTime,
+            'compropagoId'     => $response->id,
+            'compropagoStatus' => $status,
+            'storeCartId'      => $cart->id,
+            'storeOrderId'     => $this->module->currentOrder,
+            'storeExtra'       => 'COMPROPAGO_PENDING',
+            'ioIn'             => $ioIn,
+            'ioOut'            => $ioOut,
+            'api_version'      => $api
+        );
+
+        $insertTransaction = array(
+            'orderId'              => $response->order_info->order_id,
+            'date'                 => $recordTime,
+            'compropagoId'         => $response->id,
+            'compropagoStatus'     => $status,
+            'compropagoStatusLast' => $status,
+            'ioIn'                 => $ioIn,
+            'ioOut'                => $ioOut
+        );
+
+        Db::getInstance()->autoExecute($tableOrders, $insertOrder, $type);
+        Db::getInstance()->autoExecute($tableTransactions, $insertTransaction, $type);
+    }
 }

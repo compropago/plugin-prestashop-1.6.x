@@ -1,72 +1,132 @@
 #cppayment_store {
-    background: url(https://compropago.com/assets/terminal/select-input.png) no-repeat;
-    width: 298px;
+    width: 100%;
     height: 39px;
     position: relative;
     background-size: 100% auto;
     max-width: 100%
 }
+
 #cppayment_store select.providers_list {
+    border: 1px solid #cacaca;
+    width: calc(100% - 20px);
+    height: 40px;
+    font-size: 14px;
+    font-family: inherit;
+    line-height: normal;
+    color: #0a0a0a;
+    background-color: #fefefe;
     -webkit-appearance: none;
     -moz-appearance: none;
-    outline: 0;
-    border: 0;
-    background: none;
-    height: 100%;
-    width: 100%;
-    padding-left: 62px;
-    box-sizing: border-box;
-    text-transform: uppercase;
-    font-size: 14px;
-    background-size: auto 70%;
-    background-position: 2px 6px;
-    background-repeat: no-repeat
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' width='32' height='24' viewBox='0 0 32 24'><polygon points='0,0 32,0 16,24' style='fill: rgb%28138, 138, 138%29'></polygon></svg>");
+    background-size: 9px 6px;
+    background-position: right -1rem center;
+    background-origin: content-box;
+    background-repeat: no-repeat;
+    padding-right: 1.5rem;
+    border-radius: 2px;
 }
 
-ul.providers_list {
-    background: none;
-    width: 100%;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-flex-wrap: wrap;
-    -ms-flex-wrap: wrap;
-    flex-wrap: wrap;
-    height: auto
+.cppayment_text {
+    font-size: 12px;
+    color: #8f8f8f;
 }
 
-ul.providers_list label img,
-ul.providers_list label {
-    display: block;
-    width: 75px !important;
-    margin-right: 12px !important;
-    margin-bottom: 12px !important;
-    border-radius: 3px;
-    position: relative;
-    transition: all .2s linear;
-    box-shadow: none
+.cppayment_text a {
+    font-weight: bold;
+    text-decoration: none;
 }
 
-ul.providers_list input[type="radio"]{
-    display: none;
-    position: absolute;
+.cppayment_text a:hover {
+    text-decoration: underline;
 }
 
-ul.providers_list label.provider_selected {
-    box-shadow: 0 0 6px 3px #00aaef;
-    opacity: 1;
-}
-
-ul.providers_list label {
-    display: block;
-    margin: 0 auto;
-    float: none;
-    width: 100%;
-    opacity: 0.7;
-    transition-property: all;
+.cash-section,
+.spei-section {
+    text-align: center;
+    width: 49%;
+    height: 150px;
     transition-duration: 0.3s;
+    transition-property: all;
+    cursor: pointer;
+    border: 1px solid #e9e8ec;
+    border-radius: 2px;
+    overflow: hidden;
 }
 
-ul.providers_list label:hover {
-    opacity: 1;
+.cash-section .body,
+.spei-section .body {
+    display: none;
 }
+
+.cash-section:hover,
+.spei-section:hover {
+    border: 1px solid #33c3f0;
+    -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
+    -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
+    box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
+}
+
+.cash-section .cover {
+    padding: 15px;
+    height: 100px;
+}
+
+.spei-section .cover {
+    padding-top: 30px;
+    height: 100px;
+}
+
+.cash-section .cover img {
+    display: inline-block;
+    height: 70px;
+    position: relative;
+}
+
+.cash-section .footer,
+.spei-section .footer{
+    padding: 15px;
+    border-top: 1px solid #e9e8ec;
+    text-align: center;
+    background: linear-gradient(to bottom right, #fcfcfe, #f5f5f7);
+}
+
+.cash-section {
+    float: left;
+}
+
+.spei-section {
+    float: right;
+}
+
+.cash-section.active,
+.spei-section.active {
+    border: 1px solid #33c3f0;
+}
+
+.cash-section.active .footer,
+.spei-section.active .footer,
+.cash-section.active .cover,
+.spei-section.active .cover {
+    display: none;
+}
+
+.cash-section.active .body,
+.spei-section.active .body {
+    display: block;
+    height: 150px;
+    text-align: center;
+}
+
+.spei-section.active .body {
+    padding-top: 35px;
+}
+
+.cash-section.active .body {
+    padding-top: 15px;
+}
+
+
+
+
+
+

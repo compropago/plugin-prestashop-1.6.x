@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit304e45d86414a72271158ee4a4da557a
+class ComposerStaticInit5cdce36ab8b261285e9c137b7af21659
 {
     public static $prefixLengthsPsr4 = array (
         'C' => 
@@ -20,11 +20,38 @@ class ComposerStaticInit304e45d86414a72271158ee4a4da557a
         ),
     );
 
+    public static $classMap = array (
+        'CompropagoSdk\\Client' => __DIR__ . '/..' . '/compropago/php-sdk/CompropagoSdk/Client.php',
+        'CompropagoSdk\\Factory\\Factory' => __DIR__ . '/..' . '/compropago/php-sdk/CompropagoSdk/Factory/Factory.php',
+        'CompropagoSdk\\Factory\\Models\\CpOrderInfo' => __DIR__ . '/..' . '/compropago/php-sdk/CompropagoSdk/Factory/Models/CpOrderInfo.php',
+        'CompropagoSdk\\Factory\\Models\\Customer' => __DIR__ . '/..' . '/compropago/php-sdk/CompropagoSdk/Factory/Models/Customer.php',
+        'CompropagoSdk\\Factory\\Models\\EvalAuthInfo' => __DIR__ . '/..' . '/compropago/php-sdk/CompropagoSdk/Factory/Models/EvalAuthInfo.php',
+        'CompropagoSdk\\Factory\\Models\\Exchange' => __DIR__ . '/..' . '/compropago/php-sdk/CompropagoSdk/Factory/Models/Exchange.php',
+        'CompropagoSdk\\Factory\\Models\\FeeDetails' => __DIR__ . '/..' . '/compropago/php-sdk/CompropagoSdk/Factory/Models/FeeDetails.php',
+        'CompropagoSdk\\Factory\\Models\\InstructionDetails' => __DIR__ . '/..' . '/compropago/php-sdk/CompropagoSdk/Factory/Models/InstructionDetails.php',
+        'CompropagoSdk\\Factory\\Models\\Instructions' => __DIR__ . '/..' . '/compropago/php-sdk/CompropagoSdk/Factory/Models/Instructions.php',
+        'CompropagoSdk\\Factory\\Models\\NewOrderInfo' => __DIR__ . '/..' . '/compropago/php-sdk/CompropagoSdk/Factory/Models/NewOrderInfo.php',
+        'CompropagoSdk\\Factory\\Models\\OrderInfo' => __DIR__ . '/..' . '/compropago/php-sdk/CompropagoSdk/Factory/Models/OrderInfo.php',
+        'CompropagoSdk\\Factory\\Models\\PlaceOrderInfo' => __DIR__ . '/..' . '/compropago/php-sdk/CompropagoSdk/Factory/Models/PlaceOrderInfo.php',
+        'CompropagoSdk\\Factory\\Models\\Provider' => __DIR__ . '/..' . '/compropago/php-sdk/CompropagoSdk/Factory/Models/Provider.php',
+        'CompropagoSdk\\Factory\\Models\\SmsData' => __DIR__ . '/..' . '/compropago/php-sdk/CompropagoSdk/Factory/Models/SmsData.php',
+        'CompropagoSdk\\Factory\\Models\\SmsInfo' => __DIR__ . '/..' . '/compropago/php-sdk/CompropagoSdk/Factory/Models/SmsInfo.php',
+        'CompropagoSdk\\Factory\\Models\\SmsObject' => __DIR__ . '/..' . '/compropago/php-sdk/CompropagoSdk/Factory/Models/SmsObject.php',
+        'CompropagoSdk\\Factory\\Models\\Webhook' => __DIR__ . '/..' . '/compropago/php-sdk/CompropagoSdk/Factory/Models/Webhook.php',
+        'CompropagoSdk\\Factory\\Serialize' => __DIR__ . '/..' . '/compropago/php-sdk/CompropagoSdk/Factory/Serialize.php',
+        'CompropagoSdk\\Service' => __DIR__ . '/..' . '/compropago/php-sdk/CompropagoSdk/Service.php',
+        'CompropagoSdk\\Tools\\Http' => __DIR__ . '/..' . '/compropago/php-sdk/CompropagoSdk/Tools/Http.php',
+        'CompropagoSdk\\Tools\\HttpResponse' => __DIR__ . '/..' . '/compropago/php-sdk/CompropagoSdk/Tools/HttpResponse.php',
+        'CompropagoSdk\\Tools\\Request' => __DIR__ . '/..' . '/compropago/php-sdk/CompropagoSdk/Tools/Request.php',
+        'CompropagoSdk\\Tools\\Validations' => __DIR__ . '/..' . '/compropago/php-sdk/CompropagoSdk/Tools/Validations.php',
+    );
+
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit304e45d86414a72271158ee4a4da557a::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit304e45d86414a72271158ee4a4da557a::$prefixDirsPsr4;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit5cdce36ab8b261285e9c137b7af21659::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit5cdce36ab8b261285e9c137b7af21659::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit5cdce36ab8b261285e9c137b7af21659::$classMap;
 
         }, null, ClassLoader::class);
     }
