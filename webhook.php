@@ -39,6 +39,7 @@ class CompropagoWebhook
         $this->privateKey = Configuration::get('COMPROPAGO_PRIVATEKEY');
         $this->mode = Configuration::get('COMPROPAGO_MODE');
         $this->db = Db::getInstance();
+
     }
 
     /**

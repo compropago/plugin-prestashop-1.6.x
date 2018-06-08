@@ -60,7 +60,6 @@
             </div>
         </div>
     {else}
-
         {* SECCION DE RESUM DE COMPRA *}
 
         <h3>

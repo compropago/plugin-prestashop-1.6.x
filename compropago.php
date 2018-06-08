@@ -234,7 +234,8 @@ class Compropago extends PaymentModule
 	        }
 
             $compropagoData['providers']     = $f_providers;
-            $compropagoData['flag']			 = $provflag;
+			$compropagoData['flag']			 = $provflag;
+			
 			$compropagoData['description']   = $this->l('ComproPago te permite pagar en tiendas de México como OXXO, 7Eleven y más.');
 			$compropagoData['instrucciones'] = $this->l('Selecciona una tienda');
 
@@ -637,120 +638,119 @@ class Compropago extends PaymentModule
 	public function renderForm()
 	{
 		try {
-		if(!$this->publicKey && !$this->privateKey){
-			$this->client = new CompropagoSdk\Client(
-				$this->publicKey,
-				$this->privateKey,
-				$this->modoExec
-			);
-			$providers = $this->client->api->listDefaultProviders();
-		}else{
-			$providers = $this->client->api->listProviders();
-		}
+			if(!$this->publicKey && !$this->privateKey){
+				$this->client = new CompropagoSdk\Client(
+					$this->publicKey,
+					$this->privateKey,
+					$this->modoExec
+				);
+				$providers = $this->client->api->listDefaultProviders();
+			}else{
+				$providers = $this->client->api->listProviders();
+			}
 
-		if (Configuration::get('COMPROPAGO_SUCCESS') == false
-                || Configuration::get('COMPROPAGO_PENDING') == false
-                || Configuration::get('COMPROPAGO_EXPIRED') == false)
-		{
-			$this->installOrderStates();
-		}
+			if (Configuration::get('COMPROPAGO_SUCCESS') == false
+				|| Configuration::get('COMPROPAGO_PENDING') == false
+				|| Configuration::get('COMPROPAGO_EXPIRED') == false)
+			{
+				$this->installOrderStates();
+			}
+			
+			$options = [];
+			$flag = false;
+			foreach ($providers as $provider){
+				$options[] = [
+					'id_option' => $provider->internal_name,
+					'name'      => $provider->name
+				];
+			}
+			global $smarty;
+			$base_url =  ( isset( $smarty->tpl_vars['base_dir']->value ) ) ? $smarty->tpl_vars['base_dir']->value : __DIR__;
 
-        $options = [];
-		$flag = false;
-        foreach ($providers as $provider){
-            $options[] = [
-                'id_option' => $provider->internal_name,
-                'name'      => $provider->name
-            ];
-        }
-        global $smarty;
-        $base_url =  ( isset( $smarty->tpl_vars['base_dir']->value ) ) ? $smarty->tpl_vars['base_dir']->value : __DIR__;
-
-		$fields_form = array(
-			'form' => array(
-				'legend' => array(
-					'title' => $this->l('Configuración'),
-					'image' => '../modules/compropago/icon.png'
-				),
-				'input' => array(
-					array(
-						'type'     => 'text',
-						'label'    => $this->l('Public Key'),
-						'name'     => 'COMPROPAGO_PUBLICKEY',
-						'required' => true
+			$fields_form = array(
+				'form' => array(
+					'legend' => array(
+						'title' => $this->l('Configuración'),
+						'image' => '../modules/compropago/icon.png'
 					),
-					array(
-						'type'     => 'text',
-						'label'    => $this->l('Private Key'),
-						'desc'     => $this->l('Get your keys at ComproPago').': <a href="https://compropago.com/panel/configuracion" target="_blank">'.$this->l('ComproPago Panel').'</a>',
-						'name'     => 'COMPROPAGO_PRIVATEKEY',
-						'required' => true
-					),
-					array(
-                        'type'     => 'hidden',
-                        'name'     => 'COMPROPAGO_WEBHOOK',
-                        'required' => false
-                    ),
-					array(
-						'type'     => 'switch',
-						'label'    => $this->l('Live Mode'),
-						'desc'     => $this->l('Are you on live or testing?,Change your Keys according to the mode').':<a href="https://compropago.com/panel/configuracion" target="_blank">'.$this->l('ComproPago Panel').'</a>',
-						'name'     => 'COMPROPAGO_MODE',
-						'is_bool'  => true,
-						'required' => true,
-						'values'   => array(
-							array(
-								'id'    => 'active_on_bv',
-								'value' => true,
-								'label' => $this->l('Live Mode')
-							),
-							array(
-								'id'    => 'active_off_bv',
-								'value' => false,
-								'label' => $this->l('Testing Mode')
+					'input' => array(
+						array(
+							'type'     => 'text',
+							'label'    => $this->l('Public Key'),
+							'name'     => 'COMPROPAGO_PUBLICKEY',
+							'required' => true
+						),
+						array(
+							'type'     => 'text',
+							'label'    => $this->l('Private Key'),
+							'desc'     => $this->l('Get your keys at ComproPago').': <a href="https://compropago.com/panel/configuracion" target="_blank">'.$this->l('ComproPago Panel').'</a>',
+							'name'     => 'COMPROPAGO_PRIVATEKEY',
+							'required' => true
+						),
+						array(
+							'type'     => 'hidden',
+							'name'     => 'COMPROPAGO_WEBHOOK',
+							'required' => false
+						),
+						array(
+							'type'     => 'switch',
+							'label'    => $this->l('Live Mode'),
+							'desc'     => $this->l('Are you on live or testing?,Change your Keys according to the mode').':<a href="https://compropago.com/panel/configuracion" target="_blank">'.$this->l('ComproPago Panel').'</a>',
+							'name'     => 'COMPROPAGO_MODE',
+							'is_bool'  => true,
+							'required' => true,
+							'values'   => array(
+								array(
+									'id'    => 'active_on_bv',
+									'value' => true,
+									'label' => $this->l('Live Mode')
+								),
+								array(
+									'id'    => 'active_off_bv',
+									'value' => false,
+									'label' => $this->l('Testing Mode')
+								)
+							)
+						),
+						array(
+							'type'     => 'swap',
+							'multiple' => true,
+							'label'    => $this->l('Tiendas:'),
+							'desc'     => $this->l('Seleccione las tiendas'),
+							'name'     => 'COMPROPAGO_PROVIDERS',
+							'options'  => array(
+								'query' => $options, // $options contains the data itself.
+								'id'    => 'id_option', // The value of the 'id' key must be the same as the key for 'value' attribute of the <option> tag in each $options sub-array.
+								'name'  => 'name'     // The value of the 'name' key must be the same as the key for the text content of the <option> tag in each $options sub-array.
 							)
 						)
+						///END OF FIELDS
 					),
-					array(
-				        'type'     => 'swap',
-				        'multiple' => true,
-				        'label'    => $this->l('Tiendas:'),
-				        'desc'     => $this->l('Seleccione las tiendas'),
-				        'name'     => 'COMPROPAGO_PROVIDERS',
-				        'options'  => array(
-				            'query' => $options, // $options contains the data itself.
-				            'id'    => 'id_option', // The value of the 'id' key must be the same as the key for 'value' attribute of the <option> tag in each $options sub-array.
-				            'name'  => 'name'     // The value of the 'name' key must be the same as the key for the text content of the <option> tag in each $options sub-array.
-				        )
-				    )
-				    ///END OF FIELDS
-                ),
-                'submit' => array(
-                    'title' => $this->l('Save'),
-                )
-			)
-		);
+					'submit' => array(
+						'title' => $this->l('Save'),
+					)
+				)
+			);
 
-		$helper = new HelperForm();
-		$helper->show_toolbar = false;
-		$helper->table = $this->table;
-		$lang = new Language((int)Configuration::get('PS_LANG_DEFAULT'));
-		$helper->default_form_language = $lang->id;
-		$helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') ? Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') : 0;
-		$this->fields_form = array();
-		$helper->id = (int)Tools::getValue('id_carrier');
-		$helper->identifier = $this->identifier;
-		$helper->submit_action = 'btnSubmit';
-		$helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false).'&configure='.$this->name.'&tab_module='.$this->tab.'&module_name='.$this->name;
-		$helper->token = Tools::getAdminTokenLite('AdminModules');
-		$helper->tpl_vars = array(
-			'fields_value' => $this->getConfigFieldsValues(),
-			'languages' => $this->context->controller->getLanguages(),
-			'id_language' => $this->context->language->id
-		);
+			$helper = new HelperForm();	
+			$helper->show_toolbar = false;
+			$helper->table = $this->table;
+			$lang = new Language((int)Configuration::get('PS_LANG_DEFAULT'));
+			$helper->default_form_language = $lang->id;
+			$helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') ? Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') : 0;
+			$this->fields_form = array();
+			$helper->id = (int)Tools::getValue('id_carrier');
+			$helper->identifier = $this->identifier;
+			$helper->submit_action = 'btnSubmit';
+			$helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false).'&configure='.$this->name.'&tab_module='.$this->tab.'&module_name='.$this->name;
+			$helper->token = Tools::getAdminTokenLite('AdminModules');
+			$helper->tpl_vars = array(
+				'fields_value' => $this->getConfigFieldsValues(),
+				'languages' => $this->context->controller->getLanguages(),
+				'id_language' => $this->context->language->id
+			);
 
-		return $helper->generateForm(array($fields_form));
-
+			return $helper->generateForm(array($fields_form));
 		} catch (\Exception $e) {
 			die("Error al generar el formulario" . $e->getMessage());
 		}
