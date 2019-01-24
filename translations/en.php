@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2015 Compropago.
+ * Copyright 2019 Compropago.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

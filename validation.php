@@ -1,6 +1,6 @@
 <?php
 /*
-* Copyright 2015 Compropago.
+* Copyright 2019 Compropago.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -28,28 +28,43 @@ $context  = Context::getContext();
 $cart       = $context->cart;
 $compropago = new Compropago();
 
-if ($cart->id_customer == 0 OR $cart->id_address_delivery == 0 OR $cart->id_address_invoice == 0 OR !$cheque->active)
-	Tools::redirect('index.php?controller=order&step=1');
+if ($cart->id_customer == 0 || $cart->id_address_delivery == 0 || $cart->id_address_invoice == 0 || !$cheque->active)
+{
+    Tools::redirect('index.php?controller=order&step=1');
+}
 
 // Check that this payment option is still available in case the customer changed his address just before the end of the checkout process
 $authorized = false;
-foreach (Module::getPaymentModules() as $module)
-	if ($module['name'] == 'compropago')
-	{
-		$authorized = true;
-		break;
-	}
-if (!$authorized)
-	die($compropago->l('This payment method is not available.', 'validation'));
+foreach (Module::getPaymentModules() as $module) {
+    if ($module['name'] == 'compropago') {
+        $authorized = true;
+        break;
+    }
+}
+
+if (!$authorized) {
+    die($compropago->l('This payment method is not available.', 'validation'));
+}
 
 $customer = new Customer($cart->id_customer);
 
-if (!Validate::isLoadedObject($customer))
-	Tools::redirect('index.php?controller=order&step=1');
+if (!Validate::isLoadedObject($customer)) {
+    Tools::redirect('index.php?controller=order&step=1');
+}
 
-$currency = $context->currency;
-$total = (float)$cart->getOrderTotal(true, Cart::BOTH);
+$currency   = $context->currency;
+$total      = (float) $cart->getOrderTotal(true, Cart::BOTH);
 
-$compropago->validateOrder((int)$cart->id, Configuration::get('COMPROPAGO_PENDING'), $total, $compropago->displayName, NULL, array(), (int)$currency->id, false, $customer->secure_key);
+$compropago->validateOrder(
+    (int) $cart->id,
+    Configuration::get('COMPROPAGO_PENDING'),
+    $total,
+    $compropago->displayName,
+    NULL,
+    array(),
+    (int) $currency->id,
+    false,
+    $customer->secure_key
+);
 
-Tools::redirect('index.php?controller=order-confirmation&id_cart='.(int)($cart->id).'&id_module='.(int)($compropago->id).'&id_order='.$compropago->currentOrder.'&key='.$customer->secure_key);
+Tools::redirect('index.php?controller=order-confirmation&id_cart='.(int)($cart->id).'&id_module='.(int)($compropago->id)."&id_order={$compropago->currentOrder}&key={$customer->secure_key}");

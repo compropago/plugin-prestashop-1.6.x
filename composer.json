@@ -1,4 +1,20 @@
 {
+    "name": "",
+    "description": "",
+    "homepage": "https://www.compropago.com",
+    "type": "plugin",
+    "version": "2.5.1.0",
+    "keywords": [
+        "pagos internet",
+        "payment gateway",
+        "prestashop",
+        "compropago",
+        "cash",
+        "spei"
+    ],
+    "license": [
+        "Apache-2.0"
+    ],
     "require": {
         "compropago/php-sdk": "4.0.1.1"
     }

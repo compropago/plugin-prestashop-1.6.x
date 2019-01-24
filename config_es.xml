@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <module>
-	<name>compropago</name>
+	<name>ComproPago</name>
 	<displayName><![CDATA[ComproPago]]></displayName>
 	<version><![CDATA[2.4.1]]></version>
 	<description><![CDATA[Con ComproPago puedes recibir pagos en efectivo en todo M&eacute;xico]]></description>

@@ -1,6 +1,6 @@
 <?php
 /*
-* Copyright 2015 Compropago.
+* Copyright 2019 Compropago.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -17,10 +17,6 @@
 /**
  * @author Rolando Lucio <rolando@compropago.com>
  */
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 
 /* SSL Management */
 $useSSL = true;
