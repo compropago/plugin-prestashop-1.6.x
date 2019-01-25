@@ -13,7 +13,7 @@ require_once __DIR__.'/../../classes/order/Order.php';
 require_once __DIR__.'/../../classes/order/OrderHistory.php';
 require_once __DIR__.'/../../classes/order/OrderState.php';
 
-if (!defined('_PS_VERSION_')){
+if (!defined('_PS_VERSION_')) {
     die(json_encode([
         "status"     => "error",
         "message"    => "No se pudo inicializar Prestashop",
@@ -34,11 +34,11 @@ class CompropagoWebhook
 
     public function __construct()
     {
-        $this->data = @file_get_contents('php://input');
-        $this->publicKey = Configuration::get('COMPROPAGO_PUBLICKEY');
-        $this->privateKey = Configuration::get('COMPROPAGO_PRIVATEKEY');
-        $this->mode = Configuration::get('COMPROPAGO_MODE');
-        $this->db = Db::getInstance();
+        $this->data         = @file_get_contents('php://input');
+        $this->publicKey    = Configuration::get('COMPROPAGO_PUBLICKEY');
+        $this->privateKey   = Configuration::get('COMPROPAGO_PRIVATEKEY');
+        $this->mode         = Configuration::get('COMPROPAGO_MODE');
+        $this->db           = Db::getInstance();
 
     }
 
@@ -87,11 +87,7 @@ class CompropagoWebhook
      */
     private function isTestMode($reference)
     {
-        if ($reference == '000000') {
-            return true;
-        }
-
-        return false;
+        return ($reference == '000000');
     }
 
     /**
@@ -265,9 +261,9 @@ class CompropagoWebhook
         $this->db->update(
             $tableOrders,
             [
-                "modified" => $recordTime,
-                "compropagoStatus" => $data['compropagoStatus'],
-                "storeExtra" => $data['status']
+                "modified"          => $recordTime,
+                "compropagoStatus"  => $data['compropagoStatus'],
+                "storeExtra"        => $data['status']
             ],
             $where
         );
@@ -275,13 +271,13 @@ class CompropagoWebhook
         $this->db->insert(
             $tableTransactions,
             [
-                "orderId" => $data['id'],
-                "date" => $recordTime,
-                "compropagoId" => $data['compropagoId'],
-                "compropagoStatus" => $data['compropagoStatus'],
-                "compropagoStatusLast" => $data['lastStatus'],
-                "ioIn" => base64_encode(serialize($this->data)),
-                "ioOut" => base64_encode(serialize($verified))
+                "orderId"               => $data['id'],
+                "date"                  => $recordTime,
+                "compropagoId"          => $data['compropagoId'],
+                "compropagoStatus"      => $data['compropagoStatus'],
+                "compropagoStatusLast"  => $data['lastStatus'],
+                "ioIn"                  => base64_encode(serialize($this->data)),
+                "ioOut"                 => base64_encode(serialize($verified))
             ]
         );
     }

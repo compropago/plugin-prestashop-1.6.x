@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2015 Compropago.
+ * Copyright 2019 Compropago.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@
 global $_MODULE;
 $_MODULE = array();
 
+
 //[modulePath]/compropago.php 
 $_MODULE['<{compropago}prestashop>compropago_51364ec58cec9ee5f07941677781c917'] = 'ComproPago';
 $_MODULE['<{compropago}prestashop>compropago_689256bbd6f0a9e1b86e5cee6b7a038d'] = 'Con ComproPago puedes recibir pagos en efectivo en todo México';
@@ -41,7 +42,7 @@ $_MODULE['<{compropago}prestashop>compropago_a5faa48a5a05f3b45c78f7c27f63d288'] 
 $_MODULE['<{compropago}prestashop>compropago_889bdcebb4779a00387d204f74e1a44b'] = 'Panel de ComproPago';
 $_MODULE['<{compropago}prestashop>compropago_c9cc8cce247e49bae79f15173ce97354'] = 'Guardar';
 $_MODULE['<{compropago}prestashop>compropago_650be61892bf690026089544abbd9d26'] = 'Modo';
-$_MODULE['<{compropago}prestashop>compropago_13f77ac96d8b8d46bc553674bed34352'] = 'Modo Activo o de Pruebas?, cambie sus llaves de acuerdo al modo';
+$_MODULE['<{compropago}prestashop>compropago_13f77ac96d8b8d46bc553674bed34352'] = '¿Modo Activo o de Pruebas?, cambie sus llaves de acuerdo al modo';
 $_MODULE['<{compropago}prestashop>compropago_a849a06e943c4fa48e32586816a93852'] = 'Modo Activo';
 $_MODULE['<{compropago}prestashop>compropago_74e20d91279df8e47e489e30bbb8e63f'] = 'Modo Pruebas';
 $_MODULE['<{compropago}prestashop>compropago_6c4f89a480dc019becdd5437962c36ab'] = 'Llaves Incorrectas, Sus llaves Pública y Privada deben ser válidas';
@@ -75,7 +76,7 @@ $_MODULE['<{compropago}prestashop>validation_e2b7dec8fa4b498156dfee6e4c84b156'] 
 // [modulePath]/views/templates/hook/info.tpl
 $_MODULE['<{compropago}prestashop>infos_689256bbd6f0a9e1b86e5cee6b7a038d'] = 'Con ComproPago puedes recibir pagos en efectivo en todo México';
 $_MODULE['<{compropago}prestashop>infos_e444fe40d43bccfad255cf62ddc8d18f'] = 'El estatus de las órdenes realizadas por este método quedarán registradas como \'Pago Pendiente.\'';
-$_MODULE['<{compropago}prestashop>infos_a9da016950bfa3ec48d35f3cd6d8f26c'] = 'ComproPago confirmará  la orden por WebHook una vez confirmada la recepción del pago';
+$_MODULE['<{compropago}prestashop>infos_a9da016950bfa3ec48d35f3cd6d8f26c'] = 'ComproPago confirmará  la orden por WebHook una vez confirmada la recepción del pago.';
 
 // [modulePath]/views/templates/hook/payment.tpl
 $_MODULE['<{compropago}prestashop>payment_8bdb2b157c2e8364f7251fb3053650d0'] = 'Pagar por ComproPago';
@@ -105,7 +106,7 @@ $_MODULE['<{compropago}prestashop>payment_execution_0881a11f7af33bc1b43e43739112
 
 // [modulePath]/views/templates/hook/payment_return.tpl
 $_MODULE['<{compropago}prestashop>payment_return_88526efe38fd18179a127024aba8c1d7'] = 'Se ha completado su orden en %s';
-$_MODULE['<{compropago}prestashop>payment_return_621455d95c5de701e05900a98aaa9c66'] = 'Cantidad a Pagar.';
+$_MODULE['<{compropago}prestashop>payment_return_621455d95c5de701e05900a98aaa9c66'] = 'Cantidad a pagar.';
 $_MODULE['<{compropago}prestashop>payment_return_292aeef87901257c1ccf0a0ee67ee428'] = 'Número de orden: #%d.';
 $_MODULE['<{compropago}prestashop>payment_return_6c5a76b0a3c213285939bf002f296f9a'] = 'Referencia de la orden: %s.';
 $_MODULE['<{compropago}prestashop>payment_return_610abe74e72f00210e3dcb91a0a3f717'] = 'Se le ha enviado un email con ésta información';
@@ -114,7 +115,6 @@ $_MODULE['<{compropago}prestashop>payment_return_0db71da7150c27142eef9d22b843b4a
 $_MODULE['<{compropago}prestashop>payment_return_decce112a9e64363c997b04aa71b7cb8'] = 'departamento de atención.';
 $_MODULE['<{compropago}prestashop>payment_return_9bdf695c5a30784327137011da6ef568'] = 'Hemos detectado un problema con su orden. Si considera que es un error contacte al';
 $_MODULE['<{compropago}prestashop>payment_return_d15feee53d81ea16269e54d4784fa123'] = 'Hemos detectado un problema con su orden. Si considera que es un error contacte al';
-
 
 
 return $_MODULE;

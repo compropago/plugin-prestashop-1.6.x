@@ -7,7 +7,7 @@
 class CompropagoValidationModuleFrontController extends ModuleFrontController
 {
 
-    const PLUGIN_VERSION = "2.5.0.0";
+    const PLUGIN_VERSION = "2.5.1.0";
 
 	public function postProcess()
 	{
@@ -155,21 +155,21 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
      */
 	private function proccessCash($store)
     {
-        $cart = $this->context->cart;
-        $customer = new Customer($cart->id_customer);
-        $orderName = 'Ref: ' . $this->module->currentOrder;
+        $cart       = $this->context->cart;
+        $customer   = new Customer($cart->id_customer);
+        $orderName  = 'Ref: ' . $this->module->currentOrder;
 
         $order_info = [
-            'order_id' => $this->module->currentOrder,
-            'order_name' => $orderName,
-            'order_price' => $cart->getOrderTotal(true, Cart::BOTH),
-            'customer_name' => $customer->firstname . ' ' . $customer->lastname,
-            'customer_email' => $customer->email,
-            'payment_type' => $store,
-            'currency' => $this->context->currency->iso_code,
-            'image_url' => null,
-            'app_client_name' => 'prestashop',
-            'app_client_version' => self::PLUGIN_VERSION
+            'order_id'              => $this->module->currentOrder,
+            'order_name'            => $orderName,
+            'order_price'           => $cart->getOrderTotal(true, Cart::BOTH),
+            'customer_name'         => $customer->firstname . ' ' . $customer->lastname,
+            'customer_email'        => $customer->email,
+            'payment_type'          => $store,
+            'currency'              => $this->context->currency->iso_code,
+            'image_url'             => null,
+            'app_client_name'       => 'prestashop',
+            'app_client_version'    => self::PLUGIN_VERSION
         ];
 
         $order = CompropagoSdk\Factory\Factory::getInstanceOf('PlaceOrderInfo', $order_info);
@@ -209,28 +209,28 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
         $tableOrders = _DB_PREFIX_ . 'compropago_orders';
         $tableTransactions = _DB_PREFIX_ . 'compropago_transactions';
 
-        $insertOrder = array(
-            'date'             => $recordTime,
-            'modified'         => $recordTime,
-            'compropagoId'     => $response->id,
-            'compropagoStatus' => $status,
-            'storeCartId'      => $cart->id,
-            'storeOrderId'     => $this->module->currentOrder,
-            'storeExtra'       => 'COMPROPAGO_PENDING',
-            'ioIn'             => $ioIn,
-            'ioOut'            => $ioOut,
-            'api_version'      => $api
-        );
+        $insertOrder = [
+            'date'              => $recordTime,
+            'modified'          => $recordTime,
+            'compropagoId'      => $response->id,
+            'compropagoStatus'  => $status,
+            'storeCartId'       => $cart->id,
+            'storeOrderId'      => $this->module->currentOrder,
+            'storeExtra'        => 'COMPROPAGO_PENDING',
+            'ioIn'              => $ioIn,
+            'ioOut'             => $ioOut,
+            'api_version'       => $api
+        ];
 
-        $insertTransaction = array(
-            'orderId'              => $response->order_info->order_id,
-            'date'                 => $recordTime,
-            'compropagoId'         => $response->id,
-            'compropagoStatus'     => $status,
-            'compropagoStatusLast' => $status,
-            'ioIn'                 => $ioIn,
-            'ioOut'                => $ioOut
-        );
+        $insertTransaction = [
+            'orderId'               => $response->order_info->order_id,
+            'date'                  => $recordTime,
+            'compropagoId'          => $response->id,
+            'compropagoStatus'      => $status,
+            'compropagoStatusLast'  => $status,
+            'ioIn'                  => $ioIn,
+            'ioOut'                 => $ioOut
+        ];
 
         Db::getInstance()->autoExecute($tableOrders, $insertOrder, $type);
         Db::getInstance()->autoExecute($tableTransactions, $insertTransaction, $type);
